@@ -1,0 +1,107 @@
+/* Estilos heredados del root, con unidades em para escalar con el contenedor */
+
+.sfi-group {
+	margin-bottom: 1.2em;
+}
+
+.sfi-label {
+	display: block;
+	color: var(--sf-surface-variant);
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.9em;
+	font-weight: 600;
+	margin-bottom: 0.6em;
+	padding: 0 0.2em;
+}
+
+.sfi-wrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.sfi-wrapper--error .sfi-input {
+	box-shadow: 0 0 0 2px rgba(var(--sf-error-rgb), 0.50) !important;
+}
+
+.sfi-icon-left {
+	position: absolute;
+	left: 1em;
+	color: rgba(var(--sf-primary-fixed-dim-rgb), 0.40);
+	font-size: 1.1em;
+	pointer-events: none;
+	transition: color 0.2s;
+	font-family: 'Material Symbols Outlined';
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+	line-height: 1;
+}
+
+.sfi-wrapper:focus-within .sfi-icon-left {
+	color: var(--sf-primary-fixed-dim);
+}
+
+.sfi-input {
+	width: 100%;
+	background: rgba(var(--sf-inverse-surface-rgb), 0.40);
+	border: none;
+	border-radius: 0.8em;
+	padding: 0.85em 1em 0.85em 2.8em;
+	color: var(--sf-surface);
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.95em;
+	outline: none;
+	transition: box-shadow 0.2s;
+	box-sizing: border-box;
+}
+
+.sfi-input--no-icon {
+	padding-left: 1em;
+}
+
+.sfi-input--pr {
+	padding-right: 2.8em;
+}
+
+.sfi-input::placeholder {
+	color: rgba(var(--sf-primary-fixed-dim-rgb), 0.30);
+}
+
+.sfi-input:focus {
+	box-shadow: 0 0 0 2px rgba(var(--sf-primary-fixed-dim-rgb), 0.45);
+}
+
+.sfi-input:disabled {
+	opacity: 0.50;
+	cursor: not-allowed;
+}
+
+.sfi-btn-right {
+	position: absolute;
+	right: 0.9em;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: rgba(var(--sf-primary-fixed-dim-rgb), 0.40);
+	display: flex;
+	align-items: center;
+	padding: 0;
+	transition: color 0.2s;
+	font-family: 'Material Symbols Outlined';
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.sfi-btn-right:hover {
+	color: var(--sf-surface);
+}
+
+.sfi-btn-right .material-symbols-outlined {
+	font-size: 1.1em;
+}
+
+.sfi-error-text {
+	display: block;
+	margin-top: 0.3em;
+	padding: 0 0.2em;
+	font-size: 0.8em;
+	color: var(--sf-error-container);
+}

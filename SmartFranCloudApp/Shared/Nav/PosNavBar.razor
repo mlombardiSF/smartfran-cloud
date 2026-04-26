@@ -1,0 +1,221 @@
+@namespace SmartFranCloudApp.Shared.Nav
+@using SmartFranCloudApp.Models
+@implements IDisposable
+
+<header class="pos-nav">
+
+	@* ── Izquierda: toggle sidebar + logo + buscador ──────────────────────── *@
+	<div class="pos-nav__left">
+
+		<button class="pos-nav__icon-btn" @onclick="OnMenuToggle" title="Menú">
+			<span class="material-symbols-outlined">menu</span>
+		</button>
+
+		<img 
+			src="/assets/svgs/Smartfran-Cloud-logo-light.svg"
+			alt="SmartFran Cloud"
+			class="pos-nav__logo"
+			onerror="this.style.display='none';" />
+
+		<div class="pos-nav__divider"></div>
+
+		@* Buscador de productos *@
+		<div class="pos-nav__search-wrap" @ref="_searchWrapRef">
+
+			@if (_searching) {
+				<svg class="pos-nav__search-spinner" viewBox="0 0 24 24" fill="none">
+					<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity=".25"/>
+					<path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+				</svg>
+			} else {
+				<span class="material-symbols-outlined pos-nav__search-icon">search</span>
+			}
+
+			<input 
+				class="pos-nav__search-input"
+				placeholder="Buscar producto..."
+				type="text"
+				autocomplete="off"
+				value="@_query"
+				@oninput="OnSearchInput"
+				@onfocus="OnSearchFocus"
+				@onblur="OnSearchBlur" />
+
+			@if (!string.IsNullOrEmpty(_query)) {
+				<button class="pos-nav__search-clear" @onclick="ClearSearch" @onclick:stopPropagation>
+					<span class="material-symbols-outlined" style="font-size:1em;">close</span>
+				</button>
+			}
+
+			@* Dropdown resultados *@
+			@if (_dropdownVisible) {
+				<div class="pos-nav__dropdown" style="@_dropdownStyle">
+
+					@if (_searching) {
+						<div class="pos-nav__drop-loading">
+							<svg class="pos-nav__drop-spinner" viewBox="0 0 24 24" fill="none">
+								<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity=".25"/>
+								<path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+							</svg>
+							<span>Buscando...</span>
+						</div>
+					} else if (_results.Any()) {
+						@foreach (var p in _results) {
+							var prod = p;
+
+							<div class="pos-nav__drop-item" @onmousedown="() => SelectProduct(prod)">
+								<div class="pos-nav__drop-img">
+									<img
+										src="@prod.ImageUrl"
+										alt="@prod.Name"
+										onerror="this.style.display='none'"
+									/>
+								</div>
+								<div class="pos-nav__drop-info">
+									<span class="pos-nav__drop-cat">@prod.Category</span>
+									<span class="pos-nav__drop-name">@prod.Name</span>
+								</div>
+								<span class="pos-nav__drop-price">
+									@prod.Price.ToString("C0", new System.Globalization.CultureInfo("es-AR"))
+								</span>
+							</div>
+						}
+					} else if (!string.IsNullOrEmpty(_query)) {
+						<div class="pos-nav__drop-empty">
+							<span class="material-symbols-outlined pos-nav__drop-empty-icon">search_off</span>
+							<p class="pos-nav__drop-empty-text">Sin resultados para</p>
+							<p class="pos-nav__drop-empty-term">"@_query"</p>
+						</div>
+					}
+				</div>
+			}
+		</div>
+	</div>
+
+		@* ── Derecha: sonido + settings + info POS + avatar ──────────────────── *@
+	<div class="pos-nav__right">
+
+		@* Botón configurar sonido *@
+		<button 
+			class="pos-nav__icon-btn pos-nav__icon-btn--notif"
+			@onclick="OnSoundConfig"
+			title="Configurar sonido de alertas"
+		>
+			<span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">notifications_active</span>
+			<span class="pos-nav__notif-dot"></span>
+		</button>
+
+		<button class="pos-nav__icon-btn" title="Configuración">
+			<span class="material-symbols-outlined">settings</span>
+		</button>
+
+		@* Info POS: usuario, fecha, mostrador, turno *@
+		<div class="pos-nav__pos-info">
+			<span class="pos-nav__pos-user">@UserName</span>
+			<span class="pos-nav__pos-detail">@_datetime</span>
+			<span class="pos-nav__pos-detail">POS · @Terminal</span>
+			<span class="pos-nav__pos-detail">Turno · @Shift</span>
+		</div>
+
+		@* Avatar *@
+		<div class="pos-nav__avatar-wrap">
+			<div class="pos-nav__avatar">
+				<img 
+					src="/assets/images/perfil-user.png" alt="Avatar"
+					onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+				/>
+				<span class="pos-nav__avatar-fallback">@UserName.FirstOrDefault()</span>
+			</div>
+		</div>
+	</div>
+
+</header>
+
+@code {
+	[Parameter] public string              UserName        { get; set; } = "Usuario";
+	[Parameter] public string              Terminal        { get; set; } = "001";
+	[Parameter] public string              Shift           { get; set; } = "0001";
+	[Parameter] public List<Product> 			 Products 			 { get; set; } = new();
+	[Parameter] public EventCallback       OnMenuToggle    { get; set; }
+	[Parameter] public EventCallback       OnSoundConfig   { get; set; }
+	[Parameter] public EventCallback<Product> OnProductSelect { get; set; }
+
+	private bool     _searching       = false;
+	private bool     _dropdownVisible = false;
+	private string   _query						= string.Empty;
+	private string   _datetime        = string.Empty;
+	private string 	 _dropdownStyle  	= string.Empty;
+	private List<Product> _results = new();
+	private System.Timers.Timer? _debounce;
+	private ElementReference _searchWrapRef;
+
+	protected override void OnInitialized() {
+		_datetime = DateTime.Now.ToString(
+			"dddd, dd MMM yyyy · hh:mm tt",
+			new System.Globalization.CultureInfo("es-AR")
+		);
+	}
+
+	private void OnSearchInput(ChangeEventArgs e) {
+		_query = e.Value?.ToString() ?? string.Empty;
+		_debounce?.Dispose();
+
+		if (string.IsNullOrWhiteSpace(_query)) {
+			_results.Clear();
+			_searching = false;
+			_dropdownVisible = false;
+
+			return;
+		}
+
+		_searching = true;
+		_dropdownVisible = true;
+
+		_dropdownStyle = "top: 3.9em; left: 14.4em; right: 0;"; // fallback, JS ajusta si hace falta
+
+		_debounce = new System.Timers.Timer(280);
+		_debounce.Elapsed += async (_, _) => {
+			await InvokeAsync(() =>	{
+				_results = Products
+					.Where(p => p.Name.Contains(_query, StringComparison.OrdinalIgnoreCase)
+						|| p.Category.Contains(_query, StringComparison.OrdinalIgnoreCase))
+					.Take(8)
+					.ToList();
+				_searching = false;
+				StateHasChanged();
+			});
+		};
+		_debounce.AutoReset = false;
+		_debounce.Start();
+	}
+
+	private void OnSearchFocus() {
+		if (!string.IsNullOrEmpty(_query)) {
+			_dropdownVisible = true;
+		}
+	}
+
+	private void OnSearchBlur()	{
+		// Delay para permitir click en el dropdown
+		Task.Delay(200).ContinueWith(_ => InvokeAsync(() => {
+			_dropdownVisible = false;
+			StateHasChanged();
+		}));
+	}
+
+	private void ClearSearch()	{
+		_results.Clear();
+		_query = string.Empty;
+		_dropdownVisible = false;
+		_searching = false;
+	}
+
+	private async Task SelectProduct(Product p) {
+		_dropdownVisible = false;
+		_query           = string.Empty;
+		_results.Clear();
+		await OnProductSelect.InvokeAsync(p);
+	}
+
+	public void Dispose() => _debounce?.Dispose();
+}

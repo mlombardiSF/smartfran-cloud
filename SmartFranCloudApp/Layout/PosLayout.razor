@@ -1,0 +1,12 @@
+@* PosLayout.razor — Layout para el terminal de ventas
+	Sin BottomBar. overflow:hidden estricto — cada zona maneja su propio scroll. *@
+
+@inherits LayoutComponentBase
+
+<div class="pos-layout">
+	@Body
+</div>
+
+@code {
+	private MudTheme _theme = SmartFranTheme.Create();
+}

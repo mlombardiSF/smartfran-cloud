@@ -1,0 +1,20 @@
+.app-layout {
+	font-size: clamp(11px, 1.1vh, 14px);
+	min-height: 100vh;
+	background-color: #fdf7ff;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.app-layout__main {
+	flex: 1;
+	/* permite que flex child respete el límite */
+	min-height: 0;
+	padding-top: 5em;
+	padding-bottom: 6em;
+	box-sizing: border-box;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}

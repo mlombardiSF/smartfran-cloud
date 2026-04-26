@@ -1,0 +1,170 @@
+@page "/retail-sales"
+
+@layout PosLayout
+
+@using SmartFranCloudApp.Models
+@using SmartFranCloudApp.Services
+@using SmartFranCloudApp.Shared.Nav
+@using SmartFranCloudApp.Shared.POS.Venta
+
+@inject CartService Cart
+
+<PageTitle>SFC | POS</PageTitle>
+
+<div class="vm-root">
+
+	@* ── TopNav del POS ──────────────────────────────────────────────────── *@
+	<PosNavBar 
+		UserName="Matias Lombardi"
+		Terminal="Mostrador 001"
+		Shift="0345"
+		Products="@_allProducts"
+		OnMenuToggle="ToggleSidebar"
+		OnSoundConfig="ToggleSoundConfig"
+		OnProductSelect="AddProduct"
+	/>
+
+	@* ── Sidebar de navegación ───────────────────────────────────────────── *@
+	<SideNavBar IsOpen="@_sidebarOpen" OnClose="CloseSidebar" />
+
+	@* ── Workspace principal ─────────────────────────────────────────────── *@
+	<div class="vm-workspace">
+
+		@* Panel socio slide — desde la izquierda, debajo del nav *@
+        <SocioPanelSlide
+					IsOpen="@_socioPanelOpen"
+					OnClose="CloseSocioPanel" />
+
+		@* ── Zona izquierda: categorías + grilla ─────────────────────────── *@
+		<div class="vm-catalog">
+
+			@* Barra superior: categorías + botón pedidos *@
+			<div class="vm-catalog__topbar">
+				<CategoryBar 
+					CategoriesMain="@_categoriesMain"
+					CategoriesExtra="@_categoriesExtra"
+					CategoryActive="@_categoryActive"
+					OnCategorySelect="SelectCategory"
+				/>
+
+				<div class="vm-catalog__pedidos">
+						<OrdersButton
+							PendingOrders="@_pendingOrders"
+							OnClick="OpenKanban"
+							@ref="_ordersBtn"
+						/>
+				</div>
+			</div>
+
+			@* Grilla de productos *@
+			<div class="vm-catalog__grid-wrap">
+				<div class="vm-catalog__grid">
+					@foreach (var p in _filteredProducts) {
+						<ProductCard 
+							Product="p" 
+							OnAdd="AddProduct"
+						/>
+					}
+
+					@if (!_filteredProducts.Any()) {
+						<div class="vm-catalog__empty">
+							<span class="material-symbols-outlined vm-catalog__empty-icon">
+								search_off
+							</span>
+							<p>Sin productos en esta categoría</p>
+						</div>
+					}
+				</div>
+			</div>
+
+		</div>
+
+		@* ── Panel derecho: carrito ───────────────────────────────────────── *@
+		<CartPanel
+			OnConfirmPayment="OpenModalPayment"
+			OnOpenSocioPanel="OpenSocioPanel"
+			OnSocioCleared="CloseSocioPanel" />
+
+	</div>
+
+</div>
+
+@code {
+	// ── Estado UI ──────────────────────────────────────────────────────────
+	private bool   _sidebarOpen    = false;
+	private bool   _socioPanelOpen  = false;
+	private bool   _soundConfigOpen= false;
+	private string _categoryActive= "Favoritos";
+	private int    _pendingOrders = 5;
+	private OrdersButton? _ordersBtn;
+
+	// ── Datos catálogo ─────────────────────────────────────────────────────
+	private List<CategoryModel> _categoriesMain = new() {
+		new() { Name="Favoritos", Icon="star"                            },
+		new() { Name="Promos",    Icon="featured_seasonal_and_gifts"     },
+		new() { Name="Helados",   Icon=""                                },
+		new() { Name="Palitos",   Icon=""                                },
+		new() { Name="Bombones",  Icon=""                                },
+		new() { Name="Tortas",    Icon=""                                },
+	};
+
+	private List<CategoryModel> _categoriesExtra = new() {
+		new() { Name="Cucuruchos",          Icon="icecream",     Group="Helados",   IsMore=true },
+		new() { Name="Congelados",          Icon="package_2",    Group="Helados",   IsMore=true },
+		new() { Name="Helados x bocha",     Icon="icecream",     Group="Helados",   IsMore=true },
+		new() { Name="Helados x kilo",      Icon="icecream",     Group="Helados",   IsMore=true },
+		new() { Name="Batidos",             Icon="blender",      Group="Cafetería", IsMore=true },
+		new() { Name="Bebidas",             Icon="water_full",   Group="Cafetería", IsMore=true },
+		new() { Name="Infusiones",          Icon="local_cafe",   Group="Cafetería", IsMore=true },
+		new() { Name="Mermeladas",          Icon="grocery",      Group="Cafetería", IsMore=true },
+		new() { Name="Frizzio Pizzas",      Icon="local_pizza",  Group="Salados",   IsMore=true },
+		new() { Name="Frizzio Hamburguesas",Icon="lunch_dining", Group="Salados",   IsMore=true },
+	};
+
+	private List<Product> _allProducts = new() {
+		new() { Id="p1", Name="Mini Gigante", Category="Helados", Price=1400, ImageUrl="/assets/images/mini-gigante.png", IsFavorite=true  },
+		new() { Id="p2", Name="Gigante 2 Bochas", Category="Helados", Price=2000, ImageUrl="/assets/images/2-bochas.jpg", IsFavorite=true  },
+		new() { Id="p3", Name="Bombón Escocés x unidad", Category="Bombones", Price=1800, ImageUrl="/assets/images/bombon-escoces.png",        IsFavorite=false },
+		new() { Id="p4", Name="1 Kilo", Category="Helados", Price=8500, ImageUrl="/assets/images/1-kilo.png", IsFavorite=true  },
+		new() { Id="p5", Name="Palito Bombón x unidad", Category="Palitos", Price=900, ImageUrl="/assets/images/palito-bombon.jpg", IsFavorite=true  },
+		new() { Id="p6", Name="Bombón Escocés en caja x8", Category="Bombones", Price=12500, ImageUrl="/assets/images/caja-bombon-escoces.png", IsFavorite=false },
+		new() { Id="p7", Name="Torta Cookie and Cream", Category="Tortas", Price=14000, ImageUrl="/assets/images/torta-cookie-and-cream.png", IsFavorite=false },
+		new() { Id="p8", Name="Palito Frutal x unidad", Category="Palitos", Price=700, ImageUrl="/assets/images/palito-frutal-frutilla.jpg", IsFavorite=false },
+		new() { Id="p9", Name="Palito Cremoso Frutilla x unidad", Category="Palitos", Price=1600, ImageUrl="/assets/images/palito-cremoso-frutilla.jpg", IsFavorite=false },
+		new() { Id="p10", Name="Almendrado en Caja x 8 Un.", Category="Postres", Price=9500, ImageUrl="/assets/images/almendrado-x-caja.png", IsFavorite=true },
+		new() { Id="p11", Name="Almendrado x unidad", Category="Postres", Price=1600, ImageUrl="/assets/images/almendrado-x-unidad.jpg", IsFavorite=false },
+		new() { Id="p12", Name="Crocantino", Category="Postres", Price=9500, ImageUrl="/assets/images/crocantino.png", IsFavorite=false },
+		new() { Id="p13", Name="Casatta en Caja x 8 Un.", Category="Postres", Price=9500, ImageUrl="/assets/images/casatta-x-caja.png", IsFavorite=false },
+		new() { Id="p14", Name="Casatta x unidad", Category="Postres", Price=1600, ImageUrl="/assets/images/casatta-x-caja.png", IsFavorite=false },
+		new() { Id="p15", Name="Barra Delicia Chocolate y Maní", Category="Postres", Price=9500, ImageUrl="/assets/images/barra-delicia.png", IsFavorite=true },
+	};
+
+	private List<Product> _filteredProducts => _categoryActive switch
+	{
+		"Favoritos" => _allProducts.Where(p => p.IsFavorite).ToList(),
+		"Promos"    => _allProducts.Take(4).ToList(), // placeholder
+		_           => _allProducts.Where(p => p.Category == _categoryActive).ToList(),
+	};
+
+	// ── Acciones ───────────────────────────────────────────────────────────
+	private void ToggleSidebar()  => _sidebarOpen = !_sidebarOpen;
+	private void CloseSidebar()   => _sidebarOpen = false;
+	private void ToggleSoundConfig() => _soundConfigOpen = !_soundConfigOpen;
+	private void SelectCategory(string cat) => _categoryActive = cat;
+
+	private void OpenSocioPanel()  => _socioPanelOpen = true;
+  private void CloseSocioPanel()  => _socioPanelOpen = false;
+
+	private void AddProduct(Product p) {
+		Cart.AddProduct(p);
+		StateHasChanged();
+	}
+
+	private void OpenKanban() {
+		// TODO: abrir panel Kanban (próxima etapa)
+	}
+
+	private void OpenModalPayment() {
+		// TODO: abrir modal de pago (próxima etapa)
+	}
+}

@@ -1,0 +1,72 @@
+.cb {
+    background: #1e1332;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+}
+
+.cb__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background: #150d28;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.cb__lang {
+    font-family: 'Manrope', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(230, 180, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.cb__copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid rgba(230, 180, 255, 0.2);
+    border-radius: 6px;
+    background: transparent;
+    color: rgba(230, 180, 255, 0.6);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.cb__copy:hover {
+    background: rgba(230, 180, 255, 0.08);
+    color: rgba(230, 180, 255, 0.9);
+}
+
+.cb__copy--done {
+    border-color: rgba(64, 218, 227, 0.4);
+    color: #40dae3;
+}
+
+.cb__pre {
+    margin: 0;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    background: transparent !important;
+}
+
+.cb__code {
+    font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    background: transparent !important;
+}
+
+/* Override Prism theme para fondo oscuro */
+:global(.token.tag)       { color: #e6b4ff; }
+:global(.token.attr-name) { color: #40dae3; }
+:global(.token.attr-value){ color: #a8e6cf; }
+:global(.token.punctuation){ color: rgba(255,255,255,0.4); }
+:global(.token.string)    { color: #a8e6cf; }
+:global(.token.keyword)   { color: #ff79c6; }
+:global(.token.comment)   { color: rgba(255,255,255,0.3); font-style: italic; }

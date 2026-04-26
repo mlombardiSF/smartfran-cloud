@@ -1,0 +1,75 @@
+@* NotFound.razor
+	Se referencia desde App.razor en el bloque <NotFound>.
+*@
+
+@using SmartFranCloudApp.Shared.Decorations
+@using SmartFranCloudApp.Layout
+
+
+<PageBackground
+	ShowPattern="true" 
+	ShowShapes="true"
+	BlobTopRight="#9080f5"
+	BlobBottomLeft="#3d2fa0"
+>
+
+	<div class="nf-root">
+		<main class="nf-main">
+
+			@* Número 404 — display editorial del design system *@
+			<div class="nf-display">
+				<span class="nf-display__number">4</span>
+				@* Ícono como segundo elemento visual — reemplaza el "0" del medio *@
+				<div class="nf-display__icon-wrap">
+					<span 
+						class="material-symbols-outlined nf-display__icon"
+						style="font-variation-settings:'FILL' 1;"
+					>
+						search_off
+					</span>
+				</div>
+				<span class="nf-display__number">4</span>
+			</div>
+
+			@* Label editorial sobre el número *@
+			<p class="nf-label">Error de Navegación</p>
+
+			@* Headline principal *@
+			<h1 class="nf-title">
+				Página no<br />
+				<span class="nf-title__accent">encontrada</span>
+			</h1>
+
+			@* Descripción *@
+			<p class="nf-desc">
+				La ruta que buscás no existe en este workspace.
+				Puede que haya expirado la sesión o la URL sea incorrecta.
+			</p>
+
+			@* Acciones *@
+			<div class="nf-actions">
+				<a class="nf-btn nf-btn--primary" href="/login">
+					<span class="material-symbols-outlined" style="font-size:1.1em;">
+						arrow_back
+					</span>
+					Volver al inicio
+				</a>
+				<a class="nf-btn nf-btn--secondary" href="/selection-franchise">
+					Ir al sistema
+					<span class="material-symbols-outlined" style="font-size:1.1em;">
+						arrow_forward
+					</span>
+				</a>
+			</div>
+
+			@* Decoración inferior — SSL badge del design system *@
+			<div class="nf-footer">
+				<span class="material-symbols-outlined nf-footer__icon">security</span>
+				<span class="nf-footer__text">SSL Encrypted · SmartFran Cloud</span>
+			</div>
+
+		</main>
+	</div>
+
+</PageBackground>
+

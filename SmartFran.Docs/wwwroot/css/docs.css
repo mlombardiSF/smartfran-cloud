@@ -1,0 +1,51 @@
+/* ── Encabezado de página de componente ───────────────────────────────── */
+.comp-page__header {
+    margin-bottom: 2.5rem;
+}
+
+.comp-page__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.comp-page__sep {
+    opacity: 0.4;
+}
+
+.comp-page__title {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 800 !important;
+    margin-bottom: 0.4rem !important;
+}
+
+.comp-page__subtitle {
+    color: var(--mud-palette-text-secondary);
+    max-width: 680px;
+    margin-bottom: 1rem !important;
+    line-height: 1.6;
+}
+
+.comp-page__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+}
+
+/* ── Caja de modelo de datos ─────────────────────────────────────────── */
+.comp-page__model-box {
+    margin-top: 2rem;
+    border: 1px solid var(--mud-palette-divider);
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 1rem 1.25rem 0;
+}
+
+/* ── Correcciones scoped-CSS en standalone ──────────────────────────── */
+code {
+    font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+}

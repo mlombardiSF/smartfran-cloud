@@ -1,0 +1,37 @@
+@namespace SmartFran.Components.POS.Venta
+
+<div class="pb-wrap">
+	<span class="pb-smartpedidos">
+		SMARTPEDIDOS
+		<span class="material-symbols-outlined pb-smartpedidos-icon">task_alt</span>
+	</span>
+	<button
+		class="pb-btn @(_hasNew ? "pb-btn--pulse" : "")"
+		@onclick="HandleClick"
+	>
+		<span class="pb-badge @(PendingOrders > 0 ? "pb-badge--active" : "")">
+			@PendingOrders
+		</span>
+		<span class="material-symbols-outlined pb-icon">moped_package</span>
+		<span class="pb-label">Pedidos</span>
+	</button>
+</div>
+
+@code {
+	[Parameter] public int           PendingOrders { get; set; } = 0;
+	[Parameter] public EventCallback OnClick       { get; set; }
+
+	private bool _hasNew = false;
+
+	public void NotifyNewOrders() {
+		_hasNew = true;
+		StateHasChanged();
+		Task.Delay(700).ContinueWith(
+			_ => InvokeAsync(() => {
+				_hasNew = false;
+				StateHasChanged();
+		}));
+	}
+
+	private async Task HandleClick() => await OnClick.InvokeAsync();
+}

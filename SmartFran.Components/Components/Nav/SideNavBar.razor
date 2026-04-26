@@ -1,0 +1,148 @@
+@namespace SmartFran.Components.Nav
+
+@* Overlay *@
+@if (IsOpen) {
+	<div class="snb-overlay" @onclick="OnClose"></div>
+}
+
+@* Drawer *@
+<aside class="snb @(IsOpen ? "snb--open" : "")">
+
+	@* Header *@
+	<div class="snb__header">
+		<div class="snb__header-brand">
+			<div class="snb__header-icon">
+				<img
+					src="/assets/svgs/llave-smart.svg"
+					alt="SmartFran"
+					onerror="this.style.display='none';"
+				/>
+			</div>
+			<div>
+				<p class="snb__header-name">SmartFran Cloud</p>
+				<p class="snb__header-sub">Punto de Venta</p>
+			</div>
+		</div>
+		<button class="snb__close-btn" @onclick="OnClose">
+			<span class="material-symbols-outlined">close</span>
+		</button>
+	</div>
+
+	@* Nav scrollable *@
+	<nav class="snb__nav">
+
+		@* Home *@
+		<a href="/seleccion-franquicia" class="snb__item">
+			<span class="material-symbols-outlined snb__item-icon">home</span>
+			<span>Home</span>
+		</a>
+
+		@* Ventas (grupo activo) *@
+		<div class="snb__group">
+			<button
+				class="snb__group-btn snb__group-btn--active"
+				@onclick='() => ToggleGroup("ventas")'
+			>
+				<span class="material-symbols-outlined snb__group-icon snb__group-icon--active">attach_money</span>
+				<span class="snb__group-label">Ventas</span>
+				<span class="material-symbols-outlined snb__chevron @(_groups["ventas"] ? "snb__chevron--open" : "")">
+					expand_more
+				</span>
+			</button>
+			@if (_groups["ventas"]) {
+				<div class="snb__group-items">
+					<a href="/venta-minorista" class="snb__sub snb__sub--active">
+						<span class="material-symbols-outlined">point_of_sale</span>
+						<span>Ventas Minoristas</span>
+					</a>
+					<a href="#" class="snb__sub">
+						<span class="material-symbols-outlined">moped</span>
+						<span>Delivery</span>
+					</a>
+					<a href="#" class="snb__sub">
+						<span class="material-symbols-outlined">receipt_long</span>
+						<span>Informe del Turno</span>
+					</a>
+				</div>
+			}
+		</div>
+
+		@* Caja *@
+		<a href="#" class="snb__item">
+			<span class="material-symbols-outlined snb__item-icon">account_balance</span>
+			<span>Caja</span>
+		</a>
+
+		@* Stock *@
+		<div class="snb__group">
+			<button class="snb__group-btn" @onclick='() => ToggleGroup("stock")'>
+				<span class="material-symbols-outlined snb__group-icon">warehouse</span>
+				<span class="snb__group-label">Stock</span>
+				<span class="material-symbols-outlined snb__chevron @(_groups["stock"] ? "snb__chevron--open" : "")">
+					expand_more
+				</span>
+			</button>
+			@if (_groups["stock"]) {
+				<div class="snb__group-items">
+					<a href="#" class="snb__sub"><span class="material-symbols-outlined">move_item</span><span>Bajas por consumo</span></a>
+					<a href="#" class="snb__sub"><span class="material-symbols-outlined">inventory</span><span>Apertura de caja</span></a>
+					<a href="#" class="snb__sub"><span class="material-symbols-outlined">manage_search</span><span>Consulta bajas</span></a>
+					<a href="#" class="snb__sub"><span class="material-symbols-outlined">swap_horiz</span><span>Movimientos de Stock</span></a>
+					<a href="#" class="snb__sub"><span class="material-symbols-outlined">summarize</span><span>Informe de Stock</span></a>
+				</div>
+			}
+		</div>
+
+		@* Fidelización *@
+		<div class="snb__group">
+			<button class="snb__group-btn" @onclick='() => ToggleGroup("fidelizacion")'>
+				<span class="material-symbols-outlined snb__group-icon">group</span>
+				<span class="snb__group-label">Fidelización</span>
+				<span class="material-symbols-outlined snb__chevron @(_groups["fidelizacion"] ? "snb__chevron--open" : "")">
+					expand_more
+				</span>
+			</button>
+			@if (_groups["fidelizacion"]) {
+				<div class="snb__group-items">
+					<a href="#" class="snb__sub"><span class="material-symbols-outlined">person_add</span><span>Nuevo Socio</span></a>
+					<a href="#" class="snb__sub"><span class="material-symbols-outlined">credit_card</span><span>Reemplazo Tarjeta</span></a>
+				</div>
+			}
+		</div>
+
+	</nav>
+
+	@* Footer *@
+	<div class="snb__footer">
+		<div class="snb__footer-version">
+			<span class="material-symbols-outlined snb__footer-ver-icon">desktop_cloud</span>
+			<span class="snb__footer-ver-text">versión 3.00.00</span>
+		</div>
+		<a href="#" class="snb__footer-item">
+			<span class="material-symbols-outlined">support_agent</span>
+			<span>Soporte</span>
+		</a>
+		<a href="/login" class="snb__footer-item snb__footer-item--logout">
+			<span class="material-symbols-outlined">logout</span>
+			<span>Cerrar sesión</span>
+		</a>
+	</div>
+
+</aside>
+
+@code {
+	[Parameter] public bool          IsOpen  { get; set; }
+	[Parameter] public EventCallback OnClose { get; set; }
+
+	private Dictionary<string, bool> _groups = new() {
+		["ventas"]       = true,
+		["stock"]        = false,
+		["fidelizacion"] = false,
+	};
+
+	private void ToggleGroup(string key) {
+		if (_groups.ContainsKey(key)){
+			_groups[key] = !_groups[key];
+		}
+	}
+}

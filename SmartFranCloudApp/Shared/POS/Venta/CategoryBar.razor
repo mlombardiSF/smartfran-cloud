@@ -1,0 +1,100 @@
+@namespace SmartFranCloudApp.Shared.POS.Venta
+@using SmartFranCloudApp.Models
+
+<div class="catbar">
+	@* Chips de categorías principales *@
+	<div class="catbar__chips">
+		@foreach (var cat in CategoriesMain) {
+			var c = cat;
+			<button 
+				class="catbar__chip @(CategoryActive == c.Name ? "catbar__chip--active" : "")"
+				@onclick="() => SelectCat(c.Name)"
+			>
+				@if (!string.IsNullOrEmpty(c.Icon)) {
+					<span
+						class="material-symbols-outlined catbar__chip-icon"
+						style="font-variation-settings:'FILL' 1;"
+					>
+						@c.Icon
+					</span>
+				}
+				@c.Name
+			</button>
+		}
+
+		@* Botón Más *@
+		@if (CategoriesExtra.Any()) {
+			<div class="catbar__mas-wrap" @ref="_addRef">
+				<button 
+					class="catbar__chip catbar__chip--mas @(_addOpen ? "catbar__chip--active" : "")"
+					@onclick="ToggleAdd"
+				>
+					Más
+					<span 
+						class="material-symbols-outlined catbar__mas-chevron @(_addOpen ? "catbar__mas-chevron--open" : "")"
+					>
+						expand_more
+					</span>
+				</button>
+			</div>
+		}
+	</div>
+</div>
+
+@* Dropdown de categorías extra *@
+@if (_addOpen && CategoriesExtra.Any()) {
+	@* Overlay para cerrar al hacer click fuera *@
+	<div class="catbar__mas-overlay" @onclick="CloseAdd"></div>
+	<div class="catbar__mas-dropdown">
+		<p class="catbar__mas-label">Más categorías</p>
+
+		@foreach (var group in CategoriesExtra.GroupBy(c => c.Group))	{
+			<p class="catbar__mas-group">@group.Key</p>
+			<div class="catbar__mas-grid">
+
+				@foreach (var cat in group){
+					var c = cat;
+					<button class="catbar__mas-item" @onclick="() => SelectCatFromAdd(c.Name)">
+						<div class="catbar__mas-item-icon catbar__mas-item-icon--@c.Group.ToLower().Replace(" ","")">
+							<span 
+								class="material-symbols-outlined"
+								style="font-variation-settings:'FILL' 1; font-size:0.95em;"
+							>
+								@c.Icon
+							</span>
+						</div>
+						<span class="catbar__mas-item-name">@c.Name</span>
+					</button>
+				}
+			</div>
+
+			@if (group.Key != CategoriesExtra.Last().Group) {
+				<div class="catbar__mas-sep"></div>
+			}
+		}
+	</div>
+}
+
+
+@code {
+	[Parameter] public EventCallback<string> OnCategorySelect { get; set; }
+	[Parameter] public List<CategoryModel> CategoriesMain  		{ get; set; } = new();
+	[Parameter] public List<CategoryModel> CategoriesExtra 		{ get; set; } = new();
+	[Parameter] public string              CategoryActive  		{ get; set; } = string.Empty;
+
+	private ElementReference _addRef;
+	private bool _addOpen = false;
+
+	private async Task SelectCat(string name) {
+		_addOpen = false;
+		await OnCategorySelect.InvokeAsync(name);
+	}
+
+	private async Task SelectCatFromAdd(string name){
+		_addOpen = false;
+		await OnCategorySelect.InvokeAsync(name);
+	}
+
+	private void ToggleAdd() => _addOpen = !_addOpen;
+	private void CloseAdd()  => _addOpen = false;
+}

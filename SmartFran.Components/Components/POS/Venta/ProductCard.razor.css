@@ -1,0 +1,117 @@
+.pcard {
+	background: #ffffff;
+	border-radius: 0.9em;
+	padding: 0.9em;
+	display: flex;
+	flex-direction: column;
+	gap: 0.7em;
+	justify-content: space-between;
+	border: 1.5px solid transparent;
+	box-shadow: 0 1px 4px rgba(31, 17, 68, 0.06);
+	cursor: pointer;
+	transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.pcard:hover {
+	border-color: rgba(138, 0, 203, 0.20);
+	box-shadow: 0 12px 32px rgba(31, 17, 68, 0.12);
+}
+
+.pcard:active {
+	transform: scale(0.98);
+}
+
+/* Imagen */
+.pcard__img-wrap {
+	aspect-ratio: 1;
+	width: 100%;
+	border-radius: 0.6em;
+	overflow: hidden;
+	background: #f8f1ff;
+	position: relative;
+}
+
+.pcard__img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.5s;
+	display: block;
+}
+
+.pcard:hover .pcard__img {
+	transform: scale(1.08);
+}
+
+.pcard__img-fallback {
+	display: none;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	inset: 0;
+}
+
+/* Info */
+.pcard__info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
+}
+
+.pcard__cat {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.6em;
+	font-weight: 700;
+	color: #8a00cb;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.pcard__name {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 0.85em;
+	font-weight: 700;
+	color: #1f1144;
+	line-height: 1.2;
+	margin: 0;
+}
+
+.pcard__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 0.4em;
+}
+
+.pcard__price {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 1em;
+	font-weight: 800;
+	color: #0f0035;
+}
+
+.pcard__add-btn {
+	width: 2em;
+	height: 2em;
+	border-radius: 9999px;
+	background: #f5d9ff;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #8a00cb;
+	transition: background 0.2s, color 0.2s;
+	font-family: 'Material Symbols Outlined';
+}
+
+.pcard__add-btn:hover {
+	background: #8a00cb;
+	color: #ffffff;
+}
+
+.pcard__add-btn .material-symbols-outlined {
+	font-size: 1.1em;
+}

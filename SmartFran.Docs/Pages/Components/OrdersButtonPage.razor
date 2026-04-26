@@ -1,0 +1,59 @@
+@page "/components/ordersbutton"
+
+<PageTitle>OrdersButton — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">POS</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">OrdersButton</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">OrdersButton</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Botón de pedidos del POS con badge contador y animación de pulso.
+        Al llamar a <code>NotifyNewOrders()</code> se activa el efecto de pulso por 700ms.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"pos","orders","badge","pulse","delivery"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Estados del badge ────────────────────────────────────────── *@
+<ComponentPreview Title="Badge con distintos contadores"
+    Description="PendingOrders controla el número del badge. En 0 el badge se muestra inactivo."
+    Code="@BadgeCode" DarkBackground="true">
+    <Preview>
+        <div style="display:flex; gap:2rem; flex-wrap:wrap; align-items:flex-end;">
+            <div>
+                <p style="color:rgba(232,221,255,.5); font-size:.72rem; font-family:'Manrope',sans-serif; margin:0 0 .5rem;">0 pedidos</p>
+                <OrdersButton PendingOrders="0" />
+            </div>
+            <div>
+                <p style="color:rgba(232,221,255,.5); font-size:.72rem; font-family:'Manrope',sans-serif; margin:0 0 .5rem;">3 pedidos</p>
+                <OrdersButton PendingOrders="3" />
+            </div>
+            <div>
+                <p style="color:rgba(232,221,255,.5); font-size:.72rem; font-family:'Manrope',sans-serif; margin:0 0 .5rem;">12 pedidos</p>
+                <OrdersButton PendingOrders="12" />
+            </div>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Simular nuevo pedido ─────────────────────────────────────── *@
+<ComponentPreview Title="Simular nuevo pedido"
+    Description="Hacé click en Simular para activar el pulso. NotifyNewOrders() es un método público invocable vía referencia al componente."
+    Code="@NotifyCode" DarkBackground="true">
+    <Preview>
+        <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+            <OrdersButton @ref="_ordersBtn" PendingOrders="@_pendingCount" OnClick="EventCallback.Factory.Create(this, () => { })" />
+            <SfButton OnClick="EventCallback.Factory.Create(this, SimulateNewOrder)">Simular nuevo pedido</SfButton>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

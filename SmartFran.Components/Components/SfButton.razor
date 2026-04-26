@@ -1,0 +1,71 @@
+@* =============================================================================
+	SfButton.razor  —  Botón del design system SmartFran
+	Uso:
+			<SfButton OnClick="HandleLogin" IsLoading="_loading">Iniciar sesión</SfButton>
+			<SfButton Variant="SfButton.SfButtonVariant.Secondary">Cancelar</SfButton>
+			<SfButton Href="/otra-pagina">Ir a página</SfButton>
+   ============================================================================= *@
+
+@namespace SmartFran.Components
+
+@if (!string.IsNullOrEmpty(Href)){
+	<a class="@_classes" href="@Href">
+		@_innerContent
+	</a>
+}else {
+	<button
+		class="@_classes"
+		type="@Type"
+		disabled="@(Disabled || IsLoading)"
+		@onclick="OnClick"
+	>
+		@_innerContent
+	</button>
+}
+
+@code {
+	public enum SfButtonVariant { Primary, Secondary, Ghost }
+
+	[Parameter] public RenderFragment? ChildContent { get; set; }
+	[Parameter] public SfButtonVariant Variant      { get; set; } = SfButtonVariant.Primary;
+	[Parameter] public bool            IsLoading    { get; set; } = false;
+	[Parameter] public bool            Disabled     { get; set; } = false;
+	[Parameter] public string          Type         { get; set; } = "button";
+	[Parameter] public string?         Href         { get; set; }
+	[Parameter] public string?         TrailingIcon { get; set; } = "arrow_forward";
+	[Parameter] public EventCallback   OnClick      { get; set; }
+
+	private string _classes => string.Join(" ", new[] {
+		"sfb-btn",
+		Variant switch {
+			SfButtonVariant.Secondary => "sfb-btn--secondary",
+			SfButtonVariant.Ghost     => "sfb-btn--ghost",
+			_                         => "sfb-btn--primary",
+		},
+		(Disabled || IsLoading) ? "sfb-btn--disabled" : "",
+	}.Where(c => !string.IsNullOrEmpty(c)));
+
+	private RenderFragment _innerContent => __builder => {
+		if (IsLoading) {
+			__builder.OpenElement(0, "span");
+			__builder.AddAttribute(1, "class", "material-symbols-outlined sfb-spin");
+			__builder.AddAttribute(2, "style", "font-size:20px;");
+			__builder.AddContent(3, "progress_activity");
+			__builder.CloseElement();
+
+			__builder.OpenElement(4, "span");
+			__builder.AddContent(5, "Cargando...");
+			__builder.CloseElement();
+		}else {
+			__builder.AddContent(6, ChildContent);
+
+			if (!string.IsNullOrEmpty(TrailingIcon)){
+				__builder.OpenElement(7, "span");
+				__builder.AddAttribute(8, "class", "material-symbols-outlined");
+				__builder.AddAttribute(9, "style", "font-size:20px;");
+				__builder.AddContent(10, TrailingIcon);
+				__builder.CloseElement();
+			}
+		}
+	};
+}

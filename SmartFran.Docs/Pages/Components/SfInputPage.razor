@@ -1,0 +1,62 @@
+@page "/components/sfinput"
+
+<PageTitle>SfInput — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">SfInput</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">SfInput</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Campo de texto del design system SmartFran. Soporta ícono izquierdo,
+        toggle de contraseña, estado de error y binding bidireccional.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"input","form","text","password"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Básico con ícono ─────────────────────────────────────────────── *@
+<ComponentPreview Title="Básico con ícono"
+    Description="El parámetro Icon acepta cualquier nombre de Material Symbols Outlined."
+    Code="@BasicCode">
+    <Preview>
+        <div style="width:100%; max-width:340px; background:rgba(53,40,91,0.3); padding:1.5rem; border-radius:12px;">
+            <SfInput Label="Email" Icon="alternate_email" Placeholder="usuario@empresa.com" @bind-Value="_email" />
+            <SfInput Label="Nombre" Icon="person" Placeholder="Tu nombre completo" @bind-Value="_nombre" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Toggle de contraseña ────────────────────────────────────────── *@
+<ComponentPreview Title="Toggle de contraseña"
+    Description="ShowToggle=true agrega un botón de ojo para mostrar/ocultar. Type debe ser password."
+    Code="@PasswordCode">
+    <Preview>
+        <div style="width:100%; max-width:340px; background:rgba(53,40,91,0.3); padding:1.5rem; border-radius:12px;">
+            <SfInput Label="Contraseña" Icon="lock" Type="password"
+                     ShowToggle="true" Placeholder="Ingresá tu contraseña"
+                     @bind-Value="_pass" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 3: Estado de error ──────────────────────────────────────────────── *@
+<ComponentPreview Title="Estado de error"
+    Description="HasError=true activa el borde rojo. ErrorText muestra el mensaje debajo del campo."
+    Code="@ErrorCode">
+    <Preview>
+        <div style="width:100%; max-width:340px; background:rgba(53,40,91,0.3); padding:1.5rem; border-radius:12px;">
+            <SfInput Label="Email" Icon="alternate_email" Placeholder="usuario@empresa.com"
+                     Value="mail-invalido" HasError="true" ErrorText="El formato del email no es válido." />
+            <SfInput Label="DNI" Icon="badge" Placeholder="Número de documento"
+                     HasError="true" ErrorText="Este campo es requerido." />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

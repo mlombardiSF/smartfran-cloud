@@ -1,0 +1,9 @@
+.pos-layout {
+	font-size: clamp(11px, 1.1vh, 14px);
+	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	background: #fdf7ff;
+}

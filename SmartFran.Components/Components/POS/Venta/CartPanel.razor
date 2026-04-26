@@ -1,0 +1,302 @@
+@namespace SmartFran.Components.POS.Venta
+@using SmartFran.Components.Models
+@using SmartFran.Components.Services
+@inject CartService Cart
+@implements IDisposable
+
+<aside class="cp">
+
+	@* ── Zona Socio ──────────────────────────────────────────────────────── *@
+	<div class="cp__socio-area">
+		<div class="cp__socio-card">
+
+			<div class="cp__socio-header">
+				<span class="cp__socio-label">Socio</span>
+				<span class="cp__club-badge">
+					CLUBGRIDO
+					<span class="material-symbols-outlined cp__club-icon">task_alt</span>
+				</span>
+			</div>
+
+			@* Input DNI *@
+			@if (Cart.SocioActive is null) {
+				<div class="cp__dni-wrap">
+					<span class="material-symbols-outlined cp__dni-icon">person_search</span>
+					@if (_socioState == "searching") {
+						<svg class="cp__dni-spinner" viewBox="0 0 24 24" fill="none">
+							<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity=".25"/>
+							<path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+						</svg>
+					}
+					<input
+						class="cp__dni-input"
+						placeholder="DNI o ID de Tarjeta"
+						type="text"
+						maxlength="10"
+						autocomplete="Off"
+						value="@_dniValue"
+						@oninput="OnDniInput"
+						@onkeydown="OnDniKeyDown"
+					/>
+				</div>
+
+				@if (_socioState == "error") {
+					<div class="cp__socio-error">
+						<span class="material-symbols-outlined cp__socio-error-icon">error_outline</span>
+						<p>Socio no encontrado. Verificá el DNI.</p>
+					</div>
+				}
+			}else {
+				@* Socio cargado *@
+				var cfg = NivelConfig.Get(Cart.SocioActive.Level);
+				<div class="cp__socio-loaded" @onclick="OnOpenSocioPanel">
+					<div
+						class="cp__socio-avatar"
+						style="background: linear-gradient(135deg, @cfg.Bg 0%, #e8ddff 100%);"
+					>
+						<span
+							class="material-symbols-outlined"
+							style="font-variation-settings:'FILL' 1; color:@cfg.Color; font-size:1.3em;"
+						>
+							@cfg.Icon
+						</span>
+					</div>
+					<div class="cp__socio-data">
+						<p class="cp__socio-nombre">@Cart.SocioActive.Name</p>
+						<p class="cp__socio-dni">DNI @Cart.SocioActive.Dni</p>
+					</div>
+					<div class="cp__socio-puntos-wrap">
+						<p class="cp__socio-puntos" style="color:@cfg.Color;">
+							@Cart.SocioActive.Points.ToString("N0")
+						</p>
+						<p class="cp__socio-puntos-label">puntos</p>
+					</div>
+					<button class="cp__socio-close" @onclick="ClearSocio">
+						<span class="material-symbols-outlined" style="font-size:0.9em;">close</span>
+					</button>
+				</div>
+			}
+		</div>
+	</div>
+
+	@* ── Carrito ──────────────────────────────────────────────────────────── *@
+	<div class="cp__cart-header">
+		<h2 class="cp__cart-title">Carrito de Ventas</h2>
+		<div class="cp__cart-header-actions">
+			@if (Cart.TotalItems > 0) {
+				<button class="cp__vaciar-btn" @onclick="ToggleEmptyConfirm">
+					<span class="material-symbols-outlined" style="font-size:0.9em;">delete_sweep</span>
+					Vaciar
+				</button>
+			}
+			<span class="cp__cart-badge">
+				@(Cart.TotalItems == 0
+					? "0 ITEMS"
+					: $"{Cart.TotalItems} ITEM{(Cart.TotalItems != 1 ? "S" : "")}"
+				)
+			</span>
+		</div>
+	</div>
+
+	@* Confirm vaciar *@
+	@if (_showEmptyConfirm) {
+		<div class="cp__vaciar-confirm">
+			<p>¿Vaciar todo el carrito?</p>
+			<div class="cp__vaciar-btns">
+				<button class="cp__vaciar-cancel" @onclick="() => _showEmptyConfirm = false">Cancelar</button>
+				<button class="cp__vaciar-ok" @onclick="EmptyCart">Sí, vaciar</button>
+			</div>
+		</div>
+	}
+
+	@* Lista de items *@
+	<div class="cp__items">
+		@if (Cart.TotalItems == 0) {
+			<div class="cp__empty">
+				<div class="cp__empty-icon-wrap">
+					<span
+						class="material-symbols-outlined cp__empty-icon"
+						style="font-variation-settings:'FILL' 1;"
+					>shopping_cart</span>
+				</div>
+				<p class="cp__empty-title">Carrito vacío</p>
+				<p class="cp__empty-desc">
+					Agregá productos desde el catálogo o canjeá puntos del socio
+				</p>
+			</div>
+		}else {
+			@foreach (var item in Cart.Items) {
+				var it = item;
+				<div class="cp__item">
+					<div class="cp__item-img @(it.IsRedemption ? "cp__item-img--canje" : "")">
+						@if (it.IsRedemption) {
+							<span
+								class="material-symbols-outlined"
+								style="font-variation-settings:'FILL' 1; font-size:1.5em; color:#8a00cb;"
+							>
+								redeem
+							</span>
+						}else {
+							<img
+								src="@it.ImageUrl" alt="@it.Name"
+								onerror="this.style.display='none'" />
+						}
+					</div>
+					<div class="cp__item-data">
+						<div class="cp__item-top">
+							<h4 class="cp__item-name">@it.Name</h4>
+							<span class="cp__item-total">
+								@it.Total.ToString("C0", new System.Globalization.CultureInfo("es-AR"))
+							</span>
+						</div>
+						@if (it.IsRedemption) {
+							<p class="cp__item-canje-label">
+								<span class="material-symbols-outlined" style="font-size:0.8em; color:#b45309;">kid_star</span>
+								Resta @((it.RedemptionPoints * it.Quantity).ToString("N0")) pts ·
+								@it.Price.ToString("C0", new System.Globalization.CultureInfo("es-AR")) c/u
+							</p>
+						}else {
+							<p class="cp__item-unit">
+								@it.Price.ToString("C0", new System.Globalization.CultureInfo("es-AR")) c/u
+							</p>
+						}
+						<div class="cp__item-controls">
+							<div class="cp__qty-wrap">
+								<button class="cp__qty-btn" @onclick="() => Cart.DecreaseItem(it.Id)">
+									<span class="material-symbols-outlined" style="font-size:0.9em;">remove</span>
+								</button>
+								<span class="cp__qty-val">@it.Quantity</span>
+								<button class="cp__qty-btn" @onclick="() => Cart.AddItem(it.Id)">
+									<span class="material-symbols-outlined" style="font-size:0.9em;">add</span>
+								</button>
+							</div>
+							<button class="cp__del-btn" @onclick="() => Cart.ClearItem(it.Id)">
+								<span class="material-symbols-outlined" style="font-size:1.1em;">delete_outline</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			}
+		}
+	</div>
+
+	@* ── Checkout ─────────────────────────────────────────────────────────── *@
+	<div class="cp__checkout">
+		<div class="cp__totals">
+			<div class="cp__total-row">
+				<span>Subtotal</span>
+				<span>@Cart.Subtotal.ToString("C0", new System.Globalization.CultureInfo("es-AR"))</span>
+			</div>
+			@if (!Cart.HasRedemptions && Cart.SocioActive is not null && Cart.SocioActive.Discount > 0) {
+				<div class="cp__total-row cp__total-row--discount">
+					<span>
+						<span class="material-symbols-outlined" style="font-size:0.9em;">sell</span>
+						Descuento (@Cart.SocioActive.Discount%)
+					</span>
+					<span>-@Cart.AmountDiscount.ToString("C0", new System.Globalization.CultureInfo("es-AR"))</span>
+				</div>
+			}
+			@if (Cart.HasRedemptions) {
+				<div class="cp__total-row cp__total-row--points">
+					<span>
+						<span class="material-symbols-outlined" style="font-size:0.9em;">kid_star</span>
+						Pts a descontar
+					</span>
+					<span>-@Cart.TotalRedemptionPoints.ToString("N0") pts</span>
+				</div>
+			}
+			<div class="cp__total-final">
+				<span class="cp__total-label">TOTAL</span>
+				<span class="cp__total-amount">
+					@Cart.Total.ToString("C0", new System.Globalization.CultureInfo("es-AR"))
+				</span>
+			</div>
+		</div>
+
+		<button
+			class="cp__pay-btn @(Cart.TotalItems == 0 ? "cp__pay-btn--disabled" : "")"
+			disabled="@(Cart.TotalItems == 0)"
+			@onclick="OnConfirmPayment"
+		>
+			CONFIRMAR PAGO
+			<span class="material-symbols-outlined" style="font-size:1.1em;">arrow_forward</span>
+		</button>
+	</div>
+
+</aside>
+
+@code {
+	[Parameter] public EventCallback OnConfirmPayment { get; set; }
+	[Parameter] public EventCallback OnOpenSocioPanel { get; set; }
+	[Parameter] public EventCallback OnSocioCleared   { get; set; }
+
+	private string _dniValue         = string.Empty;
+	private string _socioState       = "idle";
+	private bool   _showEmptyConfirm = false;
+	private System.Timers.Timer? _dniTimer;
+
+	private static readonly Dictionary<string, SocioModel> _sociosDb = new() {
+		["30456789"] = new() { Name="Marina Rossi",      Dni="30456789", Points=1450, Level="Gold",     Discount=10, Progress=72, Favorite="Palito Bombón", Birthday="14/03", Loyalty="2019" },
+		["25123456"] = new() { Name="Carlos Fernández",  Dni="25123456", Points=320,  Level="Bronce",   Discount=3,  Progress=32, Favorite="Cucurucho",     Birthday="05/07", Loyalty="2023" },
+		["33987654"] = new() { Name="Lucía Gómez",       Dni="33987654", Points=5800, Level="Platinum", Discount=15, Progress=90, Favorite="Gigante 2B",    Birthday="22/11", Loyalty="2017" },
+		["28765432"] = new() { Name="Roberto Sánchez",   Dni="28765432", Points=980,  Level="Silver",   Discount=7,  Progress=55, Favorite="Tacita 1B",     Birthday="30/01", Loyalty="2021" },
+		["41234567"] = new() { Name="Valentina Torres",  Dni="41234567", Points=2100, Level="Gold",     Discount=10, Progress=85, Favorite="Sundae Frutal", Birthday="08/06", Loyalty="2020" },
+	};
+
+	protected override void OnInitialized() => Cart.OnCartChanged += HandleCartChanged;
+
+	private void HandleCartChanged() => InvokeAsync(StateHasChanged);
+
+	private void OnDniInput(ChangeEventArgs e) {
+		_dniValue = new string((e.Value?.ToString() ?? "").Where(char.IsDigit).ToArray());
+		_dniTimer?.Dispose();
+
+		if (_dniValue.Length < 7) {
+			_socioState = "idle";
+			return;
+		}
+
+		_socioState = "searching";
+		_dniTimer = new System.Timers.Timer(500);
+		_dniTimer.Elapsed += async (_, _) => await InvokeAsync(SearchSocio);
+		_dniTimer.AutoReset = false;
+		_dniTimer.Start();
+	}
+
+	private void OnDniKeyDown(KeyboardEventArgs e) {
+		if (e.Key == "Enter") {
+			_dniTimer?.Dispose();
+			SearchSocio();
+		}
+	}
+
+	private void SearchSocio() {
+		if (_sociosDb.TryGetValue(_dniValue, out var socio)) {
+			Cart.SetSocio(socio);
+			_socioState = "found";
+			OnOpenSocioPanel.InvokeAsync();
+		}else {
+			_socioState = "error";
+		}
+		StateHasChanged();
+	}
+
+	private void ClearSocio() {
+		Cart.ClearSocio();
+		_dniValue   = string.Empty;
+		_socioState = "idle";
+		OnSocioCleared.InvokeAsync();
+	}
+
+	private void ToggleEmptyConfirm() => _showEmptyConfirm = !_showEmptyConfirm;
+
+	private void EmptyCart() {
+		Cart.EmptyCart();
+		_showEmptyConfirm = false;
+	}
+
+	public void Dispose() {
+		Cart.OnCartChanged -= HandleCartChanged;
+		_dniTimer?.Dispose();
+	}
+}

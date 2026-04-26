@@ -1,0 +1,188 @@
+@page "/initial-load"
+
+@layout EmptyLayout
+
+@using SmartFranCloudApp.Shared.Decorations
+@using SmartFranCloudApp.Shared.Loading
+
+@inject NavigationManager Nav
+
+<PageTitle>SFC - Iniciando Terminal</PageTitle>
+
+@* Fondo dark reutilizando PageBackground — sin cuadrícula, blob teal abajo *@
+<PageBackground 
+  ShowPattern="false"
+  ShowShapes="false"
+>
+  <div class="ci-root">
+
+    @* ── Corner decoration ─────────────────────────────────────────── *@
+    <div class="ci-corner-deco">
+      <span class="material-symbols-outlined">all_inclusive</span>
+    </div>
+
+    <main class="ci-main">
+      @* ── Brand cluster ─────────────────────────────────────────── *@
+      <div class="ci-brand">
+        @* Ícono con halo *@
+        <div class="ci-brand__halo-wrap">
+          <div class="ci-brand__halo"></div>
+          <div class="ci-brand__icon-box">
+            <span 
+              class="material-symbols-outlined ci-brand__icon"
+              style="font-variation-settings:'FILL' 1;"
+            >
+              cloud_sync
+            </span>
+          </div>
+          <img 
+            src="/assets/svgs/Smartfran-Cloud-logo.svg"
+            alt="SmartFran Cloud"
+            class="ci-brand__logo"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+          />
+          <span class="ci-brand__logo-fallback">SmartFran Cloud</span>
+        </div>
+        <p class="ci-brand__subtitle">POS Workspace</p>
+      </div>
+
+      @* ── Barra de progreso ─────────────────────────────────────── *@
+      <LoadingProgressBar Percentage="@_percentage" />
+
+      @* ── Lista de steps ────────────────────────────────────────── *@
+      <div class="ci-steps">
+        @for (int i = 0; i < _steps.Count; i++) {
+          var step = _steps[i];
+          @if (step.Visible) {
+            <LoadingStepItem 
+              Label="@step.Label"
+              State="@step.State"
+            />
+          }
+        }
+      </div>
+
+    </main>
+
+    @* ── Footer ────────────────────────────────────────────────────── *@
+    <footer class="ci-footer">
+      <p class="ci-footer__text">
+          Optimizando el flujo de datos para su franquicia.
+          Por favor, mantenga la conexión activa.
+      </p>
+
+      <div class="ci-footer__support">
+        <div class="ci-footer__avatars">
+          <div class="ci-footer__avatar">
+            <img 
+              src="/assets/images/soporte-1.webp"
+              alt="Soporte"
+              onerror="this.style.display='none';"
+            />
+          </div>
+          <div class="ci-footer__avatar">
+            <img 
+              src="/assets/images/soporte-2.webp" 
+              alt="Soporte"
+              onerror="this.style.display='none';"
+            />
+          </div>
+        </div>
+        <span class="ci-footer__support-label">Atención al Cliente en Línea</span>
+      </div>
+
+      <div class="ci-footer__ssl">
+        <span class="material-symbols-outlined ci-footer__ssl-icon">security</span>
+        <span class="ci-footer__ssl-text">SSL Encrypted Connection</span>
+      </div>
+    </footer>
+
+  </div>
+</PageBackground>
+
+@code {
+  // ── Modelo de step ─────────────────────────────────────────────────────
+  private class LoadingStep {
+    public string Label   { get; set; } = string.Empty;
+    public LoadingStepItem.StepState State   { get; set; } = LoadingStepItem.StepState.Pending;
+    public bool   Visible { get; set; } = false;
+  }
+
+  private List<LoadingStep> _steps = new() {
+    new() { Label = "Conectando con SmartLoyalty..."    },
+    new() { Label = "Actualizando Promociones..."       },
+    new() { Label = "Integrando con SmartPedidos..."    },
+    new() { Label = "Sincronizando Inventario..."       },
+    new() { Label = "Sincronizando Lista de Precios..." },
+    new() { Label = "Cargando Terminal..."              },
+  };
+
+  private int _percentage = 0;
+
+  // ── Secuencia de carga ─────────────────────────────────────────────────
+  // Replica exactamente los timings del HTML original
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
+    if (!firstRender) return;
+    await RunLoadingSequence();
+  }
+
+  private async Task RunLoadingSequence() {
+    await Task.Delay(250);
+
+    // 2. Cascada de aparición (Items 1 y 2 aparecen casi juntos)
+    _steps[0].Visible = true;
+    _steps[0].State   = LoadingStepItem.StepState.Completed;
+    await Tick(5); 
+
+    await Task.Delay(150); // Delay corto para efecto cascada
+    _steps[1].Visible = true;
+    _steps[1].State   = LoadingStepItem.StepState.Completed;
+    await Tick(15);
+
+    // 3. Empieza el "proceso" (Items 3, 4 y 5 aparecen rápido pero como pendientes/activos)
+    await Task.Delay(300);
+    _steps[2].Visible = true;
+    _steps[2].State   = LoadingStepItem.StepState.Active;
+    _steps[3].Visible = true; // Mostramos el siguiente casi al tiempo
+    _steps[3].State   = LoadingStepItem.StepState.Pending;
+    await Tick(35);
+
+    await Task.Delay(400);
+    _steps[4].Visible = true;
+    _steps[4].State   = LoadingStepItem.StepState.Pending;
+    await Tick(50);
+
+    // 4. Cambios de estado con tiempos variables
+    await Task.Delay(600); // Simulamos procesamiento
+    _steps[2].State = LoadingStepItem.StepState.Completed;
+    _steps[3].State = LoadingStepItem.StepState.Active; // El 4 pasa a activo apenas termina el 3
+    await Tick(70);
+
+    await Task.Delay(800); // Un poco más lento para realismo
+    _steps[3].State = LoadingStepItem.StepState.Completed;
+    _steps[4].State = LoadingStepItem.StepState.Active;
+    await Tick(85);
+
+    // 5. El tramo final
+    await Task.Delay(500);
+    _steps[4].State = LoadingStepItem.StepState.Completed;
+    _steps[5].Visible = true;
+    _steps[5].State = LoadingStepItem.StepState.Active;
+    await Tick(95);
+
+    await Task.Delay(400);
+    _steps[5].State = LoadingStepItem.StepState.Completed;
+    await Tick(100);
+
+    // Pausa final antes de redirigir para que el usuario vea el 100% y el estado completado
+    await Task.Delay(600);
+    Nav.NavigateTo("/retail-sales");
+  }
+
+  // Actualiza porcentaje y re-renderiza
+  private async Task Tick(int pct) {
+    _percentage = pct;
+    StateHasChanged();
+    await Task.Yield();
+  }
+}

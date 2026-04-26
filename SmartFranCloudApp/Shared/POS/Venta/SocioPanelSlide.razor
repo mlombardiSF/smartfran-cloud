@@ -1,0 +1,296 @@
+@namespace SmartFranCloudApp.Shared.POS.Venta
+@using SmartFranCloudApp.Models
+@using SmartFranCloudApp.Services
+@inject CartService Cart
+@implements IDisposable
+
+@* Panel slide desde la izquierda, debajo del navbar *@
+<aside class="sps @(IsOpen ? "sps--open" : "")">
+	<div class="sps__inner">
+
+		@* ── Header fijo ──────────────────────────────────────────────────── *@
+		<div class="sps__header">
+			<div>
+				<p class="sps__header-label">ClubGrido Connect</p>
+				<h3 class="sps__header-title">Socio Activo</h3>
+			</div>
+			<button class="sps__close-btn" @onclick="OnClose">
+				<span class="material-symbols-outlined" style="font-size:1.1em;">close</span>
+			</button>
+		</div>
+
+		@if (Cart.SocioActive is not null) {
+			var socio = Cart.SocioActive;
+			var cfg   = NivelConfig.Get(socio.Level);
+
+			@* ── Avatar + nombre + nivel ───────────────────────────────────── *@
+			<div class="sps__hero">
+				<div class="sps__avatar" style="background: linear-gradient(135deg, @cfg.Bg 0%, #e8ddff 100%);">
+					<span
+						class="material-symbols-outlined sps__avatar-icon"
+						style="font-variation-settings:'FILL' 1; color:@cfg.Color;"
+					>
+						@cfg.Icon
+					</span>
+				</div>
+
+				<div class="sps__nombre-wrap">
+					<p class="sps__nombre">@socio.Name</p>
+					<p class="sps__dni">DNI @socio.Dni</p>
+				</div>
+
+				<div class="sps__nivel-badge" style="background:@cfg.Bg; color:@cfg.Color;">
+					@socio.Level
+				</div>
+
+				<div class="sps__meta">
+					<span class="sps__meta-item">
+						<span 
+							class="material-symbols-outlined sps__meta-icon"
+							style="font-variation-settings:'FILL' 1; color:#6e59ee;">cake</span>
+							@socio.Birthday
+					</span>
+					<span class="sps__meta-dot">·</span>
+					<span class="sps__meta-item">
+						<span
+							class="material-symbols-outlined sps__meta-icon"
+							style="font-variation-settings:'FILL' 1; color:#006267;">calendar_today</span>
+							Socio desde @socio.Loyalty
+					</span>
+				</div>
+			</div>
+
+			<div class="sps__divider"></div>
+
+			@* ── Cuerpo scrollable ─────────────────────────────────────────── *@
+			<div class="sps__body">
+
+				@* Puntos *@
+				<div class="sps__stat-card">
+						<div class="sps__stat-icon sps__stat-icon--primary">
+							<span
+								class="material-symbols-outlined"
+								style="font-variation-settings:'FILL' 1; font-size:1em;">kid_star</span>
+						</div>
+						<div class="sps__stat-info">
+							<p class="sps__stat-label">Puntos acumulados</p>
+							<p class="sps__stat-value sps__stat-value--primary">
+								@socio.Points.ToString("N0")
+							</p>
+						</div>
+						@* Barra de progreso al siguiente nivel *@
+						<div class="sps__progress-wrap">
+							<span class="sps__progress-label">@socio.Progress%</span>
+							<div class="sps__progress-track">
+								<div
+									class="sps__progress-bar"
+									style="width:@socio.Progress%">
+								</div>
+							</div>
+						</div>
+				</div>
+
+				@* Favorito *@
+				<div class="sps__stat-card">
+					<div class="sps__stat-icon sps__stat-icon--secondary">
+						<span
+						class="material-symbols-outlined"
+						style="font-variation-settings:'FILL' 1; font-size:1em;">favorite</span>
+					</div>
+					<div class="sps__stat-info">
+						<p class="sps__stat-label">Producto favorito</p>
+						<p class="sps__stat-value">@socio.Favorite</p>
+					</div>
+				</div>
+
+				@* Descuento *@
+				<div class="sps__stat-card">
+					<div class="sps__stat-icon sps__stat-icon--tertiary">
+						<span 
+							class="material-symbols-outlined"
+							style="font-variation-settings:'FILL' 1; font-size:1em;">sell</span>
+					</div>
+					<div class="sps__stat-info">
+						<p class="sps__stat-label">Descuento por nivel</p>
+						<p class="sps__stat-value sps__stat-value--tertiary">@socio.Discount% desc.</p>
+					</div>
+				</div>
+
+				<div class="sps__divider"></div>
+
+				@* ── Canjes disponibles ────────────────────────────────────── *@
+				<div class="sps__canjes">
+					<button class="sps__canjes-toggle" @onclick="ToggleRedemptions">
+						<div class="sps__canjes-toggle-left">
+							<span
+								class="material-symbols-outlined sps__canjes-icon"
+								style="font-variation-settings:'FILL' 1;">redeem</span>
+							<span class="sps__canjes-title">Canjes disponibles</span>
+							<span 
+								class="sps__canjes-badge @(_availableRedemptions.Count > 0 ? "sps__canjes-badge--active" : "")">
+								@_availableRedemptions.Count
+							</span>
+						</div>
+						<span 
+							class="material-symbols-outlined sps__canjes-chevron @(_openRedemptions ? "sps__canjes-chevron--open" : "")">
+								expand_more
+						</span>
+					</button>
+
+					@if (_openRedemptions) {
+						@if (!_availableRedemptions.Any()) {
+							<div class="sps__canjes-empty">
+								<span
+									class="material-symbols-outlined"
+									style="font-variation-settings:'FILL' 1; font-size:2em; color:rgba(211,192,216,0.60);"
+								>
+									redeem
+								</span>
+								<p>Sin canjes disponibles<br/>con los puntos actuales</p>
+							</div>
+						}else {
+							<div class="sps__canjes-list">
+								@foreach (var redemption in _availableRedemptions.Take(8)) {
+									var c = redemption;
+									<button 
+										class="sps__canje-item"
+										@onclick="() => AddRedemption(c)">
+										<div class="sps__canje-icon">
+											<span
+												class="material-symbols-outlined"
+												style="font-variation-settings:'FILL' 1; font-size:0.9em; color:#6e59ee;"
+											>
+												redeem
+											</span>
+										</div>
+										<div class="sps__canje-info">
+											<p class="sps__canje-nombre">@c.Name</p>
+											<p class="sps__canje-detalle">
+												@c.Points.ToString("N0") pts ·
+												@c.Money.ToString("C0", new System.Globalization.CultureInfo("es-AR"))
+											</p>
+										</div>
+										<span class="material-symbols-outlined sps__canje-add">add_circle</span>
+									</button>
+								}
+							</div>
+						}
+					}
+				</div>
+			</div>
+		} else{
+			<div class="sps__no-socio">
+				<span
+					class="material-symbols-outlined sps__no-socio-icon"
+					style="font-variation-settings:'FILL' 1;">person_off</span>
+				<p>No hay socio activo</p>
+			</div>
+		}
+	</div>
+</aside>
+
+@code {
+	[Parameter] public bool          IsOpen  { get; set; }
+	[Parameter] public EventCallback OnClose { get; set; }
+
+	private bool _openRedemptions = false;
+
+	// Canjes filtrados por puntos disponibles (total del socio − ya comprometidos en el carrito)
+	private List<RedemptionModel> _availableRedemptions =>
+		Cart.SocioActive is null
+			? new()
+			: _allRedemptions.Where(c => c.Points <= Cart.AvailablePoints).Take(20).ToList();
+
+	protected override void OnInitialized() =>
+		Cart.OnCartChanged += HandleCartChanged;
+
+	private void HandleCartChanged() => InvokeAsync(StateHasChanged);
+
+	private void ToggleRedemptions() => _openRedemptions = !_openRedemptions;
+
+	private void AddRedemption(RedemptionModel c) => Cart.AddRedemption(c);
+
+	public void Dispose() => Cart.OnCartChanged -= HandleCartChanged;
+
+	// Lista reducida de canjes para demo
+	private static readonly List<RedemptionModel> _allRedemptions = new() {
+		new() { Name="Canje Mini Gigante", Points=500, Money=750 },
+		new() { Name="Canje Supergridito", Points=500, Money=800 },
+		new() { Name="Canje Gigante 2 bochas", Points=1000, Money=1000 },
+		new() { Name="Canje Cucurucho Grido", Points=1000, Money=1100 },
+		new() { Name="Canje Maxi Grido", Points=1500, Money=1350 },
+		new() { Name="Canje tacita 1 bocha", Points=500, Money=750 },
+		new() { Name="Canje tacita 2 bochas", Points=1000, Money=1000 },
+		new() { Name="Canje tacita 3 bochas", Points=1500, Money=1200 },
+		new() { Name="Canje 1 kilo", Points=5000, Money=4250 },
+		new() { Name="Canje 1/2 Kg", Points=3000, Money=2400 },
+		new() { Name="Canje 1/4 Kg", Points=1500, Money=1350 },
+		new() { Name="Canje Batido", Points=1500, Money=1300 },
+		new() { Name="Canje Capuchino", Points=1500, Money=1350 },
+		new() { Name="Canje Sundae Frutal", Points=1500, Money=1300 },
+		new() { Name="Canje Capelina", Points=1000, Money=1300 },
+		new() { Name="Canje Bombon Crocante x 8 U", Points=4000, Money=3750 },
+		new() { Name="Canje Bombón Crocante x U", Points=700, Money=475 },
+		new() { Name="Canje Bombón Escocés x 8 U", Points=5500, Money=4000 },
+		new() { Name="Canje Bombón Escoces x U", Points=900, Money=550 },
+		new() { Name="Canje Bombón Suizo x 8 U", Points=5000, Money=3750 },
+		new() { Name="Canje bombón Suizo x U", Points=800, Money=500 },
+		new() { Name="Canje Bombón V. Split x 8 U", Points=4000, Money=3500 },
+		new() { Name="Canje Bombón V. Split x U", Points=700, Money=475 },
+		new() { Name="Canje Casatta Caja x 8 U", Points=4500, Money=3250 },
+		new() { Name="Canje Casatta x U", Points=700, Money=450 },
+		new() { Name="Canje Almendrado Caja x 8 u", Points=4500, Money=3250 },
+		new() { Name="Canje Almendrado x U", Points=700, Money=450 },
+		new() { Name="Canje Crocantino", Points=4500, Money=3000 },
+		new() { Name="Canje Delicia", Points=4500, Money=3000 },
+		new() { Name="Canje Pote Tentación x 1 LT.", Points=3000, Money=2250 },
+		new() { Name="Canje Gigante 3 Bochas", Points=1500, Money=1200 },
+		new() { Name="Canje Dulce de leche Grido", Points=1500, Money=2450 },
+		new() { Name="Canje Mermelada de Frutilla Grido", Points=1500, Money=1960 },
+		new() { Name="Canje Cups Clasico x 3 unidades", Points=500, Money=770 },
+		new() { Name="Canje Cups Black por 3 Unidades", Points=500, Money=770 },
+		new() { Name="Canje Cups Vasito por 5 Unidades", Points=300, Money=595 },
+		new() { Name="Canje pote familiar x 3 LT.", Points=5000, Money=6230 },
+		new() { Name="Canje Palito Frutal xU", Points=250, Money=315 },
+		new() { Name="Canje Palito Bombon xU", Points=350, Money=385 },
+		new() { Name="Canje Palito Cremoso x U", Points=300, Money=350 },
+		new() { Name="Canje Baño de Chocolate", Points=150, Money=150 },
+		new() { Name="Canje Alfajor Secreto en Caja x6", Points=5000, Money=4750 },
+		new() { Name="Canje Alfajor Secreto x unidad", Points=1000, Money=850 },
+		new() { Name="Canje Nesquik", Points=1500, Money=1750 },
+		new() { Name="Canje Frutezza", Points=700, Money=50 },
+		new() { Name="Canje Frutezza x Caja", Points=4000, Money=5250 },
+		new() { Name="Canje Pizza Mozzarella", Points=2500, Money=3840 },
+		new() { Name="Canje Pizza Integral", Points=2500, Money=3840 },
+		new() { Name="Canje Pizza Cebolla", Points=2500, Money=3840 },
+		new() { Name="Canje Pizza Jamón y Queso", Points=2500, Money=3920 },
+		new() { Name="Canje Pizza tipo casera", Points=3000, Money=5280 },
+		new() { Name="Canje Mini Pizza", Points=1500, Money=1920 },
+		new() { Name="Canje Bastoncitos de Mozzarella", Points=2500, Money=3200 },
+		new() { Name="Canje Pechuguitas de Pollo", Points=2500, Money=3200 },
+		new() { Name="Canje Torta Cookies and Cream", Points=3300, Money=6650 },
+		new() { Name="Canje Palito Frutal x 20 Unid", Points=2400, Money=5250 },
+		new() { Name="Canje Palito Cremoso Caja x 20 U", Points=3000, Money=5950 },
+		new() { Name="Canje Palito Bombon Caja x 20 U", Points=3300, Money=7000 },
+		new() { Name="Canje Grido Toy 1 Bocha", Points=500, Money=30 },
+		new() { Name="Canje Grido Toy 2 Bochas", Points=1000, Money=30 },
+		new() { Name="Canje Palito Frutal x 10 Unid", Points=2000, Money=50 },
+		new() { Name="Canje Palito Cremoso Caja x 10 U", Points=2500, Money=50 },
+		new() { Name="Canje Palito Bombon Caja x 10 U", Points=1600, Money=30 },
+		new() { Name="Canje Torta Frutillas con Crema", Points=3300, Money=30 },
+		new() { Name="Canje empanadas x 4 sabor a elección", Points=2500, Money=20 },
+		new() { Name="Canje Yogurt Sin Tacc x Unidad", Points=900, Money=20 },
+		new() { Name="Canje Helado SA Agr x Unidad", Points=900, Money=20 },
+		new() { Name="Canje Torta", Points=3300, Money=6650 },
+		new() { Name="Canje lunchera + kilo", Points=3000, Money=13500 },
+		new() { Name="Canje Pote Recargable Solo", Points=2700, Money=20 },
+		new() { Name="Canje Pote Recargable + 1 Kg", Points=4500, Money=30 },
+		new() { Name="Canje Recarga 1 Kg", Points=3500, Money=50 },
+		new() { Name="Canje Recarga Medio Kg", Points=2000, Money=50 },
+		new() { Name="Canje Frambuesa Doble Choc. AR", Points=2000, Money=2400 },
+		new() { Name="Canje Frutilla Doble Choc. AR", Points=2000, Money=2400 },
+		new() { Name="Canje Especial Pechuguitas", Points=1250, Money=2400 },
+		new() { Name="Canje Especial Bastoncitos", Points=1250, Money=2400 },
+		new() { Name="Canje Recarga Cuarto de Kg", Points=1000, Money=50 },
+	};
+}

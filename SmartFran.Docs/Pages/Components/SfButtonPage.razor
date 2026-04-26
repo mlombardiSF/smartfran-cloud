@@ -1,0 +1,72 @@
+@page "/components/sfbutton"
+
+<PageTitle>SfButton — SmartFran Docs</PageTitle>
+
+@* ── Encabezado ───────────────────────────────────────────────────────────── *@
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">SfButton</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">SfButton</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Botón del design system SmartFran con variantes Primary, Secondary y Ghost.
+        Soporta estado de carga, deshabilitado, ícono trailing y uso como enlace.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"button","action","form","link"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Variantes ────────────────────────────────────────────────────── *@
+<ComponentPreview Title="Variantes"
+    Description="Primary para la acción principal, Secondary para acciones secundarias, Ghost para acciones terciarias."
+    Code="@VariantCode">
+    <Preview>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+            <SfButton Variant="SfButton.SfButtonVariant.Primary">Confirmar</SfButton>
+            <SfButton Variant="SfButton.SfButtonVariant.Secondary" TrailingIcon="">Cancelar</SfButton>
+            <SfButton Variant="SfButton.SfButtonVariant.Ghost" TrailingIcon="">Ver más</SfButton>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Estado de carga ──────────────────────────────────────────────── *@
+<ComponentPreview Title="Estado de carga"
+    Description="Usar IsLoading=true mientras se procesa una acción asíncrona. Deshabilita el botón automáticamente."
+    Code="@LoadingCode">
+    <Preview>
+        <div style="max-width:240px;">
+            <SfButton IsLoading="_loading" OnClick="SimulateLoad">
+                @(_loading ? "" : "Iniciar sesión")
+            </SfButton>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 3: Deshabilitado ────────────────────────────────────────────────── *@
+<ComponentPreview Title="Deshabilitado"
+    Description="Disabled=true bloquea la interacción sin mostrar spinner."
+    Code="@DisabledCode">
+    <Preview>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+            <SfButton Disabled="true">Acción bloqueada</SfButton>
+            <SfButton Variant="SfButton.SfButtonVariant.Secondary" TrailingIcon="" Disabled="true">También bloqueada</SfButton>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 4: Como enlace ──────────────────────────────────────────────────── *@
+<ComponentPreview Title="Como enlace (Href)"
+    Description="Con Href el componente renderiza un tag `a` conservando el mismo estilo visual."
+    Code="@HrefCode">
+    <Preview>
+        <SfButton Href="/">Ir al inicio</SfButton>
+    </Preview>
+</ComponentPreview>
+
+@* ── Props ────────────────────────────────────────────────────────────────── *@
+<PropsTable Props="@Props" />

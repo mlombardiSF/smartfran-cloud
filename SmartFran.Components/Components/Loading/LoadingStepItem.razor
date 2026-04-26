@@ -1,0 +1,88 @@
+@* LoadingStepItem.razor
+	Estados:
+    Completed → ícono check teal, badge "Listo", glass panel sutil
+    Active    → shimmer, ícono sync pulsante, dots bounce, borde primary
+    Pending   → opacidad reducida, ícono circle outline
+*@
+
+@namespace SmartFran.Components.Loading
+
+<div class="lsi @_stateClass">
+
+	@* Shimmer solo en estado activo *@
+	@if (State == StepState.Active) {
+		<div class="lsi__shimmer"></div>
+	}
+
+	@* Lado izquierdo: ícono + texto *@
+	<div class="lsi__left">
+		<div class="lsi__icon-wrap @_iconWrapClass">
+			<span
+				class="material-symbols-outlined lsi__icon @_iconClass"
+				style="@_iconFill"
+			>
+				@_iconName
+			</span>
+		</div>
+		<span class="lsi__label @_labelClass">@Label</span>
+	</div>
+
+	@* Lado derecho: badge o dots *@
+	<div class="lsi__right">
+		@if (State == StepState.Completed) {
+			<span class="lsi__badge lsi__badge--done">Listo</span>
+		}else if (State == StepState.Active) {
+			<div class="lsi__dots">
+				<span class="lsi__dot lsi__dot--1"></span>
+				<span class="lsi__dot lsi__dot--2"></span>
+				<span class="lsi__dot lsi__dot--3"></span>
+			</div>
+		}else {
+			<span class="lsi__badge lsi__badge--pending">Pendiente</span>
+		}
+	</div>
+
+</div>
+
+@code {
+	public enum StepState { Pending, Active, Completed }
+
+	[Parameter] public string    Label { get; set; } = string.Empty;
+	[Parameter] public StepState State { get; set; } = StepState.Pending;
+
+	private string _stateClass => State switch {
+		StepState.Completed => "lsi--completed",
+		StepState.Active    => "lsi--active",
+		_                   => "lsi--pending",
+	};
+
+	private string _iconWrapClass => State switch {
+		StepState.Completed => "lsi__icon-wrap--done",
+		StepState.Active    => "lsi__icon-wrap--active",
+		_                   => "lsi__icon-wrap--pending",
+	};
+
+	private string _iconName => State switch {
+		StepState.Completed => "check_circle",
+		StepState.Active    => "sync",
+		_                   => "circle",
+	};
+
+	private string _iconClass => State switch {
+		StepState.Completed => "lsi__icon--done",
+		StepState.Active    => "lsi__icon--active lsi__icon--spin",
+		_                   => "lsi__icon--pending",
+	};
+
+	private string _iconFill => State switch {
+		StepState.Completed => "font-variation-settings:'FILL' 1;",
+		StepState.Active    => "font-variation-settings:'FILL' 0;",
+		_                   => "font-variation-settings:'FILL' 0;",
+	};
+
+	private string _labelClass => State switch {
+		StepState.Completed => "lsi__label--done",
+		StepState.Active    => "lsi__label--active",
+		_                   => "lsi__label--pending",
+	};
+}

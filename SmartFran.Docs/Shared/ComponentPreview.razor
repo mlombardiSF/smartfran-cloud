@@ -1,0 +1,42 @@
+@namespace SmartFran.Docs.Shared
+
+<div class="cp-wrap">
+
+    @* Header: título + descripción *@
+    @if (!string.IsNullOrEmpty(Title)) {
+        <div class="cp-wrap__header">
+            <h3 class="cp-wrap__title">@Title</h3>
+            @if (!string.IsNullOrEmpty(Description)) {
+                <p class="cp-wrap__desc">@Description</p>
+            }
+        </div>
+    }
+
+    @* Tab bar *@
+    <div class="cp-wrap__tabs">
+        <button
+            class="cp-wrap__tab @(_tab == "preview" ? "cp-wrap__tab--active" : "")"
+            @onclick='() => _tab = "preview"'>
+            <span class="material-symbols-outlined" style="font-size:1rem;">visibility</span>
+            Preview
+        </button>
+        <button
+            class="cp-wrap__tab @(_tab == "code" ? "cp-wrap__tab--active" : "")"
+            @onclick='() => _tab = "code"'>
+            <span class="material-symbols-outlined" style="font-size:1rem;">code</span>
+            Código
+        </button>
+    </div>
+
+    @* Contenido *@
+    <div class="cp-wrap__body">
+        @if (_tab == "preview") {
+            <div class="cp-wrap__preview @(DarkBackground ? "cp-wrap__preview--dark" : "")">
+                @Preview
+            </div>
+        } else {
+            <CodeBlock Code="@Code" />
+        }
+    </div>
+
+</div>

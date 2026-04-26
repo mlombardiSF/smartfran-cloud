@@ -1,0 +1,223 @@
+.catbar {
+	display: flex;
+	align-items: center;
+	padding: 0.8em 0 0.8em 2em;
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.catbar__chips {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	overflow-x: auto;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	padding: 0.45em 0.45em 2.182em 0.45em;
+}
+
+.catbar__chips::-webkit-scrollbar {
+	display: none;
+}
+
+/* Chip base */
+.catbar__chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+	padding: 0.5em 1.1em;
+	border-radius: 9999px;
+	border: none;
+	cursor: pointer;
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.8em;
+	font-weight: 600;
+	white-space: nowrap;
+	transition: all 0.18s;
+	background: #e7e3ff;
+	color: #4c4568;
+	flex-shrink: 0;
+}
+
+.catbar__chip:hover {
+	background: #e7e3ff;
+	outline: 0.7px solid #9080f5;
+	color: #9080f5;
+}
+
+/* Chip activo */
+.catbar__chip--active {
+	background: #9080f5;
+	color: #ffffff;
+	font-weight: 700;
+	box-shadow: 0 4px 16px rgba(144, 128, 245, 0.25);
+}
+
+.catbar__chip--active:hover {
+	filter: brightness(1.08);
+}
+
+.catbar__chip-icon {
+	font-family: 'Material Symbols Outlined';
+	font-size: 0.9em;
+	font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Botón Más */
+.catbar__chip--mas {
+	gap: 0.25em;
+}
+
+.catbar__mas-chevron {
+	font-family: 'Material Symbols Outlined';
+	font-size: 1em;
+	transition: transform 0.2s;
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.catbar__mas-chevron--open {
+	transform: rotate(180deg);
+}
+
+/* Dropdown Más */
+.catbar__mas-wrap {
+	position: relative;
+}
+
+/* ── Overlay invisible para cerrar el dropdown al click fuera ─────────── */
+.catbar__mas-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 8999;
+	cursor: default;
+}
+
+.catbar__mas-dropdown {
+	position: fixed;
+	top: 8.5em;
+	left: 35em;
+	z-index: 9000;
+	background: #ffffff;
+	border-radius: 1.2em;
+	box-shadow: 0 20px 60px rgba(25, 18, 74, 0.15), 0 4px 16px rgba(25, 18, 74, 0.08);
+	border: 1px solid rgba(204, 198, 232, 0.30);
+	padding: 0.9em;
+	min-width: 18em;
+	max-width: 26em;
+	max-height: 70vh;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #ccc6e8 transparent;
+	animation: cat-drop-in 0.18s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+}
+
+.catbar__mas-label {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.6em;
+	font-weight: 900;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: rgba(79, 66, 85, 0.40);
+	padding: 0 0.5em 0.6em;
+	margin: 0;
+}
+
+.catbar__mas-section {
+	margin-bottom: 0.5em;
+}
+
+.catbar__mas-group {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.58em;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.10em;
+	color: rgba(79, 66, 85, 0.30);
+	padding: 0.4em 0.5em 0.3em;
+	margin: 0;
+}
+
+.catbar__mas-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.3em;
+}
+
+.catbar__mas-item {
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	gap: 0.6em;
+	padding: 0.6em 0.75em;
+	border-radius: 0.75em;
+	background: none;
+	border: none;
+	cursor: pointer;
+	text-align: left;
+	transition: background 0.12s;
+	font-family: 'Manrope', sans-serif;
+}
+
+.catbar__mas-item:hover {
+	background: #f3f1ff;
+}
+
+.catbar__mas-item-icon {
+	width: 1.8em;
+	height: 1.8em;
+	border-radius: 0.5em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	font-family: 'Material Symbols Outlined';
+}
+
+/* ────────────────────── Color del ícono según grupo ────────────────────── */
+.catbar__mas-item-icon--helados {
+	background: rgba(110,89,238,0.10);
+	color: #6e59ee;
+}
+
+.catbar__mas-item-icon--cafetería {
+	background: rgba(101,88,160,0.10);
+	color: #6558a0;
+}
+
+.catbar__mas-item-icon--salados {
+	background: rgba(0,98,103,0.10);
+	color: #006267;
+}
+/*────────────────────── FIN ────────────────────── */
+
+.catbar__mas-item-name {
+	font-size: 0.80em;
+	font-weight: 600;
+	color: #19124a;
+	line-height: 1.2;
+}
+
+.catbar__mas-item:hover,
+.catbar__mas-item-name {
+	color: #6e59ee;
+}
+
+.catbar__mas-sep {
+	height: 1px;
+	background: rgba(204,198,232,0.20);
+	margin: 0.4em 0.5em;
+}
+
+/* ── Animación ───────────────────────────────────────────────────────── */
+@keyframes cat-drop-in {
+	from {
+		opacity: 0;
+		transform: translateY(-8px) scale(0.97);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}

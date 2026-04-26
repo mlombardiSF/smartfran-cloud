@@ -1,0 +1,17 @@
+<MudThemeProvider Theme="@SmartFranTheme.Create()" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(DocsLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>No encontrado</PageTitle>
+        <LayoutView Layout="@typeof(DocsLayout)">
+            <MudText Typo="Typo.h5" Class="pa-4">Página no encontrada.</MudText>
+        </LayoutView>
+    </NotFound>
+</Router>

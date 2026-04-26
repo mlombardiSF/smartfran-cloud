@@ -1,0 +1,39 @@
+@namespace SmartFranCloudApp.Shared.POS
+@using SmartFranCloudApp.Models
+
+<div 
+	class="cr @(IsSelected ? "cr--selected" : "") @(!Terminal.Open ? "cr--closed" : "")"
+	@onclick="HandleClick"
+>
+	<div class="cr__left">
+		<h4 class="cr__name @(!Terminal.Open ? "cr__name--closed" : "")">
+			@Terminal.Name
+		</h4>
+		<p class="cr__desc">@Terminal.Description</p>
+	</div>
+
+	<div class="cr__right">
+		@if (Terminal.Open) {
+			<div class="cr__status cr__status--open">
+				<span class="cr__dot cr__dot--open"></span>
+				<span class="cr__status-text cr__status-text--open">Abierto</span>
+			</div>
+			<p class="cr__since">Desde @Terminal.Since</p>
+		}else {
+			<div class="cr__status cr__status--closed">
+				<span class="cr__dot cr__dot--closed"></span>
+				<span class="cr__status-text cr__status-text--closed">Cerrado</span>
+			</div>
+			<span class="cr__open-badge">Abrir Turno</span>
+		}
+	</div>
+
+</div>
+
+@code {
+	[Parameter] public Terminal Terminal    { get; set; } = new();
+	[Parameter] public bool      IsSelected   { get; set; }
+	[Parameter] public EventCallback<Terminal> OnClick { get; set; }
+
+	private async Task HandleClick() => await OnClick.InvokeAsync(Terminal);
+}

@@ -1,0 +1,53 @@
+.lpb {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6em;
+}
+
+/* Track */
+.lpb__track {
+	height: 0.4em;
+	width: 100%;
+	background: rgba(255, 255, 255, 0.06);
+	border-radius: 9999px;
+	overflow: hidden;
+}
+
+/* Fill — transición suave cuando Percentage cambia via Blazor */
+.lpb__fill {
+	height: 100%;
+	border-radius: 9999px;
+	background: linear-gradient(135deg, #6e59ee 0%, #9080f5 100%);
+	position: relative;
+	transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Glow sobre el fill */
+.lpb__glow {
+	position: absolute;
+	inset: 0;
+	border-radius: 9999px;
+	box-shadow: 0 0 15px rgba(144, 128, 245, 0.70);
+}
+
+/* Labels */
+.lpb__labels {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.lpb__label-left,
+.lpb__label-right {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.6em;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: rgba(200, 190, 248, 0.40);
+}
+
+.lpb__pct {
+	font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,73 @@
+@namespace SmartFran.Docs.Layout
+@inherits LayoutComponentBase
+
+<MudLayout>
+
+	@* ── Sidebar ─────────────────────────────────────────────────────────── *@
+	<MudDrawer Open="true" Variant="DrawerVariant.Persistent" Elevation="2" ClipMode="DrawerClipMode.Always">
+		<MudDrawerHeader>
+			<div class="docs-sidebar__brand">
+				<div>
+					<img 
+						src="/assets/svgs/Smartfran-Cloud-logo.svg"
+						alt="SmartFran Cloud"
+						class="pos-nav__logo"
+						onerror="this.style.display='none';" />
+					<p class="docs-sidebar__subtitle">Component Library</p>
+				</div>
+			</div>
+		</MudDrawerHeader>
+
+		<MudNavMenu>
+			<MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+				Inicio
+			</MudNavLink>
+
+			<MudNavGroup Title="Design System" Icon="@Icons.Material.Filled.Palette" Expanded="true">
+					<MudNavLink Href="/components/sfbutton"  Icon="@Icons.Material.Filled.SmartButton">SfButton</MudNavLink>
+					<MudNavLink Href="/components/sfinput"   Icon="@Icons.Material.Filled.TextFields">SfInput</MudNavLink>
+					<MudNavLink Href="/components/glasscard" Icon="@Icons.Material.Filled.CreditCard">GlassCard</MudNavLink>
+					<MudNavLink Href="/components/pagebg"    Icon="@Icons.Material.Filled.Wallpaper">PageBackground</MudNavLink>
+			</MudNavGroup>
+
+			<MudNavGroup Title="Loading" Icon="@Icons.Material.Filled.HourglassTop" Expanded="false">
+					<MudNavLink Href="/components/loadingbar"  Icon="@Icons.Material.Filled.LinearScale">LoadingProgressBar</MudNavLink>
+					<MudNavLink Href="/components/loadingstep" Icon="@Icons.Material.Filled.CheckCircle">LoadingStepItem</MudNavLink>
+			</MudNavGroup>
+
+			<MudNavGroup Title="Navegación" Icon="@Icons.Material.Filled.Navigation" Expanded="false">
+					<MudNavLink Href="/components/topnavbar"  Icon="@Icons.Material.Filled.Menu">TopNavBar</MudNavLink>
+					<MudNavLink Href="/components/sidenavbar" Icon="@Icons.Material.Filled.ViewSidebar">SideNavBar</MudNavLink>
+					<MudNavLink Href="/components/bottombar"  Icon="@Icons.Material.Filled.TableRows">BottomBar</MudNavLink>
+					<MudNavLink Href="/components/posnavbar"  Icon="@Icons.Material.Filled.PointOfSale">PosNavBar</MudNavLink>
+			</MudNavGroup>
+
+			<MudNavGroup Title="POS" Icon="@Icons.Material.Filled.PointOfSale" Expanded="false">
+				<MudNavLink Href="/components/productcard"    Icon="@Icons.Material.Filled.ShoppingBag">ProductCard</MudNavLink>
+				<MudNavLink Href="/components/cartpanel"      Icon="@Icons.Material.Filled.ShoppingCart">CartPanel</MudNavLink>
+				<MudNavLink Href="/components/categorybar"    Icon="@Icons.Material.Filled.Category">CategoryBar</MudNavLink>
+				<MudNavLink Href="/components/sociopanel"     Icon="@Icons.Material.Filled.Person">SocioPanelSlide</MudNavLink>
+				<MudNavLink Href="/components/ordersbutton"   Icon="@Icons.Material.Filled.DeliveryDining">OrdersButton</MudNavLink>
+				<MudNavLink Href="/components/franchisecard"  Icon="@Icons.Material.Filled.Store">FranchiseCard</MudNavLink>
+				<MudNavLink Href="/components/counterrow"     Icon="@Icons.Material.Filled.PointOfSale">CounterRow</MudNavLink>
+				<MudNavLink Href="/components/shiftmodal"     Icon="@Icons.Material.Filled.PlayCircle">ShiftModal</MudNavLink>
+				<MudNavLink Href="/components/toast"          Icon="@Icons.Material.Filled.Notifications">ToastNotification</MudNavLink>
+			</MudNavGroup>
+		</MudNavMenu>
+	</MudDrawer>
+
+	@* ── AppBar ──────────────────────────────────────────────────────────── *@
+	<MudAppBar Elevation="1" Dense="true">
+		<MudText Typo="Typo.h6" Class="ml-3">SmartFran Docs</MudText>
+		<MudSpacer />
+		<MudText Typo="Typo.caption" Class="mr-3" Style="opacity:.6">v1.0 · .NET 8 · MudBlazor 9</MudText>
+	</MudAppBar>
+
+	@* ── Contenido principal ─────────────────────────────────────────────── *@
+	<MudMainContent>
+		<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-6 pb-10">
+				@Body
+		</MudContainer>
+	</MudMainContent>
+
+</MudLayout>

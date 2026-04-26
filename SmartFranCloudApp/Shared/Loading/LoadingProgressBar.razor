@@ -1,0 +1,22 @@
+@namespace SmartFranCloudApp.Shared.Loading
+
+<div class="lpb">
+	@* Track + fill *@
+	<div class="lpb__track">
+		<div class="lpb__fill" style="width: @Percentage%;">
+			<div class="lpb__glow"></div>
+		</div>
+	</div>
+
+	@* Labels *@
+	<div class="lpb__labels">
+		<span class="lpb__label-left">Iniciando Entorno</span>
+		<span class="lpb__label-right">
+			<span class="lpb__pct">@Percentage</span>% Completado
+		</span>
+	</div>
+</div>
+
+@code {
+	[Parameter] public int Percentage { get; set; } = 0;
+}

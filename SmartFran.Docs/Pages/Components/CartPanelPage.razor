@@ -1,0 +1,54 @@
+@page "/components/cartpanel"
+
+<PageTitle>CartPanel — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">POS</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">CartPanel</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">CartPanel</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Panel lateral del carrito de ventas. Gestiona items (agregar, reducir, eliminar), búsqueda de socio por DNI,
+        totales con descuento por nivel y checkout. Requiere <code>CartService</code> inyectado como singleton.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"pos","cart","checkout","socio","cartservice"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Panel en vivo ────────────────────────────────────────────── *@
+<ComponentPreview Title="Panel en vivo"
+    Description="El panel refleja el estado actual de CartService. Agregá productos con ProductCard y buscá socios por DNI (probá: 30456789, 25123456, 33987654)."
+    Code="@BasicCode">
+    <Preview>
+        <div style="display:flex; gap:1.5rem; align-items:flex-start; flex-wrap:wrap; width:100%;">
+            @* Productos para agregar *@
+            <div>
+                <p style="color:var(--mud-palette-text-secondary); font-size:.78rem; margin-bottom:.5rem; font-family:'Manrope',sans-serif;">
+                    Agregá productos al carrito:
+                </p>
+                <div style="display:grid; grid-template-columns:repeat(2,160px); gap:.75rem;">
+                    @foreach (var p in DemoProducts) {
+                        var prod = p;
+                        <ProductCard Product="@prod"
+                                     OnAdd="EventCallback.Factory.Create<SmartFran.Components.Models.Product>(this, CartService.AddProduct)" />
+                    }
+                </div>
+            </div>
+            @* Panel del carrito *@
+            <div style="width:320px; min-width:280px;">
+                <CartPanel OnConfirmPayment="EventCallback.Factory.Create(this, () => { })"
+                           OnOpenSocioPanel="EventCallback.Factory.Create(this, () => { })"
+                           OnSocioCleared="EventCallback.Factory.Create(this, () => { })" />
+            </div>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

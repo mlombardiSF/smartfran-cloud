@@ -1,0 +1,164 @@
+.toast {
+	position: fixed;
+	bottom: 7em;
+	right: 2em;
+	width: 22em;
+	border-radius: 1.25em;
+	overflow: hidden;
+	background: rgba(249, 248, 255, 0.97);
+	backdrop-filter: blur(24px);
+	-webkit-backdrop-filter: blur(24px);
+	box-shadow: 0 12px 48px -4px rgba(25, 18, 74, 0.18),
+		0 0 0 1.5px rgba(144, 128, 245, 0.15);
+	display: flex;
+	flex-direction: row;
+	z-index: 60;
+	/* Oculto por defecto — entra desde la derecha */
+	transform: translateX(calc(100% + 2em));
+	opacity: 0;
+	pointer-events: none;
+	transition: transform 0.38s cubic-bezier(0.34, 1.4, 0.64, 1),
+		opacity 0.25s ease;
+}
+
+.toast--show {
+	transform: translateX(0);
+	opacity: 1;
+	pointer-events: all;
+}
+
+/* ── Acento izquierdo ────────────────────────────────────────────────────── */
+.toast__accent {
+	width: 0.75em;
+	flex-shrink: 0;
+	background: linear-gradient(180deg, #6e59ee 0%, #9080f5 100%);
+	border-radius: 1.25em 0 0 1.25em;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+.toast__body {
+	flex: 1;
+	overflow: hidden;
+}
+
+.toast__content {
+	padding: 1em 1.125em;
+	display: flex;
+	align-items: center;
+	gap: 0.875em;
+}
+
+/* ── Ícono con pulse ring ─────────────────────────────────────────────────── */
+.toast__icon-wrap {
+	position: relative;
+	flex-shrink: 0;
+}
+
+.toast__icon {
+	width: 2.5em;
+	height: 2.5em;
+	border-radius: 9999px;
+	background: linear-gradient(135deg, #6e59ee, #9080f5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.toast__pulse-ring {
+	position: absolute;
+	inset: -3px;
+	border-radius: 9999px;
+	border: 2px solid #9080f5;
+	animation: toast-pulse 1.6s ease infinite;
+	pointer-events: none;
+}
+
+/* ── Texto ───────────────────────────────────────────────────────────────── */
+.toast__text {
+	flex: 1;
+	min-width: 0;
+}
+
+.toast__title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-weight: 900;
+	font-size: 0.8em;
+	color: #19124a;
+	margin: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.toast__subtitle {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.7em;
+	font-weight: 600;
+	color: #4c4568;
+	margin: 0.15em 0 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* ── Cerrar ──────────────────────────────────────────────────────────────── */
+.toast__close {
+	width: 1.75em;
+	height: 1.75em;
+	border-radius: 9999px;
+	background: #edeaff;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #4c4568;
+	flex-shrink: 0;
+	transition: background 0.15s;
+	font-family: 'Material Symbols Outlined';
+}
+
+.toast__close:hover {
+	background: #c5bbff;
+}
+
+/* ── Barra de progreso ───────────────────────────────────────────────────── */
+.toast__progress-track {
+	height: 2px;
+	background: rgba(25, 18, 74, 0.06);
+}
+
+.toast__progress-bar {
+	height: 100%;
+	background: linear-gradient(90deg, #6e59ee, #9080f5);
+	width: 100%;
+}
+
+.toast__progress-bar--running {
+	animation: toast-progress 4500ms linear forwards;
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
+@keyframes toast-pulse {
+
+	0%,
+	100% {
+		opacity: 0.9;
+		transform: scale(1);
+	}
+
+	50% {
+		opacity: 0;
+		transform: scale(1.45);
+	}
+}
+
+@keyframes toast-progress {
+	from {
+		width: 100%;
+	}
+
+	to {
+		width: 0%;
+	}
+}

@@ -1,0 +1,47 @@
+@page "/components/toast"
+
+<PageTitle>ToastNotification — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">POS</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">ToastNotification</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">ToastNotification</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Notificación toast estilo POS con ícono animado (pulse ring), título, subtítulo,
+        barra de progreso y botón de cierre.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"pos","toast","notification","alert","progress"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Mostrar / ocultar ────────────────────────────────────────── *@
+<ComponentPreview Title="Mostrar / ocultar"
+    Description="IsVisible controla la visibilidad y activa la animación de la barra de progreso. OnClose gestiona el cierre."
+    Code="@BasicCode" DarkBackground="true">
+    <Preview>
+        <div style="position:relative; min-height:120px;">
+            <ToastNotification IsVisible="@_toastVisible"
+                               Title="@_toastTitle"
+                               Subtitle="@_toastSubtitle"
+                               OnClose="EventCallback.Factory.Create(this, () => _toastVisible = false)" />
+            <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
+                <SfButton OnClick="EventCallback.Factory.Create(this, ShowNewOrder)">
+                    Simular nuevo pedido
+                </SfButton>
+                <SfButton OnClick="EventCallback.Factory.Create(this, ShowSync)" Variant="SfButton.SfButtonVariant.Secondary">
+                    Simular sync
+                </SfButton>
+            </div>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

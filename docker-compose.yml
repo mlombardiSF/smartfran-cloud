@@ -1,0 +1,75 @@
+services:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # PRODUCCIÓN: Imágenes independientes para cada app (nginx optimizado)
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  smartfrancloud-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartfrancloud-prod
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: unless-stopped
+    profiles:
+      - prod
+
+  smartfran-docs:
+    build:
+      context: .
+      dockerfile: Dockerfile.docs
+    container_name: smartfran-docs-prod
+    ports:
+      - "8081:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: unless-stopped
+    profiles:
+      - prod
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DESARROLLO: Hot reload para todos los proyectos
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  smartfrancloud-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: smartfrancloud-dev
+    ports:
+      - "5000:5000"
+    volumes:
+      # Monta el código fuente para hot reload
+      - ./SmartFranCloudApp:/app/SmartFranCloudApp
+      # Cache de NuGet para evitar descargas repetidas
+      - nuget-cache:/root/.nuget/packages
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+    profiles:
+      - dev
+
+  smartfran-docs-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.docs.dev
+    container_name: smartfran-docs-dev
+    ports:
+      - "5001:5001"
+    volumes:
+      # Monta ambos proyectos (Docs depende de Components)
+      - ./SmartFran.Docs:/app/SmartFran.Docs
+      - ./SmartFran.Components:/app/SmartFran.Components
+      # Cache de NuGet compartido
+      - nuget-cache:/root/.nuget/packages
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+    profiles:
+      - dev
+
+volumes:
+  nuget-cache:
+    driver: local

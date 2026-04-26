@@ -1,0 +1,25 @@
+@* AppLayout.razor — Layout para pantallas internas del sistema
+  Fondo claro #fdf7ff, con TopNavBar y BottomBar fijos.
+*@
+
+@inherits LayoutComponentBase
+@using SmartFranCloudApp.Themes
+@using SmartFranCloudApp.Shared.Nav
+
+<MudThemeProvider Theme="_theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<div class="app-layout">
+  <TopNavBar UserName="Matias Lombardi" />
+
+  <main class="app-layout__main">
+    @Body
+  </main>
+
+  <BottomBar />
+</div>
+
+@code {
+  private MudTheme _theme = SmartFranTheme.Create();
+}

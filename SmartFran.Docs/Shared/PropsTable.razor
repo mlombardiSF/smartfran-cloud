@@ -1,0 +1,35 @@
+@namespace SmartFran.Docs.Shared
+
+<div class="props-table">
+    <div class="props-table__header">
+        <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--mud-palette-primary);">tune</span>
+        <h3 class="props-table__title">Parámetros</h3>
+    </div>
+
+    <MudSimpleTable Dense="true" Hover="true" Striped="false" Style="border-radius:0 0 8px 8px;">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Default</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prop in Props) {
+                <tr>
+                    <td><code style="color:var(--mud-palette-primary); font-size:.82rem;">@prop.Name</code></td>
+                    <td><code style="color:#006267; font-size:.82rem;">@prop.Type</code></td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(prop.Default)) {
+                            <code style="font-size:.82rem; opacity:.7;">@prop.Default</code>
+                        } else {
+                            <span style="opacity:.35; font-size:.82rem;">—</span>
+                        }
+                    </td>
+                    <td style="font-size:.82rem; color:var(--mud-palette-text-secondary);">@prop.Description</td>
+                </tr>
+            }
+        </tbody>
+    </MudSimpleTable>
+</div>

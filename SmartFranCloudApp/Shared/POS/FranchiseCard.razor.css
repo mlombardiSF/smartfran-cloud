@@ -1,0 +1,151 @@
+.fc {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	padding: 1.4em 1.75em;
+	border-radius: 1em;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+	border: 2px solid transparent;
+	box-sizing: border-box;
+}
+
+.fc:hover {
+	transform: scale(1.01);
+}
+
+.fc:active {
+	transform: scale(0.97);
+}
+
+/* ── Estados ─────────────────────────────────────────────────────────────── */
+.fc--selected {
+	background-color: #e2dcff;
+	border-color: #9080f5;
+	box-shadow: 0 20px 60px rgba(110, 89, 238, 0.12);
+}
+
+.fc--unselected {
+	background-color: #f3f1ff;
+	border-color: transparent;
+}
+
+.fc--unselected:hover {
+	background-color: #e7e3ff;
+}
+
+/* ── Inner: ícono + info ──────────────────────────────────────────────────── */
+.fc__inner {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+	flex: 1;
+	min-width: 0;
+}
+
+.fc__icon {
+	width: 3.2em;
+	height: 3.2em;
+	border-radius: 9999px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	transition: background 0.25s, color 0.25s;
+	box-shadow: 0 4px 12px rgba(25, 18, 74, 0.08);
+}
+
+.fc__icon--default {
+	background: #edeaff;
+	color: #4c4568;
+}
+
+.fc__icon--active {
+	background: #9080f5;
+	color: #ffffff;
+}
+
+.fc__icon .material-symbols-outlined {
+	font-size: 1.6em;
+}
+
+.fc__info {
+	flex: 1;
+	min-width: 0;
+}
+
+.fc__name {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 1em;
+	font-weight: 800;
+	color: #19124a;
+	margin: 0 0 0.25em 0;
+	line-height: 1.2;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.fc__name--selected {
+	color: #19124a;
+}
+
+.fc__address {
+	display: flex;
+	align-items: center;
+	gap: 0.2em;
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.82em;
+	color: #4c4568;
+	margin: 0;
+}
+
+.fc__address-icon {
+	font-size: 0.9em;
+	color: #6e59ee;
+}
+
+/* ── Badge ────────────────────────────────────────────────────────────────── */
+.fc__badge-wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 0.35em;
+	flex-shrink: 0;
+	margin-left: 1em;
+}
+
+.fc__badge {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.68em;
+	font-weight: 700;
+	padding: 0.25em 0.75em;
+	border-radius: 9999px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	white-space: nowrap;
+}
+
+.fc__badge--connected {
+	background: rgba(0, 98, 103, 0.10);
+	color: #006267;
+}
+
+.fc__badge--inactive {
+	background: rgba(204, 198, 232, 0.20);
+	color: #4c4568;
+}
+
+.fc__id {
+	font-size: 0.62em;
+	font-weight: 700;
+	color: rgba(76, 69, 104, 0.50);
+	font-family: 'Manrope', sans-serif;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+	.fc { padding: 1.25em; }
+	.fc__name { font-size: 0.9em; }
+	.fc__icon { width: 3em; height: 3em; }
+}

@@ -1,0 +1,31 @@
+@* GlassCard.razor — Tarjeta glassmorphism reutilizable
+	Uso:
+		<GlassCard>contenido</GlassCard>
+		<GlassCard Variant="GlassCard.GlassVariant.Strong" Radius="GlassCard.GlassRadius.Lg" Style="padding:2rem">
+			contenido
+		</GlassCard>
+*@
+
+@namespace SmartFran.Components.Decorations
+
+<div class="@_classes" style="@Style">
+	@ChildContent
+</div>
+
+@code {
+	public enum GlassVariant { Subtle, Medium, Strong }
+	public enum GlassRadius  { Default, Lg, Xl }
+
+	[Parameter] public RenderFragment? ChildContent     { get; set; }
+	[Parameter] public GlassVariant    Variant          { get; set; } = GlassVariant.Subtle;
+	[Parameter] public GlassRadius     Radius           { get; set; } = GlassRadius.Lg;
+	[Parameter] public string?         Style            { get; set; }
+	[Parameter] public string?         AdditionalClass  { get; set; }
+
+	private string _classes => string.Join(" ", new[] {
+		"sf-glass-card",
+		$"sf-glass-card--{Variant.ToString().ToLower()}",
+		$"sf-glass-card--r{Radius.ToString().ToLower()}",
+		AdditionalClass ?? "",
+	}.Where(c => !string.IsNullOrEmpty(c)));
+}

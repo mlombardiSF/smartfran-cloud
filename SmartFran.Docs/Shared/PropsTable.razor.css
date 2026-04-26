@@ -1,0 +1,22 @@
+.props-table {
+    border: 1px solid var(--mud-palette-divider);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 2rem;
+}
+
+.props-table__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.1rem;
+    background: var(--mud-palette-background);
+    border-bottom: 1px solid var(--mud-palette-divider);
+}
+
+.props-table__title {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+}

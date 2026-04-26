@@ -1,0 +1,214 @@
+@page "/selection-franchise"
+
+@layout AppLayout
+
+@using SmartFranCloudApp.Models
+@using SmartFranCloudApp.Shared.POS
+@inject NavigationManager Nav
+
+<PageTitle>SFC | Selección de Franquicia</PageTitle>
+
+<div class="sf-page">
+  <div class="sf-page__inner">
+
+    @* ── Welcome Header ───────────────────────────────────────────── *@
+    <div class="sf-welcome">
+      <h2 class="sf-welcome__title">
+        Bienvenido de nuevo,<strong class="sf-welcome__name"> Matias</strong>
+      </h2>
+      <p class="sf-welcome__subtitle">
+        Seleccioná una franquicia para iniciar tu sesión de trabajo.
+      </p>
+    </div>
+
+    @* ── Bento Grid ───────────────────────────────────────────────── *@
+    <div class="sf-grid">
+      @* Columna izquierda: franquicias *@
+      <div class="sf-grid__col sf-grid__col--left">
+        <div class="sf-section-header">
+          <h3 class="sf-section-title">
+            <span class="material-symbols-outlined sf-section-icon">storefront</span>
+            Franquicias Disponibles
+          </h3>
+          <span class="sf-badge">@_franquicias.Count Disponibles</span>
+        </div>
+
+        <div class="sf-franchise-list">
+          @foreach (var f in _franquicias)
+          {
+            <FranchiseCard 
+              Franchise="f"
+              IsSelected="@(_selectedFranchiseId == f.Id)"
+              OnSelect="SelectFranchise"
+            />
+          }
+        </div>
+      </div>
+
+      @* Columna derecha: mostradores + sesión *@
+      <div class="sf-grid__col sf-grid__col--right">
+        @* Panel de mostradores — fondo navy *@
+        <div class="sf-counters-panel">
+          <div class="sf-counters-panel__blob"></div>
+            <div class="sf-counters-panel__inner">
+              <h3 class="sf-counters-panel__title">Detalles del punto de venta</h3>
+
+              <div class="sf-counters-list">
+                @foreach (var (mostrador, idx) in _currentsTerminals.Select((m, i) => (m, i))) {
+                  @if (idx > 0) {
+                    <div class="sf-counters-sep"></div>
+                  }
+                  <CounterRow 
+                    Terminal="mostrador"
+                    IsSelected="@(_selectedCounterId == mostrador.Id)"
+                    OnClick="HandleCounterClick"
+                  />
+                }
+              </div>
+            </div>
+          </div>
+
+          @* Card de sesión autorizada *@
+          <div class="sf-session-card">
+            <div class="sf-session-card__header">
+              <span 
+                class="material-symbols-outlined sf-session-card__icon"
+                style="font-variation-settings:'FILL' 1;"
+              >
+                verified_user
+              </span>
+              <div>
+                <h5 class="sf-session-card__title">Sesión autorizada</h5>
+                <p class="sf-session-card__subtitle">
+                  Sesión Active durante las próximas 8 horas
+                </p>
+              </div>
+            </div>
+            <button 
+              class="sf-session-card__btn"
+              disabled="@(_selectedCounterId == null)"
+              @onclick="IngresarTerminal"
+            >
+              Ingresar a la Terminal
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+
+        </div>
+    </div>
+  </div>
+</div>
+
+@* ── Modal apertura de turno ──────────────────────────────────────────────── *@
+<ShiftModal 
+  IsVisible="@_showModal"
+  CounterName="@_pendingCounter?.Name"
+  OnCancel="CloseModal"
+  OnConfirm="OpenShift"
+/>
+
+@* ── Toast de confirmación ────────────────────────────────────────────────── *@
+<ToastNotification 
+  IsVisible="@_showToast"
+  Title="Turno aperturado exitosamente"
+  Subtitle="@_toastSubtitle"
+  OnClose="CloseToast"
+/>
+
+@code {
+  // ── Datos ──────────────────────────────────────────────────────────────
+  private List<Franchise> _franquicias = new() {
+    new() { Id=1, Name="SMARTFRANCLOUD CAPITAL - CBA",   Address="Av. Colón 632, Córdoba Capital", Code="SF-00129", Active=true  },
+    new() { Id=2, Name="SMARTFRANCLOUD - RIO CUARTO",    Address="Calle Florida 450, Microcentro", Code="",         Active=false },
+    new() { Id=3, Name="SMARTFRANCLOUD - BUENOS AIRES",  Address="Paseo Alcorta, 1er Piso",        Code="",         Active=false },
+  };
+
+  private Dictionary<int, List<Terminal>> _contadores = new() {
+    [1] = new() {
+      new() { Id="f1-001", Name="Mostrador 001", Description="Terminal principal", Open=true,  Since="08:00 AM", FranchiseId=1 },
+      new() { Id="f1-002", Name="Mostrador 002", Description="Terminal PedidosYa", Open=false, Since=null,       FranchiseId=1 },
+      new() { Id="f1-003", Name="Mostrador 003", Description="Autoservicio",       Open=false, Since=null,       FranchiseId=1 },
+    },
+    [2] = new() {
+      new() { Id="f2-001", Name="Mostrador 001", Description="Caja principal",  Open=true,  Since="07:30 AM", FranchiseId=2 },
+      new() { Id="f2-002", Name="Mostrador 002", Description="Caja express",    Open=true,  Since="09:15 AM", FranchiseId=2 },
+      new() { Id="f2-003", Name="Mostrador 003", Description="Terminal Rappi",  Open=false, Since=null,       FranchiseId=2 },
+      new() { Id="f2-004", Name="Mostrador 004", Description="Caja back-office",Open=false, Since=null,       FranchiseId=2 },
+    },
+    [3] = new() {
+      new() { Id="f3-001", Name="Mostrador 001", Description="Barra central",    Open=true,  Since="10:00 AM", FranchiseId=3 },
+      new() { Id="f3-002", Name="Mostrador 002", Description="Barra secundaria", Open=false, Since=null,       FranchiseId=3 },
+    },
+  };
+
+  // ── Estado ─────────────────────────────────────────────────────────────
+  private int             _selectedFranchiseId = 1;
+  private string?         _selectedCounterId   = null;
+  private Terminal?      _pendingCounter      = null;
+  private bool            _showModal           = false;
+  private bool            _showToast           = false;
+  private string          _toastSubtitle       = string.Empty;
+  private System.Timers.Timer? _toastTimer;
+
+  private List<Terminal> _currentsTerminals => _contadores.GetValueOrDefault(_selectedFranchiseId) ?? new();
+
+  // ── Handlers ───────────────────────────────────────────────────────────
+  private void SelectFranchise(int id) {
+    _selectedFranchiseId = id;
+    _selectedCounterId   = null;
+  }
+
+  private void HandleCounterClick(Terminal m) {
+    if (m.Open) {
+      _selectedCounterId = m.Id;
+    }else {
+      _pendingCounter = m;
+      _showModal      = true;
+    }
+  }
+
+  private void CloseModal() {
+    _showModal      = false;
+    _pendingCounter = null;
+  }
+
+  private void OpenShift() {
+    if (_pendingCounter is null) return;
+
+    var now = DateTime.Now.ToString(
+      "hh:mm tt",
+      new System.Globalization.CultureInfo("es-AR")
+    );
+
+    _pendingCounter.Open = true;
+    _pendingCounter.Since   = now;
+    _selectedCounterId      = _pendingCounter.Id;
+
+    _toastSubtitle = $"{_pendingCounter.Name} • Turno Open ahora";
+    CloseModal();
+    ShowToast();
+    StateHasChanged();
+  }
+
+  private void ShowToast() {
+    _showToast = true;
+    _toastTimer?.Dispose();
+    _toastTimer = new System.Timers.Timer(4600);
+    _toastTimer.Elapsed += (_, _) => InvokeAsync(
+      () => { CloseToast(); StateHasChanged(); }
+    );
+    _toastTimer.AutoReset = false;
+    _toastTimer.Start();
+  }
+
+  private void CloseToast() {
+    _showToast = false;
+    _toastTimer?.Dispose();
+  }
+
+  private void IngresarTerminal() {
+    Nav.NavigateTo("/initial-load");
+  }
+
+  public void Dispose() => _toastTimer?.Dispose();
+}

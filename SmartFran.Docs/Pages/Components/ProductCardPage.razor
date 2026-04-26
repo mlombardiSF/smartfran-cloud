@@ -1,0 +1,65 @@
+@page "/components/productcard"
+
+<PageTitle>ProductCard — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">POS</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">ProductCard</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">ProductCard</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Tarjeta de producto para grillas del POS. Muestra imagen, categoría, nombre y precio.
+        Emite el evento OnAdd al presionar el botón + o al hacer click en la tarjeta.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"pos","product","card","grid"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Tarjeta individual ───────────────────────────────────────────── *@
+<ComponentPreview Title="Tarjeta individual"
+    Description="El componente recibe un Product y dispara OnAdd cuando el usuario agrega el producto."
+    Code="@SingleCode">
+    <Preview>
+        <div style="display:flex; gap:1.5rem; align-items:center; flex-wrap:wrap;">
+            <div style="width:180px;">
+                <ProductCard Product="@SampleProduct" OnAdd="HandleAdd" />
+            </div>
+            <div style="min-height:48px;">
+                @if (_lastAdded is not null) {
+                    <MudAlert Severity="Severity.Success" Dense="true">
+                        Agregado: @_lastAdded.Name
+                    </MudAlert>
+                }
+            </div>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Grid de productos ────────────────────────────────────────────── *@
+<ComponentPreview Title="Grid de productos"
+    Description="Uso típico dentro de un grid CSS con varios productos del catálogo."
+    Code="@GridCode">
+    <Preview>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1rem; width:100%;">
+            @foreach (var p in GridProducts) {
+                var prod = p;
+                <ProductCard Product="@prod" OnAdd="HandleAdd" />
+            }
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />
+
+@* ── Modelo Product ───────────────────────────────────────────────────────── *@
+<div class="comp-page__model-box">
+    <MudText Typo="Typo.subtitle2" Class="mb-2" Style="font-weight:700;">Modelo: Product</MudText>
+    <CodeBlock Code="@ProductModelCode" />
+</div>

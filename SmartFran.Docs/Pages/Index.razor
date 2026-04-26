@@ -1,0 +1,79 @@
+@page "/"
+
+<PageTitle>SmartFran Components</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-2" Style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:800;">
+    SmartFran Component Library
+</MudText>
+<MudText Typo="Typo.subtitle1" Class="mb-8" Style="color:var(--mud-palette-text-secondary);">
+    Referencia de componentes del design system. Buscá, visualizá y copiá el código para acelerar tu desarrollo.
+</MudText>
+
+<MudGrid Spacing="3">
+    @foreach (var group in _componentGroups) {
+        <MudItem xs="12">
+            <MudText Typo="Typo.h6" Class="mb-3" Style="font-weight:700; color:var(--mud-palette-primary);">
+                @group.Category
+            </MudText>
+        </MudItem>
+        @foreach (var comp in group.Components) {
+            var c = comp;
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCard Elevation="2" Style="height:100%; cursor:pointer;" @onclick='() => Nav.NavigateTo(c.Route)'>
+                    <MudCardContent>
+                        <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.5rem;">
+                            <MudIcon Icon="@c.Icon" Color="Color.Primary" Size="Size.Large"/>
+                            <MudText Typo="Typo.h6" Style="font-weight:700; font-size:.95rem;">@c.Name</MudText>
+                        </div>
+                        <MudText Typo="Typo.body2" Style="color:var(--mud-palette-text-secondary);">
+                            @c.Description
+                        </MudText>
+                        <div style="margin-top:.75rem; display:flex; flex-wrap:wrap; gap:.3rem;">
+                            @foreach (var tag in c.Tags) {
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+                            }
+                        </div>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    }
+</MudGrid>
+
+@code {
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+
+    private record ComponentEntry(string Name, string Description, string[] Tags, string Icon, string Route);
+    private record ComponentGroup(string Category, List<ComponentEntry> Components);
+
+    private List<ComponentGroup> _componentGroups = new()
+    {
+        new("Design System", new() {
+            new("SfButton",         "Botón con variantes Primary/Secondary/Ghost, estado de carga e ícono",       new[]{"button","action","form"},     Icons.Material.Filled.SmartButton, "/components/sfbutton"),
+            new("SfInput",          "Campo de texto con ícono, toggle de password y estado de error",             new[]{"input","form","text"},         Icons.Material.Filled.TextFields,  "/components/sfinput"),
+            new("GlassCard",        "Contenedor glassmorphism con variantes de intensidad y radio de borde",      new[]{"card","glass","container"},    Icons.Material.Filled.CreditCard,  "/components/glasscard"),
+            new("PageBackground",   "Fondo animado con blobs de gradiente, patrón SVG y figuras flotantes",      new[]{"background","decoration"},     Icons.Material.Filled.Wallpaper,   "/components/pagebg"),
+        }),
+        new("Loading", new() {
+            new("LoadingProgressBar", "Barra de progreso con porcentaje y efecto glow",                          new[]{"loading","progress"},          Icons.Material.Filled.LinearScale, "/components/loadingbar"),
+            new("LoadingStepItem",    "Ítem de paso con estados Pending / Active / Completed",                   new[]{"loading","steps","wizard"},    Icons.Material.Filled.CheckCircle, "/components/loadingstep"),
+        }),
+        new("Navegación", new() {
+            new("TopNavBar",   "Barra superior con logo, usuario, fecha y acciones",                              new[]{"nav","header","topbar"},       Icons.Material.Filled.Menu,        "/components/topnavbar"),
+            new("SideNavBar",  "Drawer lateral con grupos colapsables y footer",                                  new[]{"nav","sidebar","drawer"},      Icons.Material.Filled.ViewSidebar, "/components/sidenavbar"),
+            new("BottomBar",   "Barra inferior con versión, sync y acciones",                                     new[]{"nav","footer","status"},       Icons.Material.Filled.TableRows,   "/components/bottombar"),
+            new("PosNavBar",   "Header POS con buscador de productos, notificaciones y datos de turno",          new[]{"nav","pos","search"},          Icons.Material.Filled.PointOfSale, "/components/posnavbar"),
+        }),
+        new("POS — Punto de Venta", new() {
+            new("ProductCard",       "Tarjeta de producto con imagen, categoría, precio y botón agregar",        new[]{"pos","product","card"},        Icons.Material.Filled.ShoppingBag,  "/components/productcard"),
+            new("CartPanel",         "Panel lateral de carrito con gestión de items, socio y checkout",          new[]{"pos","cart","checkout"},       Icons.Material.Filled.ShoppingCart, "/components/cartpanel"),
+            new("CategoryBar",       "Barra de chips con categorías principales y dropdown de más",              new[]{"pos","filter","chips"},        Icons.Material.Filled.Category,     "/components/categorybar"),
+            new("SocioPanelSlide",   "Panel slide-in con datos del socio, puntos, nivel y canjes",              new[]{"pos","loyalty","slide"},       Icons.Material.Filled.Person,       "/components/sociopanel"),
+            new("OrdersButton",      "Botón de pedidos con badge contador y animación de pulso",                 new[]{"pos","orders","badge"},        Icons.Material.Filled.DeliveryDining,"/components/ordersbutton"),
+            new("FranchiseCard",     "Tarjeta de selección de franquicia con estado activo/inactivo",           new[]{"pos","franchise","selection"}, Icons.Material.Filled.Store,        "/components/franchisecard"),
+            new("CounterRow",        "Fila de mostrador con estado abierto/cerrado y selector",                  new[]{"pos","counter","row"},         Icons.Material.Filled.PointOfSale,  "/components/counterrow"),
+            new("ShiftModal",        "Modal de confirmación para apertura de turno",                             new[]{"pos","modal","shift"},         Icons.Material.Filled.PlayCircle,   "/components/shiftmodal"),
+            new("ToastNotification", "Notificación toast con progreso, título y botón cerrar",                   new[]{"pos","toast","notification"},  Icons.Material.Filled.Notifications,"/components/toast"),
+        }),
+    };
+}

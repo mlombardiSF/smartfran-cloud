@@ -1,0 +1,76 @@
+.sfb-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5em;
+	width: 100%;
+	padding: 0.9em 1.5em;
+	border: none;
+	cursor: pointer;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 1.05em;
+	font-weight: 700;
+	text-decoration: none;
+	transition: filter 0.2s, transform 0.1s, background 0.2s;
+	border-radius: 9999px;
+	box-sizing: border-box;
+}
+
+.sfb-btn--primary {
+	background: linear-gradient(135deg, var(--sf-primary) 0%, var(--sf-primary-container) 100%);
+	color: #ffffff;
+	box-shadow: 0 0.5em 1.2em rgba(var(--sf-primary-rgb), 0.25);
+}
+
+.sfb-btn--primary:hover {
+	filter: brightness(1.12);
+}
+
+.sfb-btn--primary:active {
+	transform: scale(0.98);
+}
+
+.sfb-btn--secondary {
+	background: rgba(var(--sf-primary-container-rgb), 0.10);
+	color: var(--sf-primary-fixed-dim);
+	border: 1px solid rgba(var(--sf-primary-fixed-dim-rgb), 0.20);
+}
+
+.sfb-btn--secondary:hover {
+	background: rgba(var(--sf-primary-container-rgb), 0.18);
+}
+
+.sfb-btn--ghost {
+	background: transparent;
+	color: var(--sf-primary-fixed-dim);
+	box-shadow: none;
+}
+
+.sfb-btn--ghost:hover {
+	color: var(--sf-primary-fixed);
+}
+
+.sfb-btn--disabled {
+	opacity: 0.50;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.sfb-btn .material-symbols-outlined {
+	font-size: 1.1em;
+}
+
+@keyframes sfb-spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.sfb-spin {
+	animation: sfb-spin 0.9s linear infinite;
+	display: inline-block;
+}

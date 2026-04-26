@@ -1,0 +1,54 @@
+@namespace SmartFranCloudApp.Shared.POS
+@using SmartFranCloudApp.Models
+
+<div 
+	class="fc @(_selected ? "fc--selected" : "fc--unselected")"
+  @onclick="HandleClick"
+>
+
+	<div class="fc__inner">
+
+		@* Ícono — alterna entre store y check según estado *@
+		<div class="fc__icon @(_selected ? "fc__icon--active" : "fc__icon--default")">
+			<span 
+				class="material-symbols-outlined"
+				style="font-variation-settings:'FILL' 1; font-size:2rem;"
+			>
+				@(_selected ? "check_circle" : "store")
+			</span>
+		</div>
+
+		@* Info de la franquicia *@
+		<div class="fc__info">
+			<h4 class="fc__name @(_selected ? "fc__name--selected" : "")">@Franchise.Name</h4>
+			<p class="fc__address">
+				<span class="material-symbols-outlined fc__address-icon">location_on</span>
+				@Franchise.Address
+			</p>
+		</div>
+
+	</div>
+
+	@* Badge de estado *@
+	<div class="fc__badge-wrap">
+		@if (Franchise.Active) {
+			<span class="fc__badge fc__badge--connected">Conectado</span>
+			@if (!string.IsNullOrEmpty(Franchise.Code)) {
+				<span class="fc__id">ID: @Franchise.Code</span>
+			}
+		}else {
+			<span class="fc__badge fc__badge--inactive">Inactiva</span>
+		}
+	</div>
+
+</div>
+
+@code {
+	[Parameter] public Franchise Franchise   { get; set; } = new();
+	[Parameter] public bool       IsSelected   { get; set; }
+	[Parameter] public EventCallback<int> OnSelect { get; set; }
+
+	private bool _selected => IsSelected;
+
+	private async Task HandleClick() => await OnSelect.InvokeAsync(Franchise.Id);
+}

@@ -1,0 +1,36 @@
+@page "/components/bottombar"
+
+<PageTitle>BottomBar — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">Navegación</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">BottomBar</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">BottomBar</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Barra inferior del dashboard con versión actual, estado de Cloud Sync y botones de acceso rápido a informes y gestión de franquicias.
+        Componente presentacional sin parámetros.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"nav","footer","status","version","sync"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Uso ──────────────────────────────────────────────────────── *@
+<ComponentPreview Title="Uso"
+    Description="Componente de presentación pura. No recibe parámetros. Usarlo al pie del layout principal."
+    Code="@BasicCode" DarkBackground="true">
+    <Preview>
+        <div style="width:100%; border-radius:8px; overflow:hidden;">
+            <BottomBar />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

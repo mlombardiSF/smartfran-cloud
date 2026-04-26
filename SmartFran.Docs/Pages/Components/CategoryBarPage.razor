@@ -1,0 +1,60 @@
+@page "/components/categorybar"
+
+<PageTitle>CategoryBar — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">POS</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">CategoryBar</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">CategoryBar</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Barra de filtrado por categorías del POS. Chips para las categorías principales y un botón "Más" con
+        dropdown agrupado para las categorías extra.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"pos","filter","chips","category","dropdown"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Con categorías extra ────────────────────────────────────── *@
+<ComponentPreview Title="Con categorías principales y extra"
+    Description="CategoriesMain muestra los chips directos. CategoriesExtra aparece en el dropdown del botón Más. Probá hacer click en Más."
+    Code="@FullCode" DarkBackground="true">
+    <Preview>
+        <div style="width:100%;">
+            <CategoryBar CategoriesMain="@MainCategories"
+                         CategoriesExtra="@ExtraCategories"
+                         CategoryActive="@_activeCategory"
+                         OnCategorySelect="EventCallback.Factory.Create<string>(this, cat => _activeCategory = cat)" />
+            @if (!string.IsNullOrEmpty(_activeCategory)) {
+                <p style="color:rgba(232,221,255,.6); font-size:.78rem; font-family:'Manrope',sans-serif; margin-top:.75rem;">
+                    Categoría activa: <strong style="color:#ae00ff;">@_activeCategory</strong>
+                </p>
+            }
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Solo principales ─────────────────────────────────────────── *@
+<ComponentPreview Title="Solo categorías principales"
+    Description="Sin CategoriesExtra, el botón Más no se muestra."
+    Code="@MainOnlyCode" DarkBackground="true">
+    <Preview>
+        <CategoryBar CategoriesMain="@MainCategories"
+                     CategoryActive="@_activeCategory2"
+                     OnCategorySelect="EventCallback.Factory.Create<string>(this, cat => _activeCategory2 = cat)" />
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />
+
+<div class="comp-page__model-box">
+    <MudText Typo="Typo.subtitle2" Class="mb-2" Style="font-weight:700;">Modelo: CategoryModel</MudText>
+    <CodeBlock Code="@CategoryModelCode" />
+</div>

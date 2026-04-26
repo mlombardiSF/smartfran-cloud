@@ -1,0 +1,51 @@
+@namespace SmartFran.Components.POS
+@inject IJSRuntime JS
+
+<div class="toast @(IsVisible ? "toast--show" : "")">
+
+	@* Acento izquierdo *@
+	<div class="toast__accent"></div>
+
+	@* Contenido *@
+	<div class="toast__body">
+		<div class="toast__content">
+
+			@* Ícono con pulse ring *@
+			<div class="toast__icon-wrap">
+				<div class="toast__icon">
+					<span
+						class="material-symbols-outlined"
+						style="color:#fff; font-size:1.1em; font-variation-settings:'FILL' 1;"
+					>
+						point_of_sale
+					</span>
+				</div>
+				<span class="toast__pulse-ring"></span>
+			</div>
+
+			@* Texto *@
+			<div class="toast__text">
+				<p class="toast__title">@Title</p>
+				<p class="toast__subtitle">@Subtitle</p>
+			</div>
+
+			@* Cerrar *@
+			<button class="toast__close" @onclick="OnClose">
+				<span class="material-symbols-outlined" style="font-size:0.9rem;">close</span>
+			</button>
+		</div>
+
+		@* Barra de progreso *@
+		<div class="toast__progress-track">
+			<div class="toast__progress-bar @(IsVisible ? "toast__progress-bar--running" : "")"></div>
+		</div>
+	</div>
+
+</div>
+
+@code {
+	[Parameter] public bool          IsVisible { get; set; }
+	[Parameter] public string        Title     { get; set; } = string.Empty;
+	[Parameter] public string        Subtitle  { get; set; } = string.Empty;
+	[Parameter] public EventCallback OnClose   { get; set; }
+}

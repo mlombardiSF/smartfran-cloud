@@ -1,0 +1,280 @@
+/* ── Root: font-size fluido es la clave ─────────────────────── */
+/* clamp(min, preferred, max)
+   En 1920px → ~14px  |  En 1366px → ~12px  |  En 768px → ~10px */
+.lg-root {
+	font-size: clamp(10px, 1vh, 14px);
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 2em;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+/* ── Columna central en em (relativo al font-size del root) ─── */
+.lg-main {
+	width: 100%;
+	max-width: 32em;
+	/* ~448px en 14px base, ~320px en 10px */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.2em;
+}
+
+/* ── Brand ───────────────────────────────────────────────────── */
+.lg-brand {
+	text-align: center;
+	width: 100%;
+}
+
+.lg-brand__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5em;
+	border-radius: 1em;
+}
+
+.lg-brand__icon .material-symbols-outlined {
+	font-size: 2.5em !important;
+}
+
+.lg-brand__logo {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 0.5em;
+}
+
+.lg-brand__logo img {
+	height: 5em;
+	width: auto;
+}
+
+.lg-brand__logo-fallback {
+	display: none;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 1.8em;
+	font-weight: 800;
+	color: #c5bbff;
+}
+
+.lg-brand__subtitle {
+	color: rgba(226, 220, 255, 0.60);
+	font-weight: 500;
+	font-size: 0.75em;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	margin: 0;
+}
+
+/* ── Glass Card padding en em ───────────────────────────────── */
+.lg-main .sf-glass-card {
+	padding: 2.5em 2.2em !important;
+	width: 100% !important;
+	box-sizing: border-box;
+}
+
+/* ── Inputs — override padding/font en em ───────────────────── */
+.lg-main .sfi-group {
+	margin-bottom: 1em;
+}
+
+.lg-main .sfi-label {
+	font-size: 0.9em;
+	margin-bottom: 0.5em;
+}
+
+.lg-main .sfi-input {
+	padding: 0.85em 1em 0.85em 2.8em;
+	font-size: 0.95em;
+}
+
+.lg-main .sfi-input--pr {
+	padding-right: 2.8em;
+}
+
+.lg-main .sfi-icon-left {
+	font-size: 1.1em;
+	left: 0.9em;
+}
+
+.lg-main .sfi-btn-right {
+	right: 0.9em;
+}
+
+.lg-main .sfi-btn-right .material-symbols-outlined {
+	font-size: 1.1em;
+}
+
+/* ── Remember row ────────────────────────────────────────────── */
+.lg-remember-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1em;
+	padding: 0 0.1em;
+	flex-wrap: wrap;
+	gap: 0.4em;
+}
+
+.lg-checkbox-label {
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+	cursor: pointer;
+}
+
+.lg-checkbox {
+	appearance: none;
+	width: 1.1em;
+	height: 1.1em;
+	border-radius: 0.3em;
+	border: 1px solid rgba(226, 220, 255, 0.20);
+	background: rgba(44, 36, 88, 0.40);
+	cursor: pointer;
+	position: relative;
+	transition: background 0.2s;
+	flex-shrink: 0;
+}
+
+.lg-checkbox:checked {
+	background: #9080f5;
+	border-color: transparent;
+}
+
+.lg-checkbox:checked::after {
+	content: '✓';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: white;
+	font-size: 0.7em;
+	font-weight: 700;
+}
+
+.lg-remember-text {
+	font-size: 0.85em;
+	color: rgba(226, 220, 255, 0.80);
+}
+
+.lg-forgot-link {
+	font-size: 0.85em;
+	font-weight: 600;
+	color: #c5bbff;
+	text-decoration: none;
+	transition: color 0.2s;
+	white-space: nowrap;
+}
+
+.lg-forgot-link:hover {
+	color: #ebe8ff;
+}
+
+/* ── Botón CTA en em ─────────────────────────────────────────── */
+.lg-main .sfb-btn {
+	padding: 0.9em 1.5em;
+	font-size: 1.05em;
+	border-radius: 9999px;
+}
+
+/* ── Error banner ────────────────────────────────────────────── */
+.lg-error-banner {
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+	margin-bottom: 0.8em;
+	padding: 0.55em 0.8em;
+	border-radius: 0.8em;
+	background: rgba(186, 26, 26, 0.15);
+	color: #ffdad6;
+	font-size: 0.85em;
+}
+
+/* ── Card footer ─────────────────────────────────────────────── */
+.lg-card-footer {
+	margin-top: 1.2em;
+	padding-top: 1em;
+	border-top: 1px solid rgba(204, 198, 232, 0.10);
+	text-align: center;
+}
+
+.lg-footer-text {
+	color: rgba(226, 220, 255, 0.50);
+	font-size: 0.8em;
+	margin: 0 0 0.4em 0;
+	padding-bottom: 1em;
+}
+
+.lg-support-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	color: rgba(226, 220, 255, 0.60);
+	text-decoration: none;
+	font-weight: 500;
+	font-size: 0.8em;
+	transition: color 0.2s;
+}
+
+.lg-support-link:hover {
+	color: var(--sf-surface);
+}
+
+.lg-support-link .material-symbols-outlined {
+	font-size: 1em;
+}
+
+/* ── Feature pills ───────────────────────────────────────────── */
+.lg-features {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1em;
+	opacity: 0.40;
+	width: 100%;
+	padding-top: 1.4em;
+}
+
+.lg-feature {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 0.4em;
+	color: var(--sf-surface);
+}
+
+.lg-feature .material-symbols-outlined {
+	color: #c5bbff;
+	font-size: 1.5em;
+}
+
+.lg-feature span:last-child {
+	font-size: 0.62em;
+	font-weight: 700;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	line-height: 1.3;
+}
+
+/* ── Landscape / pantalla muy baja ──────────────────────────── */
+@media (max-height: 500px) {
+	.lg-brand__icon {
+		display: none;
+	}
+
+	.lg-features {
+		display: none;
+	}
+
+	.lg-card-footer {
+		display: none;
+	}
+
+	.lg-root {
+		align-items: flex-start;
+		padding-top: 0.5em;
+	}
+}

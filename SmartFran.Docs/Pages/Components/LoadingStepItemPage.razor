@@ -1,0 +1,58 @@
+@page "/components/loadingstep"
+
+<PageTitle>LoadingStepItem — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">Loading</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">LoadingStepItem</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">LoadingStepItem</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Ítem de paso de carga con tres estados: Pending, Active y Completed.
+        Diseñado para usarse en listas de inicialización o wizards de carga.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"loading","steps","wizard","state"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Los tres estados ─────────────────────────────────────────── *@
+<ComponentPreview Title="Los tres estados"
+    Description="Pending para pasos futuros, Active para el paso en curso (con animación), Completed para pasos finalizados."
+    Code="@StatesCode" DarkBackground="true">
+    <Preview>
+        <div style="display:flex; flex-direction:column; gap:.75rem; width:100%; max-width:480px;">
+            <LoadingStepItem Label="Conectando con el servidor" State="LoadingStepItem.StepState.Pending" />
+            <LoadingStepItem Label="Cargando catálogo de productos" State="LoadingStepItem.StepState.Active" />
+            <LoadingStepItem Label="Verificando credenciales" State="LoadingStepItem.StepState.Completed" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Secuencia real ───────────────────────────────────────────── *@
+<ComponentPreview Title="Secuencia real de inicialización"
+    Description="Combinación típica: pasos completados, uno activo y los restantes pendientes. El paso activo muestra shimmer y dots animados."
+    Code="@SequenceCode" DarkBackground="true">
+    <Preview>
+        <div style="display:flex; flex-direction:column; gap:.75rem; width:100%; max-width:480px;">
+            <LoadingStepItem Label="Verificando credenciales"       State="LoadingStepItem.StepState.Completed" />
+            <LoadingStepItem Label="Conectando con SmartFran Cloud" State="LoadingStepItem.StepState.Completed" />
+            <LoadingStepItem Label="Cargando catálogo de productos" State="LoadingStepItem.StepState.Active" />
+            <LoadingStepItem Label="Sincronizando inventario"       State="LoadingStepItem.StepState.Pending" />
+            <LoadingStepItem Label="Iniciando módulo de ventas"     State="LoadingStepItem.StepState.Pending" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />
+
+<div class="comp-page__model-box">
+    <MudText Typo="Typo.subtitle2" Class="mb-2" Style="font-weight:700;">Enum: StepState</MudText>
+    <CodeBlock Code="@EnumCode" />
+</div>

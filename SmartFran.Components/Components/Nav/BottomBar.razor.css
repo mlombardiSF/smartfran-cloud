@@ -1,0 +1,135 @@
+.bottombar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 30;
+	height: 6em;
+	background: rgba(253, 247, 255, 0.85);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	box-shadow: 0 -10px 40px rgba(31, 17, 68, 0.05);
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+}
+
+.bottombar__inner {
+	max-width: 80em;
+	width: 100%;
+	margin: 0 auto;
+	padding: 0 2.5em;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+/* ── Izquierda ────────────────────────────────────────────────────────────── */
+.bottombar__left {
+	display: flex;
+	align-items: center;
+	gap: 1.5em;
+}
+
+.bottombar__status {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.bottombar__dot {
+	width: 0.7em;
+	height: 0.7em;
+	border-radius: 9999px;
+	background: #006267;
+	flex-shrink: 0;
+}
+
+.bottombar__version-text {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.85em;
+	font-weight: 500;
+	color: #1f1144;
+}
+
+.bottombar__version-num {
+	color: #8a00cb;
+	font-weight: 700;
+}
+
+.bottombar__divider {
+	width: 1px;
+	height: 1.5em;
+	background: rgba(211, 192, 216, 0.30);
+}
+
+.bottombar__sync {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.85em;
+	font-weight: 500;
+	color: #4f4255;
+}
+
+.bottombar__sync-time {
+	color: #8a00cb;
+	font-weight: 700;
+}
+
+/* ── Derecha ──────────────────────────────────────────────────────────────── */
+.bottombar__right {
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
+}
+
+.bottombar__btn {
+	padding: 0.65em 1.75em /*0.75em 2em*/;
+	border-radius: 9999px;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-weight: 700;
+	font-size: 0.9em;
+	cursor: pointer;
+	transition: all 0.2s;
+	border: none;
+}
+
+.bottombar__btn:active {
+	transform: scale(0.95);
+}
+
+.bottombar__btn--outline {
+	background: transparent;
+	border: 2px solid #d3c0d8;
+	color: #1f1144;
+}
+
+.bottombar__btn--outline:hover {
+	background: #e8ddff;
+}
+
+.bottombar__btn--primary {
+	background: linear-gradient(135deg, #8a00cb 0%, #ae00ff 100%);
+	color: #ffffff;
+	box-shadow: 0 4px 20px rgba(138, 0, 203, 0.20);
+}
+
+.bottombar__btn--primary:hover {
+	filter: brightness(1.08);
+}
+
+@media (max-width: 768px) {
+
+	.bottombar__divider,
+	.bottombar__sync {
+		display: none;
+	}
+
+	.bottombar__inner {
+		padding: 0 1em;
+	}
+
+	.bottombar__btn {
+		padding: 0.55em 1em;
+		font-size: 0.8em;
+	}
+}

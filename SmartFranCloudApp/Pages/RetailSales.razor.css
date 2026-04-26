@@ -1,0 +1,90 @@
+/* VentaMinorista.razor.css */
+
+.vm-root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fdf7ff;
+}
+
+/* ── Workspace: ocupa el espacio bajo el nav ─────────────────────────────── */
+.vm-workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Zona catálogo (izquierda, flexible) ─────────────────────────────────── */
+.vm-catalog {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Barra superior: categorías + botón pedidos */
+.vm-catalog__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 2em;
+  flex-shrink: 0;
+  /*border-bottom: 1px solid rgba(211, 192, 216, 0.20);*/
+}
+
+.vm-catalog__pedidos {
+  flex-shrink: 0;
+}
+
+/* Grilla de productos con scroll interno */
+.vm-catalog__grid-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5em 2em 2em;
+  scrollbar-width: thin;
+  scrollbar-color: #d3c0d8 transparent;
+}
+
+.vm-catalog__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1em;
+}
+
+@media (min-width: 900px) {
+  .vm-catalog__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .vm-catalog__grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* Estado vacío del catálogo */
+.vm-catalog__empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75em;
+  padding: 4em 1em;
+  color: rgba(79, 66, 85, 0.40);
+}
+
+.vm-catalog__empty-icon {
+  font-family: 'Material Symbols Outlined';
+  font-size: 3em;
+}
+
+.vm-catalog__empty p {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9em;
+  font-weight: 600;
+  margin: 0;
+}

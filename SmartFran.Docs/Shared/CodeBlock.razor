@@ -1,0 +1,35 @@
+@namespace SmartFran.Docs.Shared
+@inject IJSRuntime JS
+
+<div class="cb">
+    <div class="cb__header">
+        <span class="cb__lang">razor</span>
+        <button class="cb__copy @(_copied ? "cb__copy--done" : "")" @onclick="CopyCode">
+            <span class="material-symbols-outlined" style="font-size:1rem;">
+                @(_copied ? "check" : "content_copy")
+            </span>
+            @(_copied ? "Copiado" : "Copiar")
+        </button>
+    </div>
+    <pre class="cb__pre line-numbers"><code class="language-html cb__code">@Code</code></pre>
+</div>
+
+@code {
+    [Parameter] public string Code { get; set; } = string.Empty;
+
+    private bool _copied = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender)
+            await JS.InvokeVoidAsync("sfDocs.highlightAll");
+    }
+
+    private async Task CopyCode() {
+        await JS.InvokeVoidAsync("sfDocs.copyToClipboard", Code);
+        _copied = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        _copied = false;
+        StateHasChanged();
+    }
+}

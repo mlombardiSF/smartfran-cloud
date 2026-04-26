@@ -1,0 +1,53 @@
+@page "/components/sociopanel"
+
+<PageTitle>SocioPanelSlide — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">POS</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">SocioPanelSlide</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">SocioPanelSlide</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Panel slide-in con el perfil completo del socio activo: avatar con nivel, puntos, progreso, producto favorito,
+        descuento y canjes disponibles. Se abre desde el CartPanel y requiere <code>CartService</code> con un socio cargado.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"pos","loyalty","socio","slide","canjes","cartservice"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Panel con socio ──────────────────────────────────────────── *@
+<ComponentPreview Title="Panel con socio activo"
+    Description="Primero cargá un socio en el CartPanel (DNI: 33987654 = Platinum, 30456789 = Gold, 25123456 = Bronce), luego abrí el panel."
+    Code="@BasicCode">
+    <Preview>
+        <div style="position:relative; display:flex; gap:1.5rem; align-items:flex-start; flex-wrap:wrap; overflow:hidden; min-height:200px;">
+            <div style="display:flex; gap:.75rem; flex-direction:column;">
+                <SfButton OnClick="EventCallback.Factory.Create(this, () => _open = !_open)">
+                    @(_open ? "Cerrar panel" : "Abrir SocioPanelSlide")
+                </SfButton>
+                @if (CartService.SocioActive is null) {
+                    <MudAlert Severity="Severity.Info" Dense="true">
+                        Sin socio activo. Cargá uno desde el CartPanel (DNI: 33987654)
+                    </MudAlert>
+                } else {
+                    <MudAlert Severity="Severity.Success" Dense="true">
+                        Socio: @CartService.SocioActive.Name
+                    </MudAlert>
+                }
+            </div>
+            <div style="position:relative; width:320px; min-width:280px; height:480px; overflow:hidden; border-radius:12px; border:1px solid rgba(174,0,255,.2);">
+                <SocioPanelSlide IsOpen="@_open"
+                                 OnClose="EventCallback.Factory.Create(this, () => _open = false)" />
+            </div>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

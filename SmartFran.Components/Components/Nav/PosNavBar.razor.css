@@ -1,0 +1,395 @@
+.pos-nav {
+	height: 5em;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 2em;
+	background: rgba(253, 247, 255, 0.95);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	box-shadow: 0 4px 20px rgba(31, 17, 68, 0.06);
+	flex-shrink: 0;
+	box-sizing: border-box;
+	z-index: 100;
+	position: relative;
+}
+
+/* ── Izquierda ────────────────────────────────────────────────────────────── */
+.pos-nav__left {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+	flex: 1;
+	min-width: 0;
+	position: relative;
+}
+
+.pos-nav__logo {
+	width: 7em;
+	height: auto;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+.pos-nav__divider {
+	width: 1px;
+	height: 2em;
+	background: rgba(211, 192, 216, 0.30);
+	flex-shrink: 0;
+}
+
+/* Buscador */
+.pos-nav__search-wrap {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	background: #e8ddff;
+	border-radius: 9999px;
+	padding: 0.45em 1em;
+	flex: 1;
+	max-width: 24em;
+	transition: box-shadow 0.2s;
+}
+
+.pos-nav__search-wrap:focus-within {
+	box-shadow: 0 0 0 2px rgba(174,0,255,0.30);
+}
+
+.pos-nav__search-icon {
+	color: #4f4255;
+	font-size: 1em;
+	font-family: 'Material Symbols Outlined';
+	flex-shrink: 0;
+}
+
+.pos-nav__search-spinner {
+	width: 1em;
+	height: 1em;
+	color: #8a00cb;
+	animation: pos-spin 0.75s linear infinite;
+	flex-shrink: 0;
+}
+
+.pos-nav__search-input {
+	flex: 1;
+	background: transparent;
+	border: none;
+	outline: none;
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.85em;
+	color: #1f1144;
+	min-width: 0;
+}
+
+.pos-nav__search-input::placeholder {
+	color: rgba(79, 66, 85, 0.45);
+}
+
+.pos-nav__search-clear {
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: rgba(79, 66, 85, 0.50);
+	display: flex;
+	align-items: center;
+	padding: 0;
+	transition: color 0.15s;
+	flex-shrink: 0;
+	font-family: 'Material Symbols Outlined';
+}
+
+.pos-nav__search-clear:hover {
+	color: #ba1a1a;
+}
+
+/* Dropdown */
+.pos-nav__dropdown {
+	position: fixed;
+	top: 3.9em;
+	left: 14.4em;
+	width: min(24em, calc(100vw - 36em));
+	background: #ffffff;
+	border-radius: 1em;
+	box-shadow: 0 20px 60px rgba(31, 17, 68, 0.15), 0 4px 16px rgba(138, 0, 203, 0.08);
+	border: 1px solid #e8ddff;
+	overflow: hidden;
+	max-height: 26em;
+	overflow-y: auto;
+	z-index: 9999;
+	scrollbar-width: thin;
+	scrollbar-color: #d3c0d8 transparent;
+	animation: pos-drop-in 0.18s ease both;
+}
+
+.pos-nav__drop-loading {
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
+	padding: 1.2em 1em;
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.82em;
+	color: rgba(79,66,85,0.60);
+}
+
+.pos-nav__drop-spinner {
+	width: 1.2em;
+	height: 1.2em;
+	color: #8a00cb;
+	animation: pos-spin 0.75s linear infinite;
+	flex-shrink: 0;
+}
+
+.pos-nav__drop-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
+	padding: 0.65em 1em;
+	cursor: pointer;
+	transition: background 0.12s;
+	animation: pos-result-in 0.18s ease both;
+	border-bottom: 1px solid rgba(211, 192, 216, 0.12);
+}
+
+.pos-nav__drop-item:last-child {
+	border-bottom: none;
+}
+
+.pos-nav__drop-item:hover {
+	background: #f8f1ff;
+}
+
+.pos-nav__drop-img {
+	width: 2.6em;
+	height: 2.6em;
+	border-radius: 0.5em;
+	overflow: hidden;
+	background: #f3eaff;
+	flex-shrink: 0;
+}
+
+.pos-nav__drop-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.pos-nav__drop-info {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.1em;
+}
+
+.pos-nav__drop-cat {
+	font-size: 0.60em;
+	font-weight: 700;
+	color: #8a00cb;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-family: 'Manrope', sans-serif;
+}
+
+.pos-nav__drop-name {
+	font-size: 0.82em;
+	font-weight: 700;
+	color: #1f1144;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.pos-nav__drop-price {
+	font-size: 0.88em;
+	font-weight: 800;
+	color: #0f0035;
+	flex-shrink: 0;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Sin resultados */
+.pos-nav__drop-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 2em 1em;
+	gap: 0.35em;
+	text-align: center;
+}
+
+.pos-nav__drop-empty-icon {
+	font-family: 'Material Symbols Outlined';
+	font-size: 2.5em;
+	color: rgba(211, 192, 216, 0.60);
+}
+
+.pos-nav__drop-empty-text {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.8em;
+	font-weight: 700;
+	color: rgba(79, 66, 85, 0.60);
+	margin: 0;
+}
+
+.pos-nav__drop-empty-term {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 0.8em;
+	font-weight: 900;
+	color: #8a00cb;
+	margin: 0;
+}
+
+
+
+/* ── Derecha ──────────────────────────────────────────────────────────────── */
+.pos-nav__right {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	flex-shrink: 0;
+}
+
+.pos-nav__icon-btn {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.4em;
+	height: 2.4em;
+	border-radius: 9999px;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	color: #1f1144;
+	transition: background 0.2s;
+}
+
+.pos-nav__icon-btn:hover {
+	background: rgba(174, 0, 255, 0.08);
+}
+
+.pos-nav__icon-btn:active {
+	transform: scale(0.92);
+}
+
+.pos-nav__icon-btn .material-symbols-outlined {
+	font-size: 1.2em;
+}
+
+.pos-nav__notif-dot {
+	position: absolute;
+	top: 0.3em;
+	right: 0.3em;
+	width: 0.45em;
+	height: 0.45em;
+	border-radius: 9999px;
+	background: #ae00ff;
+	box-shadow: 0 0 4px #ae00ff;
+}
+
+/* Info POS */
+.pos-nav__pos-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.05em;
+	padding: 0 0.25em;
+}
+
+.pos-nav__pos-user {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.65em;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: #4f4255;
+	line-height: 1.2;
+}
+
+.pos-nav__pos-detail {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.62em;
+	font-weight: 500;
+	color: #8a00cb;
+	line-height: 1.2;
+}
+
+/* Avatar */
+.pos-nav__avatar-wrap {
+	display: flex;
+	align-items: center;
+	padding-left: 0.75em;
+	border-left: 1px solid rgba(211, 192, 216, 0.20);
+	margin-left: 0.25em;
+}
+
+.pos-nav__avatar {
+	width: 2.4em;
+	height: 2.4em;
+	border-radius: 9999px;
+	background: #e8ddff;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.pos-nav__avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.pos-nav__avatar-fallback {
+	display: none;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-weight: 700;
+	font-size: 1em;
+	color: #4f4255;
+	text-transform: uppercase;
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
+@keyframes pos-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes pos-drop-in {
+	from { 
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+	to {
+		opacity: 1; 
+		transform: translateY(0); }
+	}
+
+@keyframes pos-result-in {
+	from {
+		opacity: 0;
+		transform: translateY(3px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+
+	.pos-nav__pos-info,
+	.pos-nav__divider {
+		display: none;
+	}
+
+	.pos-nav__search-wrap {
+		max-width: 14em;
+	}
+
+	.pos-nav__dropdown { left: 6em; }
+}

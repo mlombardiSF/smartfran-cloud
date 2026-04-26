@@ -1,0 +1,47 @@
+@inherits LayoutComponentBase
+
+<MudLayout>
+	<MudAppBar Elevation="0" Style="backdrop-filter:blur(24px); background:rgba(31,17,68,0.85);">
+		<MudIconButton 
+			Icon="@Icons.Material.Filled.Menu"
+			Color="Color.Inherit"
+			Edge="Edge.Start"
+			OnClick="@ToggleDrawer" />
+		<MudText Typo="Typo.h6" Style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:700;">
+			SmartFran Cloud
+		</MudText>
+		<MudSpacer />
+	</MudAppBar>
+
+	<MudDrawer 
+		@bind-Open="_drawerOpen"
+		ClipMode="DrawerClipMode.Always"
+		Elevation="0"
+		Style="background:#2c2458;"
+	>
+		<MudDrawerHeader>
+			<MudText
+				Typo="Typo.h6"
+				Style="color:#c5bbff; font-family:'Plus Jakarta Sans',sans-serif;"
+			>
+				Navegación
+			</MudText>
+		</MudDrawerHeader>
+		<!-- <NavMenu /> -->
+	</MudDrawer>
+
+	<MudMainContent>
+		<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+			@Body
+		</MudContainer>
+	</MudMainContent>
+</MudLayout>
+
+@using SmartFranCloudApp.Themes
+
+@code {
+	private bool     _drawerOpen = true;
+	private MudTheme _theme      = SmartFranTheme.Create();
+
+	private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+}

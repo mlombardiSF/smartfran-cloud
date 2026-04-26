@@ -1,0 +1,61 @@
+@namespace SmartFranCloudApp.Shared.POS
+
+@if (IsVisible) {
+	<div class="sm-overlay" @onclick="HandleOverlayClick">
+		<div class="sm-box" @onclick:stopPropagation>
+
+			@* Blob decorativo *@
+			<div class="sm-blob"></div>
+
+			@* Header *@
+			<div class="sm-header">
+				<div class="sm-header__icon">
+						<span 
+							class="material-symbols-outlined"
+							style="font-variation-settings:'FILL' 1; color:#fff; font-size:1.5em;"
+						>
+							point_of_sale
+						</span>
+				</div>
+				<div>
+					<p class="sm-header__label">Apertura de Turno</p>
+					<h3 class="sm-header__title">@CounterName</h3>
+				</div>
+			</div>
+
+			@* Cuerpo *@
+			<p class="sm-body">
+				Este mostrador tiene el turno
+				<strong class="sm-body__closed"> cerrado</strong>.
+				¿Deseás aperturar un nuevo turno en
+				<strong class="sm-body__name">@CounterName</strong>?
+			</p>
+
+			@* Acciones *@
+			<div class="sm-actions">
+				<button class="sm-btn sm-btn--cancel" @onclick="OnCancel">
+					Cancelar
+				</button>
+				<button class="sm-btn sm-btn--confirm" @onclick="OnConfirm">
+					<span 
+						class="material-symbols-outlined"
+						style="font-size:1.2rem; font-variation-settings:'FILL' 1;"
+					>
+						play_circle
+					</span>
+					Aperturar Turno
+				</button>
+			</div>
+
+		</div>
+	</div>
+}
+
+@code {
+	[Parameter] public bool            IsVisible   { get; set; }
+	[Parameter] public string          CounterName { get; set; } = string.Empty;
+	[Parameter] public EventCallback   OnCancel    { get; set; }
+	[Parameter] public EventCallback   OnConfirm   { get; set; }
+
+	private async Task HandleOverlayClick() => await OnCancel.InvokeAsync();
+}

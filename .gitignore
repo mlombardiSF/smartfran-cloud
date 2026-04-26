@@ -1,0 +1,49 @@
+## --- [ SECCIÓN .NET / VISUAL STUDIO ] ---
+# Archivos de compilación y binarios
+[Bb]in/
+[Oo]bj/
+
+# Archivos de usuario y caché de Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Archivos de configuración de AI
+*.claude
+*.openai
+*.gemini
+
+# Archivos de configuración de herramientas
+.libraryindex
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+## --- [ SECCIÓN WEB / BLAZOR WASM ] ---
+# Archivos de publicación local y assets generados
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+node_modules/
+wwwroot/dist/
+wwwroot/css/mudblazor.min.css # Opcional: si prefieres que se compile siempre en el cliente
+
+## --- [ SECCIÓN DOCKER ] ---
+# Archivos temporales de Docker y Logs
+.dockerignore
+*.tar
+*.tar.gz
+# Si el Dockerfile genera imágenes intermedias, ignorar logs
+docker-compose.override.yml*
+
+## --- [ SECCIÓN SEGURIDAD (IMPORTANTE) ] ---
+# Evita subir secretos o configuraciones sensibles
+appsettings.Development.json
+*.secrets.json
+.env

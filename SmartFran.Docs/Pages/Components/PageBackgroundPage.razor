@@ -1,0 +1,70 @@
+@page "/components/pagebg"
+
+<PageTitle>PageBackground — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">Design System</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">PageBackground</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">PageBackground</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Fondo animado con gradiente deep-space, blobs de color, patrón SVG de puntos y figuras geométricas flotantes.
+        Envuelve el contenido de la página y sirve como capa visual base de SmartFran.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"background","decoration","glassmorphism","layout"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Configuración por defecto ────────────────────────────────── *@
+<ComponentPreview Title="Configuración por defecto"
+    Description="Con ShowPattern y ShowShapes activados. Blobs en los colores estándar del design system."
+    Code="@DefaultCode" DarkBackground="true">
+    <Preview>
+        <div style="position:relative; width:100%; height:220px; border-radius:12px; overflow:hidden;">
+            <PageBackground>
+                <div style="position:relative; z-index:1; padding:2rem; display:flex; align-items:center; justify-content:center; height:100%;">
+                    <span style="color:#e8ddff; font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;">Contenido de la página</span>
+                </div>
+            </PageBackground>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Sin patrón ni figuras ────────────────────────────────────── *@
+<ComponentPreview Title="Sin patrón ni figuras"
+    Description="ShowPattern=false y ShowShapes=false. Solo el gradiente base y los blobs de color."
+    Code="@MinimalCode" DarkBackground="true">
+    <Preview>
+        <div style="position:relative; width:100%; height:220px; border-radius:12px; overflow:hidden;">
+            <PageBackground ShowPattern="false" ShowShapes="false">
+                <div style="position:relative; z-index:1; padding:2rem; display:flex; align-items:center; justify-content:center; height:100%;">
+                    <span style="color:#e8ddff; font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;">Solo gradiente + blobs</span>
+                </div>
+            </PageBackground>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 3: Colores de blob personalizados ───────────────────────────── *@
+<ComponentPreview Title="Colores de blob personalizados"
+    Description="BlobTopRight y BlobBottomLeft aceptan cualquier valor CSS de color."
+    Code="@CustomBlobCode" DarkBackground="true">
+    <Preview>
+        <div style="position:relative; width:100%; height:220px; border-radius:12px; overflow:hidden;">
+            <PageBackground BlobTopRight="#00c3ff" BlobBottomLeft="#0055aa">
+                <div style="position:relative; z-index:1; padding:2rem; display:flex; align-items:center; justify-content:center; height:100%;">
+                    <span style="color:#e8ddff; font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;">Blobs azules</span>
+                </div>
+            </PageBackground>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

@@ -1,0 +1,26 @@
+.docs-sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    padding: 0.5em 0;
+}
+
+.docs-sidebar__logo-icon {
+    font-size: 2em;
+    color: var(--mud-palette-primary);
+    font-variation-settings: 'FILL' 1;
+}
+
+.docs-sidebar__title {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1em;
+    font-weight: 700;
+    color: var(--mud-palette-text-primary);
+}
+
+.docs-sidebar__subtitle {
+    margin: 0;
+    font-size: 0.75em;
+    color: var(--mud-palette-text-secondary);
+}

@@ -1,0 +1,56 @@
+@namespace SmartFranCloudApp.Shared.Nav
+
+<nav class="topnav">
+	@* Lado izquierdo: logo + separador + usuario/fecha *@
+	<div class="topnav__left">
+		<img 
+			src="/assets/svgs/Smartfran-Cloud-logo-light.svg"
+			alt="SmartFran Cloud"
+			class="topnav__logo"
+			onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+		/>
+		<span class="topnav__logo-fallback">SmartFran</span>
+		<div class="topnav__divider"></div>
+		<div class="topnav__user-info">
+			<span class="topnav__user-name">@UserName</span>
+			<span class="topnav__datetime">@_datetime</span>
+		</div>
+	</div>
+
+	@* Lado derecho: notificaciones + settings + avatar *@
+	<div class="topnav__right">
+		<button class="topnav__icon-btn" title="Notificaciones">
+			<span class="material-symbols-outlined">notifications</span>
+		</button>
+		<button class="topnav__icon-btn" title="Configuración">
+			<span class="material-symbols-outlined">settings</span>
+		</button>
+
+		<div class="topnav__avatar-wrap">
+			<div class="topnav__avatar">
+				<img 
+					src="/assets/images/perfil-user.png"
+					alt="Avatar"
+					onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+				/>
+				<span class="topnav__avatar-fallback">
+					@UserName.FirstOrDefault()
+				</span>
+			</div>
+		</div>
+	</div>
+</nav>
+
+@code {
+	[Parameter] public string UserName { get; set; } = "Usuario";
+
+	private string _datetime = string.Empty;
+
+	protected override void OnInitialized()	{
+		var now = DateTime.Now;
+		_datetime = now.ToString(
+			"dddd, dd MMM yyyy • hh:mm tt",
+			new System.Globalization.CultureInfo("es-AR")
+		);
+	}
+}

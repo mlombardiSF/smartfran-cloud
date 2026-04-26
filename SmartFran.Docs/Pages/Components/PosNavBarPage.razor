@@ -1,0 +1,51 @@
+@page "/components/posnavbar"
+
+<PageTitle>PosNavBar — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">Navegación</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">PosNavBar</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">PosNavBar</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Header del Punto de Venta con buscador de productos (debounce 280ms + dropdown), notificaciones de sonido,
+        datos de turno y avatar. El buscador filtra por nombre y categoría.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"nav","pos","search","header","turno"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Con catálogo de productos ───────────────────────────────── *@
+<ComponentPreview Title="Con catálogo de productos"
+    Description="Pasá la lista de productos para activar el buscador. Probá escribir 'Cucurucho' o 'Helados' en el campo de búsqueda."
+    Code="@WithProductsCode" DarkBackground="true">
+    <Preview>
+        <div style="width:100%; border-radius:8px; overflow:hidden;">
+            <PosNavBar UserName="Matías L."
+                       Terminal="002"
+                       Shift="0045"
+                       Products="@SampleProducts"
+                       OnProductSelect="EventCallback.Factory.Create<SmartFran.Components.Models.Product>(this, p => { })" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Sin productos ────────────────────────────────────────────── *@
+<ComponentPreview Title="Sin catálogo"
+    Description="Con Products vacío el buscador no muestra resultados. Útil para vistas donde el catálogo aún no cargó."
+    Code="@EmptyCode" DarkBackground="true">
+    <Preview>
+        <div style="width:100%; border-radius:8px; overflow:hidden;">
+            <PosNavBar UserName="Carlos F." Terminal="001" Shift="0001" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

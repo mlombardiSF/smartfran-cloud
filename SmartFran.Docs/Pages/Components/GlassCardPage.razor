@@ -1,0 +1,82 @@
+@page "/components/glasscard"
+
+<PageTitle>GlassCard — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">GlassCard</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">GlassCard</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Contenedor glassmorphism con efecto blur y fondo semitransparente.
+        Disponible en 3 intensidades y 3 radios de borde.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"card","glass","container","layout","decoration"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Variantes de intensidad ─────────────────────────────────────── *@
+<ComponentPreview Title="Variantes de intensidad"
+    Description="Subtle para capas de fondo, Medium para cards principales, Strong para modales o paneles destacados."
+    Code="@VariantCode" DarkBackground="true">
+    <Preview>
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; width:100%;">
+            <GlassCard Variant="GlassCard.GlassVariant.Subtle" Style="padding:1.5rem; width:150px; text-align:center;">
+                <span style="color:#e8ddff; font-size:.85rem; font-family:'Manrope',sans-serif;">Subtle</span>
+            </GlassCard>
+            <GlassCard Variant="GlassCard.GlassVariant.Medium" Style="padding:1.5rem; width:150px; text-align:center;">
+                <span style="color:#e8ddff; font-size:.85rem; font-family:'Manrope',sans-serif;">Medium</span>
+            </GlassCard>
+            <GlassCard Variant="GlassCard.GlassVariant.Strong" Style="padding:1.5rem; width:150px; text-align:center;">
+                <span style="color:#e8ddff; font-size:.85rem; font-family:'Manrope',sans-serif;">Strong</span>
+            </GlassCard>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Variantes de radio ───────────────────────────────────────────── *@
+<ComponentPreview Title="Variantes de radio de borde"
+    Description="Default para cards compactas, Lg para tarjetas generales (el más usado), Xl para modales y paneles."
+    Code="@RadiusCode" DarkBackground="true">
+    <Preview>
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; width:100%;">
+            <GlassCard Variant="GlassCard.GlassVariant.Medium" Radius="GlassCard.GlassRadius.Default"
+                       Style="padding:1.5rem; width:150px; text-align:center;">
+                <span style="color:#e8ddff; font-size:.8rem; font-family:'Manrope',sans-serif;">Default</span>
+            </GlassCard>
+            <GlassCard Variant="GlassCard.GlassVariant.Medium" Radius="GlassCard.GlassRadius.Lg"
+                       Style="padding:1.5rem; width:150px; text-align:center;">
+                <span style="color:#e8ddff; font-size:.8rem; font-family:'Manrope',sans-serif;">Lg ✓</span>
+            </GlassCard>
+            <GlassCard Variant="GlassCard.GlassVariant.Medium" Radius="GlassCard.GlassRadius.Xl"
+                       Style="padding:1.5rem; width:150px; text-align:center;">
+                <span style="color:#e8ddff; font-size:.8rem; font-family:'Manrope',sans-serif;">Xl</span>
+            </GlassCard>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 3: Uso real ─────────────────────────────────────────────────────── *@
+<ComponentPreview Title="Uso real: formulario de login"
+    Description="GlassCard como contenedor de formulario. Combina con SfInput y SfButton del mismo design system."
+    Code="@RealCode" DarkBackground="true">
+    <Preview>
+        <GlassCard Variant="GlassCard.GlassVariant.Medium" Radius="GlassCard.GlassRadius.Xl"
+                   Style="padding:2rem; width:100%; max-width:320px;">
+            <div style="margin-bottom:1.25rem; text-align:center;">
+                <p style="margin:0; color:rgba(230,180,255,.5); font-size:.7rem; font-family:'Manrope',sans-serif; letter-spacing:.12em; text-transform:uppercase;">SmartFran Cloud</p>
+                <h3 style="margin:.2rem 0 0; color:#e8ddff; font-family:'Plus Jakarta Sans',sans-serif; font-size:1.15rem; font-weight:700;">Iniciar sesión</h3>
+            </div>
+            <SfInput Label="Email" Icon="alternate_email" Placeholder="usuario@empresa.com" Value="" />
+            <SfInput Label="Contraseña" Icon="lock" Type="password" ShowToggle="true" Placeholder="Tu contraseña" Value="" />
+            <SfButton>Ingresar</SfButton>
+        </GlassCard>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

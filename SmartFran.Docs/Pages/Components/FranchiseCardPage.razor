@@ -1,0 +1,64 @@
+@page "/components/franchisecard"
+
+<PageTitle>FranchiseCard — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">POS</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">FranchiseCard</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">FranchiseCard</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Tarjeta de selección de franquicia. Muestra nombre, dirección, badge de estado (Conectado / Inactiva) y código.
+        Al seleccionarse el ícono cambia a check_circle y el borde se activa.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"pos","franchise","selection","card"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Estados ──────────────────────────────────────────────────── *@
+<ComponentPreview Title="Estados: no seleccionada / seleccionada / inactiva"
+    Description="IsSelected activa el ícono check y el borde. Active=false muestra el badge Inactiva en lugar del código."
+    Code="@StatesCode">
+    <Preview>
+        <div style="display:flex; flex-direction:column; gap:.75rem; width:100%; max-width:440px;">
+            <FranchiseCard Franchise="@FranchiseA" IsSelected="false" />
+            <FranchiseCard Franchise="@FranchiseA" IsSelected="true" />
+            <FranchiseCard Franchise="@FranchiseInactive" IsSelected="false" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Lista seleccionable ──────────────────────────────────────── *@
+<ComponentPreview Title="Lista seleccionable"
+    Description="Usá OnSelect para gestionar cuál franquicia está activa. El evento emite el Id de la franquicia."
+    Code="@SelectableCode">
+    <Preview>
+        <div style="display:flex; flex-direction:column; gap:.75rem; width:100%; max-width:440px;">
+            @foreach (var f in SampleFranchises) {
+                var franchise = f;
+                <FranchiseCard Franchise="@franchise"
+                               IsSelected="@(_selectedId == franchise.Id)"
+                               OnSelect="EventCallback.Factory.Create<int>(this, id => _selectedId = id)" />
+            }
+        </div>
+        @if (_selectedId > 0) {
+            <MudAlert Severity="Severity.Success" Dense="true" Class="mt-3">
+                Franquicia seleccionada: ID @_selectedId
+            </MudAlert>
+        }
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />
+
+<div class="comp-page__model-box">
+    <MudText Typo="Typo.subtitle2" Class="mb-2" Style="font-weight:700;">Modelo: Franchise</MudText>
+    <CodeBlock Code="@FranchiseModelCode" />
+</div>

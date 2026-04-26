@@ -1,0 +1,81 @@
+@* =============================================================================
+    SfInput.razor  —  Input field del design system "Luminous Ledger"
+    Uso:
+    <SfInput Label="Email" Icon="alternate_email" Type="email"
+            @bind-Value="_email" Placeholder="usuario@empresa.com" />
+
+    <SfInput Label="Contraseña" Icon="lock" Type="password"
+                ShowToggle="true" @bind-Value="_password" />
+   ============================================================================= *@
+
+@namespace SmartFranCloudApp.Shared
+
+<div class="sfi-group">
+
+	@if (!string.IsNullOrEmpty(Label)) {
+		<label class="sfi-label" for="@_inputId">@Label</label>
+	}
+
+	<div class="sfi-wrapper @(HasError ? "sfi-wrapper--error" : "")">
+		@* Ícono izquierdo *@
+		@if (!string.IsNullOrEmpty(Icon))	{
+			<span class="material-symbols-outlined sfi-icon-left">@Icon</span>
+		}
+
+		@* Input *@
+		<input 
+			class="sfi-input @(HasRightButton ? "sfi-input--pr" : "") @(string.IsNullOrEmpty(Icon) ? "sfi-input--no-icon" : "")"
+			id="@_inputId"
+			type="@_currentType"
+			placeholder="@Placeholder"
+			value="@Value"
+			@oninput="OnInputChange"
+			autocomplete="@AutoComplete"
+			disabled="@Disabled" />
+
+		@* Botón toggle password *@
+		@if (ShowToggle) {
+			<button 
+				class="sfi-btn-right" type="button" @onclick="ToggleVisibility"
+				title="@(_visible ? "Ocultar" : "Mostrar")"
+			>
+				<span class="material-symbols-outlined" style="font-size:20px;">
+					@(_visible ? "visibility_off" : "visibility")
+				</span>
+			</button>
+		}
+
+	</div>
+
+	@* Mensaje de error *@
+	@if (HasError && !string.IsNullOrEmpty(ErrorText)) {
+		<span class="sfi-error-text">@ErrorText</span>
+	}
+
+</div>
+
+@code {
+	[Parameter] public string  Value        { get; set; } = string.Empty;
+	[Parameter] public EventCallback<string> ValueChanged { get; set; }
+	[Parameter] public string  Label        { get; set; } = string.Empty;
+	[Parameter] public string  Icon         { get; set; } = string.Empty;
+	[Parameter] public string  Type         { get; set; } = "text";
+	[Parameter] public string  Placeholder  { get; set; } = string.Empty;
+	[Parameter] public string  AutoComplete { get; set; } = "off";
+	[Parameter] public bool    ShowToggle   { get; set; } = false;
+	[Parameter] public bool    HasError     { get; set; } = false;
+	[Parameter] public string  ErrorText    { get; set; } = string.Empty;
+	[Parameter] public bool    Disabled     { get; set; } = false;
+
+	private bool   _visible     = false;
+	private string _currentType => ShowToggle 
+		? (_visible ? "text" : "password") 
+		: Type;
+	private bool   HasRightButton => ShowToggle;
+	private string _inputId = Guid.NewGuid().ToString("N")[..8];
+
+	private async Task OnInputChange(ChangeEventArgs e)
+		=> await ValueChanged.InvokeAsync(e.Value?.ToString() ?? string.Empty);
+
+	private void ToggleVisibility() => _visible = !_visible;
+}

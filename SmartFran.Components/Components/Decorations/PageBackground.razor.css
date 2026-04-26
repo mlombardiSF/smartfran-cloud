@@ -1,0 +1,183 @@
+.sf-page-bg {
+	position: relative;
+	min-height: 100vh;
+	width: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+/* ── Capa 1: gradiente deep space ────────────────────────────────────────── */
+/* El original es muy oscuro en el centro, casi negro navy (#0f0035),
+   con púrpura más visible hacia los bordes */
+.sf-page-bg__base {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	/* Gradiente radial desde el centro (muy oscuro) hacia las esquinas (navy) */
+	background:
+		radial-gradient(ellipse 80% 80% at 50% 50%,
+			#0a0020 0%,
+			#150040 40%,
+			#1a0050 70%,
+			#2a0060 100%);
+	pointer-events: none;
+}
+
+/* ── Capa 2 y 3: blobs de luz ────────────────────────────────────────────── */
+.sf-page-bg__blob {
+	position: fixed;
+	border-radius: 9999px;
+	filter: blur(90px);
+	pointer-events: none;
+	z-index: 1;
+}
+
+/* Blob superior derecho — púrpura vibrante, alta opacidad */
+.sf-page-bg__blob--tr {
+	top: -15%;
+	right: -15%;
+	width: 55rem;
+	height: 55rem;
+	opacity: 0.55;
+}
+
+/* Blob inferior izquierdo — púrpura oscuro */
+.sf-page-bg__blob--bl {
+	bottom: -25%;
+	left: -15%;
+	width: 60rem;
+	height: 60rem;
+	opacity: 0.40;
+}
+
+/* Blob inferior derecho — teal/azul sutil (visible en el original) */
+.sf-page-bg__blob--br {
+	bottom: -10%;
+	right: 5%;
+	width: 30rem;
+	height: 30rem;
+	background: #003060;
+	opacity: 0.35;
+	filter: blur(80px);
+}
+
+/* ── Capa 5: patrón de puntos SVG ───────────────────────────────────────── */
+/* Cubre toda la pantalla, sobre el gradiente y los blobs */
+.sf-page-bg__pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+}
+
+.sf-page-bg__pattern svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+/* ── Capa 6: figuras geométricas flotantes ───────────────────────────────── */
+.sf-page-bg__shape {
+	position: fixed;
+	pointer-events: none;
+	z-index: 3;
+}
+
+/* Cuadrado rotado — arriba izquierda */
+.sf-page-bg__shape--sq-tl {
+	top: 4rem;
+	left: 4rem;
+	width: 6rem;
+	height: 6rem;
+	border-radius: 1.25rem;
+	background: #6200a0;
+	opacity: 0.35;
+	transform: rotate(15deg);
+	animation: sf-float-a 9s ease-in-out infinite;
+}
+
+/* Cuadrado rotado — centro derecha */
+.sf-page-bg__shape--sq-cr {
+	top: 38%;
+	right: 5%;
+	width: 4rem;
+	height: 4rem;
+	border-radius: 1rem;
+	background: #ae00ff;
+	opacity: 0.12;
+	transform: rotate(-22deg);
+	animation: sf-float-b 9s ease-in-out infinite;
+}
+
+/* Círculo outline — abajo derecha */
+.sf-page-bg__shape--circle-br {
+	bottom: 6rem;
+	right: 6rem;
+	width: 12rem;
+	height: 12rem;
+	border-radius: 9999px;
+	background: transparent;
+	border: 1.5px solid rgba(174, 0, 255, 0.15);
+	animation: sf-pulse 7s ease-in-out infinite;
+}
+
+/* Círculo sólido — arriba centro */
+.sf-page-bg__shape--circle-tc {
+	top: 10%;
+	left: 36%;
+	width: 3rem;
+	height: 3rem;
+	border-radius: 9999px;
+	background: #40dae3;
+	opacity: 0.07;
+	animation: sf-float-a 12s ease-in-out infinite reverse;
+}
+
+/* ── Contenido sobre todas las capas ─────────────────────────────────────── */
+.sf-page-bg__content {
+	position: relative;
+	z-index: 10;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
+@keyframes sf-float-a {
+
+	0%,
+	100% {
+		transform: rotate(15deg) translateY(0);
+	}
+
+	50% {
+		transform: rotate(15deg) translateY(-14px);
+	}
+}
+
+@keyframes sf-float-b {
+
+	0%,
+	100% {
+		transform: rotate(-22deg) translateY(0);
+	}
+
+	50% {
+		transform: rotate(-22deg) translateY(10px);
+	}
+}
+
+@keyframes sf-pulse {
+
+	0%,
+	100% {
+		transform: scale(1);
+		opacity: 0.6;
+	}
+
+	50% {
+		transform: scale(1.07);
+		opacity: 0.3;
+	}
+}

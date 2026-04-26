@@ -1,0 +1,18 @@
+# Corregir App.razor
+cat > SmartFranCloudApp/App.razor << 'RAZOR'
+<Router AppAssembly="typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="typeof(Layout.MainLayout)">
+            <MudText Typo="Typo.h4">Página no encontrada.</MudText>
+        </LayoutView>
+    </NotFound>
+</Router>
+RAZOR
+
+# Agregar @using Layout al _Imports.razor
+echo "@using SmartFranCloudApp.Layout" >> SmartFranCloudApp/_Imports.razor

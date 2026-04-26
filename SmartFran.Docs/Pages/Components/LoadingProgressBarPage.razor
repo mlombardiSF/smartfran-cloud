@@ -1,0 +1,60 @@
+@page "/components/loadingbar"
+
+<PageTitle>LoadingProgressBar — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">Loading</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">LoadingProgressBar</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">LoadingProgressBar</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Barra de progreso con efecto glow para pantallas de carga. Muestra porcentaje completado y etiqueta de estado.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"loading","progress","bar","glow"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Valores estáticos ────────────────────────────────────────── *@
+<ComponentPreview Title="Valores estáticos"
+    Description="La barra acepta cualquier valor entre 0 y 100. El fill y el texto de porcentaje se actualizan en tiempo real."
+    Code="@StaticCode" DarkBackground="true">
+    <Preview>
+        <div style="display:flex; flex-direction:column; gap:1.5rem; width:100%; max-width:520px;">
+            <div>
+                <p style="color:rgba(232,221,255,.5); font-size:.72rem; font-family:'Manrope',sans-serif; margin:0 0 .5rem;">0%</p>
+                <LoadingProgressBar Percentage="0" />
+            </div>
+            <div>
+                <p style="color:rgba(232,221,255,.5); font-size:.72rem; font-family:'Manrope',sans-serif; margin:0 0 .5rem;">45%</p>
+                <LoadingProgressBar Percentage="45" />
+            </div>
+            <div>
+                <p style="color:rgba(232,221,255,.5); font-size:.72rem; font-family:'Manrope',sans-serif; margin:0 0 .5rem;">100%</p>
+                <LoadingProgressBar Percentage="100" />
+            </div>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Interactivo ──────────────────────────────────────────────── *@
+<ComponentPreview Title="Interactivo"
+    Description="Arrastrá el slider para simular el avance de la barra de carga."
+    Code="@InteractiveCode" DarkBackground="true">
+    <Preview>
+        <div style="width:100%; max-width:520px;">
+            <LoadingProgressBar Percentage="@_pct" />
+            <input type="range" min="0" max="100" value="@_pct"
+                   style="width:100%; margin-top:1rem; accent-color:#ae00ff;"
+                   @oninput="e => _pct = int.Parse(e.Value!.ToString()!)" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

@@ -1,0 +1,39 @@
+@namespace SmartFranCloudApp.Shared.POS.Venta
+@using SmartFranCloudApp.Models
+
+<div class="pcard" @onclick="HandleClick">
+	<div class="pcard__img-wrap">
+		<img 
+			class="pcard__img"
+			src="@Product.ImageUrl"
+			alt="@Product.Name"
+			onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+		<div class="pcard__img-fallback">
+			<span 
+				class="material-symbols-outlined"
+				style="font-variation-settings:'FILL' 1; font-size:2em; color:#d3c0d8;"
+			>
+				image_not_supported
+			</span>
+		</div>
+	</div>
+	<div class="pcard__info">
+		<span class="pcard__cat">@Product.Category</span>
+		<h3 class="pcard__name">@Product.Name</h3>
+		<div class="pcard__footer">
+				<span class="pcard__price">
+						@Product.Price.ToString("C0", new System.Globalization.CultureInfo("es-AR"))
+				</span>
+				<button class="pcard__add-btn" @onclick:stopPropagation @onclick="HandleClick">
+						<span class="material-symbols-outlined">add</span>
+				</button>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter] public Product              Product  { get; set; } = new();
+	[Parameter] public EventCallback<Product> OnAdd { get; set; }
+
+	private async Task HandleClick() => await OnAdd.InvokeAsync(Product);
+}

@@ -1,0 +1,40 @@
+@page "/components/sidenavbar"
+
+<PageTitle>SideNavBar — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">Navegación</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">SideNavBar</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">SideNavBar</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Drawer lateral del POS con grupos colapsables (Ventas, Stock, Fidelización), overlay de cierre y footer con versión, soporte y logout.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"nav","sidebar","drawer","menu","pos"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Abrir / cerrar ───────────────────────────────────────────── *@
+<ComponentPreview Title="Abrir / cerrar"
+    Description="IsOpen controla la visibilidad. OnClose se dispara al presionar el botón X o el overlay."
+    Code="@ToggleCode">
+    <Preview>
+        <div style="position:relative; height:320px; overflow:hidden; border-radius:8px; background:#1a0030;">
+            <SideNavBar IsOpen="@_open" OnClose="EventCallback.Factory.Create(this, () => _open = false)" />
+            <div style="padding:1.5rem;">
+                <SfButton OnClick="EventCallback.Factory.Create(this, () => _open = true)">
+                    Abrir SideNavBar
+                </SfButton>
+            </div>
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

@@ -1,0 +1,80 @@
+.cp-wrap {
+    border: 1px solid var(--mud-palette-divider);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.cp-wrap__header {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--mud-palette-divider);
+    background: var(--mud-palette-background);
+}
+
+.cp-wrap__title {
+    margin: 0 0 0.25rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--mud-palette-text-primary);
+}
+
+.cp-wrap__desc {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.cp-wrap__tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--mud-palette-divider);
+    background: var(--mud-palette-background);
+}
+
+.cp-wrap__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--mud-palette-text-secondary);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.cp-wrap__tab:hover {
+    color: var(--mud-palette-primary);
+}
+
+.cp-wrap__tab--active {
+    color: var(--mud-palette-primary);
+    border-bottom-color: var(--mud-palette-primary);
+}
+
+.cp-wrap__body {
+    background: var(--mud-palette-surface);
+}
+
+.cp-wrap__preview {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+/* Fondo oscuro para componentes glassmorphism */
+.cp-wrap__preview--dark {
+    background: radial-gradient(ellipse 80% 80% at 50% 50%,
+        #0a0020 0%, #150040 40%, #2a0060 100%);
+    min-height: 180px;
+    align-items: center;
+    justify-content: center;
+}

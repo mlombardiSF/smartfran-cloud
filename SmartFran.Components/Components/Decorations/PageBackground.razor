@@ -1,0 +1,63 @@
+@namespace SmartFran.Components.Decorations
+
+<div class="sf-page-bg">
+
+	@* Capa 1: gradiente base deep space *@
+	<div class="sf-page-bg__base"></div>
+
+	@* Capa 2: blob púrpura vibrante — esquina superior derecha *@
+	<div class="sf-page-bg__blob sf-page-bg__blob--tr" style="background: @BlobTopRight;"></div>
+
+	@* Capa 3: blob púrpura oscuro — esquina inferior izquierda *@
+	<div class="sf-page-bg__blob sf-page-bg__blob--bl" style="background: @BlobBottomLeft;"></div>
+
+	@* Capa 4: blob teal sutil — esquina inferior derecha *@
+	<div class="sf-page-bg__blob sf-page-bg__blob--br"></div>
+
+	@* Capa 5: patrón de puntos SVG *@
+	@if (ShowPattern){
+		<div class="sf-page-bg__pattern">
+			@((MarkupString)SvgDotPattern)
+		</div>
+	}
+
+	@* Capa 6: figuras geométricas flotantes *@
+	@if (ShowShapes){
+		<div class="sf-page-bg__shape sf-page-bg__shape--sq-tl"></div>
+		<div class="sf-page-bg__shape sf-page-bg__shape--sq-cr"></div>
+		<div class="sf-page-bg__shape sf-page-bg__shape--circle-br"></div>
+		<div class="sf-page-bg__shape sf-page-bg__shape--circle-tc"></div>
+	}
+
+	@* Contenido de la página *@
+	<div class="sf-page-bg__content">
+		@ChildContent
+	</div>
+
+</div>
+
+@code {
+	[Parameter] public RenderFragment? ChildContent   { get; set; }
+	[Parameter] public bool            ShowPattern    { get; set; } = true;
+	[Parameter] public bool            ShowShapes     { get; set; } = true;
+	[Parameter] public string          BlobTopRight   { get; set; } = "#ae00ff";
+	[Parameter] public string          BlobBottomLeft { get; set; } = "#6200a0";
+
+	private const string SvgDotPattern = @"
+	<svg width=""100%"" height=""100%"" xmlns=""http://www.w3.org/2000/svg"">
+			<defs>
+					<pattern id=""sf-grid"" x=""0"" y=""0"" width=""200"" height=""200""
+										patternUnits=""userSpaceOnUse"">
+							<!-- lineas de la cuadricula -->
+							<path d=""M 200 0 L 0 0 0 200""
+										fill=""none""
+										stroke=""rgba(180,130,255,0.08)""
+										stroke-width=""0.5"" />
+							<!-- sombreado interno sutil por celda -->
+							<rect x=""0"" y=""0"" width=""200"" height=""200""
+										fill=""rgba(100,0,180,0.03)"" />
+					</pattern>
+			</defs>
+			<rect width=""100%"" height=""100%"" fill=""url(#sf-grid)"" />
+	</svg>";
+}

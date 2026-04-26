@@ -1,0 +1,45 @@
+.sf-glass-card {
+	box-sizing: border-box;
+}
+
+/* ── Variantes de opacidad ───────────────────────────────────────────────── */
+.sf-glass-card--subtle {
+	background: rgba(var(--sf-surface-rgb), 0.07);
+	backdrop-filter: blur(24px);
+	-webkit-backdrop-filter: blur(24px);
+	border: 1px solid rgba(255, 255, 255, 0.09);
+	box-shadow: 0 24px 60px rgba(var(--sf-bg-dark-rgb), 0.45);
+}
+
+.sf-glass-card--medium {
+	background: rgba(var(--sf-inverse-surface-rgb), 0.35);
+	backdrop-filter: blur(28px);
+	-webkit-backdrop-filter: blur(28px);
+	border: 1px solid rgba(var(--sf-primary-fixed-dim-rgb), 0.10);
+	box-shadow: 0 16px 40px rgba(var(--sf-bg-dark-rgb), 0.40);
+}
+
+.sf-glass-card--strong {
+	background: rgba(var(--sf-inverse-surface-rgb), 0.60);
+	backdrop-filter: blur(36px);
+	-webkit-backdrop-filter: blur(36px);
+	border: 1px solid rgba(var(--sf-primary-fixed-dim-rgb), 0.14);
+	box-shadow: 0 12px 32px rgba(var(--sf-bg-dark-rgb), 0.50);
+}
+
+/* ── Border radius ───────────────────────────────────────────────────────── */
+.sf-glass-card--rdefault {
+	border-radius: var(--sf-radius);
+}
+
+/* 1rem  */
+.sf-glass-card--rlg {
+	border-radius: var(--sf-radius-lg);
+}
+
+/* 2rem  */
+.sf-glass-card--rxl {
+	border-radius: var(--sf-radius-xl);
+}
+
+/* 3rem  */

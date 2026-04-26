@@ -1,0 +1,45 @@
+@page "/components/shiftmodal"
+
+<PageTitle>ShiftModal — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">POS</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">ShiftModal</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">ShiftModal</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Modal de confirmación para apertura de turno en un mostrador cerrado.
+        Se muestra sobre un overlay que también dispara OnCancel al hacer click fuera.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"pos","modal","shift","confirm","overlay"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Abrir modal ──────────────────────────────────────────────── *@
+<ComponentPreview Title="Confirmar apertura de turno"
+    Description="IsVisible controla la visibilidad. OnCancel y OnConfirm manejan las acciones del usuario."
+    Code="@BasicCode">
+    <Preview>
+        <div style="position:relative; min-height:260px;">
+            <SfButton OnClick="EventCallback.Factory.Create(this, () => _visible = true)">
+                Abrir Modal
+            </SfButton>
+            <ShiftModal IsVisible="@_visible"
+                        CounterName="Mostrador 2"
+                        OnCancel="EventCallback.Factory.Create(this, () => { _visible = false; _result = string.Empty; })"
+                        OnConfirm="EventCallback.Factory.Create(this, HandleConfirmDemo)" />
+            @if (!string.IsNullOrEmpty(_result)) {
+                <MudAlert Severity="Severity.Success" Dense="true" Class="mt-3">@_result</MudAlert>
+            }
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

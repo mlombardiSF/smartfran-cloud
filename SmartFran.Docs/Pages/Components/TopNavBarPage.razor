@@ -1,0 +1,46 @@
+@page "/components/topnavbar"
+
+<PageTitle>TopNavBar — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">Navegación</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">TopNavBar</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">TopNavBar</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Barra de navegación superior con logo SmartFran, nombre de usuario, fecha/hora dinámica y botones de notificaciones, settings y avatar.
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"nav","header","topbar","user","logo"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Por defecto ──────────────────────────────────────────────── *@
+<ComponentPreview Title="Por defecto"
+    Description="La fecha y hora se calculan en OnInitialized con cultura es-AR. El logo muestra el fallback si el asset no existe."
+    Code="@DefaultCode" DarkBackground="true">
+    <Preview>
+        <div style="width:100%; border-radius:8px; overflow:hidden;">
+            <TopNavBar />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Usuario personalizado ────────────────────────────────────── *@
+<ComponentPreview Title="Usuario personalizado"
+    Description="Pasando UserName cambia el nombre visible y la inicial del avatar."
+    Code="@UserCode" DarkBackground="true">
+    <Preview>
+        <div style="width:100%; border-radius:8px; overflow:hidden;">
+            <TopNavBar UserName="Marina Rossi" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />

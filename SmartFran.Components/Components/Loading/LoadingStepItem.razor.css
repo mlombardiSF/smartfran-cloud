@@ -1,0 +1,244 @@
+/* ── Base ────────────────────────────────────────────────────────────────── */
+.lsi {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1em 1.2em;
+	border-radius: 0.9em;
+	border: 1px solid transparent;
+	overflow: hidden;
+	/* entrada desde abajo */
+	animation: lsi-slide-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── Estados ─────────────────────────────────────────────────────────────── */
+.lsi--completed {
+	background: rgba(253, 247, 255, 0.05);
+	backdrop-filter: blur(20px);
+	border-color: rgba(255, 255, 255, 0.05);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.lsi--active {
+	background: rgba(255, 255, 255, 0.10);
+	border-color: rgba(174, 0, 255, 0.20);
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.lsi--pending {
+	background: rgba(253, 247, 255, 0.04);
+	backdrop-filter: blur(20px);
+	border-color: rgba(255, 255, 255, 0.04);
+	opacity: 0.40;
+}
+
+/* ── Shimmer (solo activo) ───────────────────────────────────────────────── */
+.lsi__shimmer {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg,
+			transparent,
+			rgba(174, 0, 255, 0.18),
+			transparent);
+	background-size: 200% 100%;
+	animation: lsi-shimmer 2s infinite linear;
+	opacity: 0.30;
+	pointer-events: none;
+	z-index: 0;
+}
+
+/* ── Izquierda ───────────────────────────────────────────────────────────── */
+.lsi__left {
+	display: flex;
+	align-items: center;
+	gap: 0.9em;
+	position: relative;
+	z-index: 1;
+	flex: 1;
+	min-width: 0;
+}
+
+.lsi__icon-wrap {
+	width: 2em;
+	height: 2em;
+	border-radius: 9999px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.lsi__icon-wrap--done {
+	background: rgba(0, 98, 103, 0.20);
+}
+
+.lsi__icon-wrap--active {
+	background: rgba(138, 0, 203, 0.20);
+	animation: lsi-pulse 1.5s ease-in-out infinite;
+}
+
+.lsi__icon-wrap--pending {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.lsi__icon {
+	font-size: 1em;
+	font-family: 'Material Symbols Outlined';
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.lsi__icon--done {
+	color: #6bf6ff;
+}
+
+.lsi__icon--active {
+	color: #ae00ff;
+}
+
+.lsi__icon--pending {
+	color: rgba(255, 255, 255, 0.30);
+}
+
+.lsi__icon--spin {
+	animation: lsi-spin 1.4s linear infinite;
+}
+
+.lsi__label {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 0.85em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.lsi__label--done {
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.90);
+}
+
+.lsi__label--active {
+	font-weight: 700;
+	color: #ffffff;
+}
+
+.lsi__label--pending {
+	font-weight: 500;
+	color: rgba(255, 255, 255, 0.50);
+}
+
+/* ── Derecha ──────────────────────────────────────────────────────────────── */
+.lsi__right {
+	display: flex;
+	align-items: center;
+	gap: 0.3em;
+	position: relative;
+	z-index: 1;
+	flex-shrink: 0;
+	margin-left: 1em;
+}
+
+/* Badge */
+.lsi__badge {
+	font-family: 'Manrope', sans-serif;
+	font-size: 0.6em;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	padding: 0.3em 0.7em;
+	border-radius: 9999px;
+}
+
+.lsi__badge--done {
+	color: #6bf6ff;
+	background: rgba(0, 98, 103, 0.15);
+}
+
+.lsi__badge--pending {
+	color: rgba(255, 255, 255, 0.35);
+	background: transparent;
+}
+
+/* Bounce dots */
+.lsi__dots {
+	display: flex;
+	gap: 0.25em;
+	align-items: center;
+}
+
+.lsi__dot {
+	width: 0.4em;
+	height: 0.4em;
+	border-radius: 9999px;
+	background: #ae00ff;
+	animation: lsi-bounce 0.9s ease-in-out infinite;
+}
+
+.lsi__dot--1 {
+	animation-delay: 0s;
+}
+
+.lsi__dot--2 {
+	animation-delay: -0.15s;
+}
+
+.lsi__dot--3 {
+	animation-delay: -0.30s;
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
+@keyframes lsi-slide-up {
+	from {
+		opacity: 0;
+		transform: translateY(28px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes lsi-shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+@keyframes lsi-spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes lsi-pulse {
+
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.5;
+	}
+}
+
+@keyframes lsi-bounce {
+
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+
+	50% {
+		transform: translateY(-0.35em);
+	}
+}

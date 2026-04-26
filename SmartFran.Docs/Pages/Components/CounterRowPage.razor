@@ -1,0 +1,64 @@
+@page "/components/counterrow"
+
+<PageTitle>CounterRow — SmartFran Docs</PageTitle>
+
+<div class="comp-page__header">
+    <div class="comp-page__breadcrumb">
+        <MudLink Href="/" Typo="Typo.caption">Inicio</MudLink>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption">POS</MudText>
+        <span class="comp-page__sep">/</span>
+        <MudText Typo="Typo.caption" Color="Color.Primary">CounterRow</MudText>
+    </div>
+    <MudText Typo="Typo.h4" Class="comp-page__title">CounterRow</MudText>
+    <MudText Typo="Typo.body1" Class="comp-page__subtitle">
+        Fila de mostrador (terminal) para la pantalla de selección de turno.
+        Muestra estado abierto con hora desde o cerrado con badge "Abrir Turno".
+    </MudText>
+    <div class="comp-page__tags">
+        @foreach (var tag in new[]{"pos","counter","row","shift","terminal"}) {
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">@tag</MudChip>
+        }
+    </div>
+</div>
+
+@* ── Demo 1: Estados ──────────────────────────────────────────────────── *@
+<ComponentPreview Title="Abierto / cerrado / seleccionado"
+    Description="Open controla el estado visual. IsSelected agrega el borde activo. OnClick emite el objeto Terminal."
+    Code="@StatesCode">
+    <Preview>
+        <div style="display:flex; flex-direction:column; gap:.75rem; width:100%; max-width:480px;">
+            <CounterRow Terminal="@TerminalOpen"   IsSelected="false" />
+            <CounterRow Terminal="@TerminalOpen"   IsSelected="true"  />
+            <CounterRow Terminal="@TerminalClosed" IsSelected="false" />
+        </div>
+    </Preview>
+</ComponentPreview>
+
+@* ── Demo 2: Lista seleccionable ──────────────────────────────────────── *@
+<ComponentPreview Title="Lista seleccionable"
+    Description="Al hacer click en una fila se emite el Terminal. La franquicia puede tener varios mostradores."
+    Code="@SelectableCode">
+    <Preview>
+        <div style="display:flex; flex-direction:column; gap:.75rem; width:100%; max-width:480px;">
+            @foreach (var t in SampleTerminals) {
+                var term = t;
+                <CounterRow Terminal="@term"
+                             IsSelected="@(_selectedId == term.Id)"
+                             OnClick="EventCallback.Factory.Create<SmartFran.Components.Models.Terminal>(this, t2 => _selectedId = t2.Id)" />
+            }
+        </div>
+        @if (!string.IsNullOrEmpty(_selectedId)) {
+            <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">
+                Mostrador seleccionado: @_selectedId
+            </MudAlert>
+        }
+    </Preview>
+</ComponentPreview>
+
+<PropsTable Props="@Props" />
+
+<div class="comp-page__model-box">
+    <MudText Typo="Typo.subtitle2" Class="mb-2" Style="font-weight:700;">Modelo: Terminal</MudText>
+    <CodeBlock Code="@TerminalModelCode" />
+</div>
