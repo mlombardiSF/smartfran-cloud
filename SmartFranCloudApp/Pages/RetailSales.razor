@@ -122,21 +122,21 @@
 	};
 
 	private List<Product> _allProducts = new() {
-		new() { Id="p1", Name="Mini Gigante", Category="Helados", Price=1400, ImageUrl="/assets/images/mini-gigante.png", IsFavorite=true  },
-		new() { Id="p2", Name="Gigante 2 Bochas", Category="Helados", Price=2000, ImageUrl="/assets/images/2-bochas.jpg", IsFavorite=true  },
-		new() { Id="p3", Name="Bombón Escocés x unidad", Category="Bombones", Price=1800, ImageUrl="/assets/images/bombon-escoces.png",        IsFavorite=false },
-		new() { Id="p4", Name="1 Kilo", Category="Helados", Price=8500, ImageUrl="/assets/images/1-kilo.png", IsFavorite=true  },
-		new() { Id="p5", Name="Palito Bombón x unidad", Category="Palitos", Price=900, ImageUrl="/assets/images/palito-bombon.jpg", IsFavorite=true  },
-		new() { Id="p6", Name="Bombón Escocés en caja x8", Category="Bombones", Price=12500, ImageUrl="/assets/images/caja-bombon-escoces.png", IsFavorite=false },
-		new() { Id="p7", Name="Torta Cookie and Cream", Category="Tortas", Price=14000, ImageUrl="/assets/images/torta-cookie-and-cream.png", IsFavorite=false },
-		new() { Id="p8", Name="Palito Frutal x unidad", Category="Palitos", Price=700, ImageUrl="/assets/images/palito-frutal-frutilla.jpg", IsFavorite=false },
-		new() { Id="p9", Name="Palito Cremoso Frutilla x unidad", Category="Palitos", Price=1600, ImageUrl="/assets/images/palito-cremoso-frutilla.jpg", IsFavorite=false },
-		new() { Id="p10", Name="Almendrado en Caja x 8 Un.", Category="Postres", Price=9500, ImageUrl="/assets/images/almendrado-x-caja.png", IsFavorite=true },
-		new() { Id="p11", Name="Almendrado x unidad", Category="Postres", Price=1600, ImageUrl="/assets/images/almendrado-x-unidad.jpg", IsFavorite=false },
-		new() { Id="p12", Name="Crocantino", Category="Postres", Price=9500, ImageUrl="/assets/images/crocantino.png", IsFavorite=false },
-		new() { Id="p13", Name="Casatta en Caja x 8 Un.", Category="Postres", Price=9500, ImageUrl="/assets/images/casatta-x-caja.png", IsFavorite=false },
-		new() { Id="p14", Name="Casatta x unidad", Category="Postres", Price=1600, ImageUrl="/assets/images/casatta-x-caja.png", IsFavorite=false },
-		new() { Id="p15", Name="Barra Delicia Chocolate y Maní", Category="Postres", Price=9500, ImageUrl="/assets/images/barra-delicia.png", IsFavorite=true },
+		new() { Id="p1", Name="Mini Gigante", Category="Helados", Price=1400, ImageUrl="assets/images/mini-gigante.png", IsFavorite=true  },
+		new() { Id="p2", Name="Gigante 2 Bochas", Category="Helados", Price=2000, ImageUrl="assets/images/2-bochas.jpg", IsFavorite=true  },
+		new() { Id="p3", Name="Bombón Escocés x unidad", Category="Bombones", Price=1800, ImageUrl="assets/images/bombon-escoces.png",        IsFavorite=false },
+		new() { Id="p4", Name="1 Kilo", Category="Helados", Price=8500, ImageUrl="assets/images/1-kilo.png", IsFavorite=true  },
+		new() { Id="p5", Name="Palito Bombón x unidad", Category="Palitos", Price=900, ImageUrl="assets/images/palito-bombon.jpg", IsFavorite=true  },
+		new() { Id="p6", Name="Bombón Escocés en caja x8", Category="Bombones", Price=12500, ImageUrl="assets/images/caja-bombon-escoces.png", IsFavorite=false },
+		new() { Id="p7", Name="Torta Cookie and Cream", Category="Tortas", Price=14000, ImageUrl="assets/images/torta-cookie-and-cream.png", IsFavorite=false },
+		new() { Id="p8", Name="Palito Frutal x unidad", Category="Palitos", Price=700, ImageUrl="assets/images/palito-frutal-frutilla.jpg", IsFavorite=false },
+		new() { Id="p9", Name="Palito Cremoso Frutilla x unidad", Category="Palitos", Price=1600, ImageUrl="assets/images/palito-cremoso-frutilla.jpg", IsFavorite=false },
+		new() { Id="p10", Name="Almendrado en Caja x 8 Un.", Category="Postres", Price=9500, ImageUrl="assets/images/almendrado-x-caja.png", IsFavorite=true },
+		new() { Id="p11", Name="Almendrado x unidad", Category="Postres", Price=1600, ImageUrl="assets/images/almendrado-x-unidad.jpg", IsFavorite=false },
+		new() { Id="p12", Name="Crocantino", Category="Postres", Price=9500, ImageUrl="assets/images/crocantino.png", IsFavorite=false },
+		new() { Id="p13", Name="Casatta en Caja x 8 Un.", Category="Postres", Price=9500, ImageUrl="assets/images/casatta-x-caja.png", IsFavorite=false },
+		new() { Id="p14", Name="Casatta x unidad", Category="Postres", Price=1600, ImageUrl="assets/images/casatta-x-caja.png", IsFavorite=false },
+		new() { Id="p15", Name="Barra Delicia Chocolate y Maní", Category="Postres", Price=9500, ImageUrl="assets/images/barra-delicia.png", IsFavorite=true },
 	};
 
 	private List<Product> _filteredProducts => _categoryActive switch
