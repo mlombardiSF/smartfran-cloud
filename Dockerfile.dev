@@ -2,11 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 WORKDIR /app
 
-# Instalar dotnet-watch (ya incluido en el SDK)
-# Exponer puertos de desarrollo
 EXPOSE 5000
 EXPOSE 5001
 
-# Comando para desarrollo con hot reload
-CMD ["dotnet", "watch", "run", "--project", "SmartFranCloudApp/SmartFranCloudApp.csproj", \
-     "--urls", "http://0.0.0.0:5000"]
+# Entrypoint: parchea base href en el source montado al iniciar y lo restaura al salir
+COPY scripts/docker-entrypoint-dev.sh /app/entrypoint-dev.sh
+RUN chmod +x /app/entrypoint-dev.sh
+
+CMD ["/app/entrypoint-dev.sh"]

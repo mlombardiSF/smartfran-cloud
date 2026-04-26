@@ -14,6 +14,9 @@ RUN dotnet publish "SmartFranCloudApp/SmartFranCloudApp.csproj" \
     -o /app/publish \
     --nologo
 
+# Patch base href: /smartfran-cloud/ → / (GitHub Pages usa el source; Docker sirve desde raíz)
+RUN sed -i 's|<base href="/smartfran-cloud/"|<base href="/"|g' /app/publish/wwwroot/index.html
+
 # ── Stage 2: Serve con Nginx ─────────────────────────────────────────────────
 FROM nginx:alpine AS final
 WORKDIR /usr/share/nginx/html

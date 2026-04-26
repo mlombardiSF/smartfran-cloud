@@ -23,9 +23,16 @@
   z-index: 1;
 }
 
-.ci-corner-deco .material-symbols-outlined {
-  font-size: 7em;
-  color: #ffffff;
+.ci-corner-deco__img {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: auto;
+  padding: 1em;
+  pointer-events: none;
+  z-index: 1;
+  filter: contrast(1.25);
 }
 
 /* ── Main ────────────────────────────────────────────────────────────────── */
