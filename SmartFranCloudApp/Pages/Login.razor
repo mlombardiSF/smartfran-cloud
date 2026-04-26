@@ -158,7 +158,7 @@
 			if (_validUsers.Any(u => u.Email.Equals(_email, StringComparison.OrdinalIgnoreCase) && u.Password == _password)) {
 				_globalError = "✓ Login exitoso — redirigiendo...";
 				/* redirect */
-				NavigationManager.NavigateTo("/selection-franchise", replace: true, forceLoad: true);
+				NavigationManager.NavigateTo("selection-franchise", replace: true);
 			} else {
 				_globalError = "Credenciales incorrectas. Verificá tu correo y contraseña.";
 			}
