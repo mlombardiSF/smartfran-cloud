@@ -43,6 +43,8 @@ services:
     volumes:
       # Monta el código fuente para hot reload
       - ./SmartFranCloudApp:/app/SmartFranCloudApp
+      # Override index.html con versión local (base href = /)
+      - ./SmartFranCloudApp/wwwroot/index.local.html:/app/SmartFranCloudApp/wwwroot/index.html:ro
       # Cache de NuGet para evitar descargas repetidas
       - nuget-cache:/root/.nuget/packages
     environment:
