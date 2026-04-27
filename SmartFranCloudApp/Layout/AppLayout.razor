@@ -6,13 +6,14 @@
 @using SmartFranCloudApp.Themes
 @using SmartFranCloudApp.Shared.Nav
 @using SmartFranCloudApp.Shared.POS
+@inject UserService UserSvc
 
 <MudThemeProvider Theme="_theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <div class="app-layout">
-  <TopNavBar UserName="Matias Lombardi" />
+  <TopNavBar UserName="@UserSvc.CurrentUser.FullName" AvatarUrl="@UserSvc.CurrentUser.AvatarPath" />
 
   <main class="app-layout__main">
     @Body

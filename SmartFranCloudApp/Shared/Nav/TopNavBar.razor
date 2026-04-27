@@ -28,9 +28,9 @@
 
 		<div class="topnav__avatar-wrap">
 			<div class="topnav__avatar">
-				<img 
-					src="assets/images/perfil-user.png"
-					alt="Avatar"
+				<img
+					src="@AvatarUrl"
+					alt="@UserName"
 					onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 				/>
 				<span class="topnav__avatar-fallback">
@@ -42,7 +42,8 @@
 </nav>
 
 @code {
-	[Parameter] public string UserName { get; set; } = "Usuario";
+	[Parameter] public string UserName  { get; set; } = "Usuario";
+	[Parameter] public string AvatarUrl { get; set; } = "assets/images/perfil-user.png";
 
 	private string _datetime = string.Empty;
 

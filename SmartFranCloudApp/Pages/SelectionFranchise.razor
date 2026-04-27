@@ -6,6 +6,7 @@
 @using SmartFranCloudApp.Shared.POS
 @inject NavigationManager Nav
 @inject ToastService ToastSvc
+@inject UserService UserSvc
 
 <PageTitle>SFC | Selección de Franquicia</PageTitle>
 
@@ -15,7 +16,7 @@
     @* ── Welcome Header ───────────────────────────────────────────── *@
     <div class="sf-welcome">
       <h2 class="sf-welcome__title">
-        Bienvenido de nuevo,<strong class="sf-welcome__name"> Matias</strong>
+        Bienvenido de nuevo,<strong class="sf-welcome__name"> @UserSvc.CurrentUser.FirstName</strong>
       </h2>
       <p class="sf-welcome__subtitle">
         Seleccioná una franquicia para iniciar tu sesión de trabajo.

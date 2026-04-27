@@ -121,8 +121,8 @@
 </PageBackground>
 
 @code {
-    [Inject]
-    private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private UserService        UserSvc          { get; set; } = default!;
 
     private string _email       = string.Empty;
     private string _password    = string.Empty;
@@ -130,39 +130,25 @@
     private bool   _isLoading   = false;
     private string _globalError = string.Empty;
     private Dictionary<string, string> _fieldErrors = new();
-		public record UserCredential(string Email, string Password);
 
-		private readonly List<UserCredential> _validUsers = new()
+    private async Task HandleLogin()
     {
-        new UserCredential("admin@smartfran.com", "1234"),
-        new UserCredential("soporte@smartfran.com", "1234"),
-        new UserCredential("matiasl@smartfran.com", "1234"),
-    };
+        _globalError = string.Empty;
+        _fieldErrors = new();
 
-    private async Task HandleLogin(){
-			_globalError = string.Empty;
-			_fieldErrors = new();
+        if (string.IsNullOrWhiteSpace(_email))
+            _fieldErrors["email"] = "El correo es obligatorio.";
+        if (string.IsNullOrWhiteSpace(_password))
+            _fieldErrors["password"] = "La contraseña es obligatoria.";
 
-			if (string.IsNullOrWhiteSpace(_email))
-				_fieldErrors["email"] = "El correo es obligatorio.";
-			if (string.IsNullOrWhiteSpace(_password))
-				_fieldErrors["password"] = "La contraseña es obligatoria.";
+        if (_fieldErrors.Count > 0) return;
 
-			if (_fieldErrors.Count > 0) return;
+        _isLoading = true;
+        StateHasChanged();
 
-			_isLoading = true;
-			StateHasChanged();
+        await Task.Delay(1200);
 
-			await Task.Delay(1200);
-
-			if (_validUsers.Any(u => u.Email.Equals(_email, StringComparison.OrdinalIgnoreCase) && u.Password == _password)) {
-				_globalError = "✓ Login exitoso — redirigiendo...";
-				/* redirect */
-				NavigationManager.NavigateTo("selection-franchise", replace: true);
-			} else {
-				_globalError = "Credenciales incorrectas. Verificá tu correo y contraseña.";
-			}
-
-			_isLoading = false;
+        UserSvc.Login(_email, _password);
+        NavigationManager.NavigateTo("selection-franchise", replace: true);
     }
 }

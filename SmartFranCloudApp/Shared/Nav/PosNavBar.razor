@@ -120,8 +120,9 @@
 		@* Avatar *@
 		<div class="pos-nav__avatar-wrap">
 			<div class="pos-nav__avatar">
-				<img 
-					src="assets/images/perfil-user.png" alt="Avatar"
+				<img
+					src="@AvatarUrl"
+					alt="@UserName"
 					onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 				/>
 				<span class="pos-nav__avatar-fallback">@UserName.FirstOrDefault()</span>
@@ -133,6 +134,7 @@
 
 @code {
 	[Parameter] public string              UserName        { get; set; } = "Usuario";
+	[Parameter] public string              AvatarUrl       { get; set; } = "assets/images/perfil-user.png";
 	[Parameter] public string              Terminal        { get; set; } = "001";
 	[Parameter] public string              Shift           { get; set; } = "0001";
 	[Parameter] public List<Product> 			 Products 			 { get; set; } = new();
