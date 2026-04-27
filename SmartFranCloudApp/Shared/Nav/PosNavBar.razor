@@ -31,7 +31,7 @@
 				<span class="material-symbols-outlined pos-nav__search-icon">search</span>
 			}
 
-			<input 
+			<input
 				class="pos-nav__search-input"
 				placeholder="Buscar producto..."
 				type="text"
@@ -39,7 +39,8 @@
 				value="@_query"
 				@oninput="OnSearchInput"
 				@onfocus="OnSearchFocus"
-				@onblur="OnSearchBlur" />
+				@onblur="OnSearchBlur"
+				@onkeydown="OnSearchKeyDown" />
 
 			@if (!string.IsNullOrEmpty(_query)) {
 				<button class="pos-nav__search-clear" @onclick="ClearSearch" @onclick:stopPropagation>
@@ -60,10 +61,17 @@
 							<span>Buscando...</span>
 						</div>
 					} else if (_results.Any()) {
-						@foreach (var p in _results) {
-							var prod = p;
+						<div class="pos-nav__drop-header">
+							<span>@_results.Count resultado@(_results.Count != 1 ? "s" : "")</span>
+							<span>↑↓ navegar · Enter agregar</span>
+						</div>
+						@for (int i = 0; i < _results.Count; i++) {
+							var prod = _results[i];
+							var idx  = i;
 
-							<div class="pos-nav__drop-item" @onmousedown="() => SelectProduct(prod)">
+							<div class="pos-nav__drop-item @(idx == _highlightedIdx ? "pos-nav__drop-item--highlighted" : "")"
+								@onmousedown="() => SelectProduct(prod)"
+								@onmouseenter="() => _highlightedIdx = idx">
 								<div class="pos-nav__drop-img">
 									<img
 										src="@prod.ImageUrl"
@@ -73,7 +81,7 @@
 								</div>
 								<div class="pos-nav__drop-info">
 									<span class="pos-nav__drop-cat">@prod.Category</span>
-									<span class="pos-nav__drop-name">@prod.Name</span>
+									<span class="pos-nav__drop-name">@((MarkupString)HighlightText(prod.Name, _query))</span>
 								</div>
 								<span class="pos-nav__drop-price">
 									@prod.Price.ToString("C0", new System.Globalization.CultureInfo("es-AR"))
@@ -144,9 +152,10 @@
 
 	private bool     _searching       = false;
 	private bool     _dropdownVisible = false;
-	private string   _query						= string.Empty;
+	private string   _query           = string.Empty;
 	private string   _datetime        = string.Empty;
-	private string 	 _dropdownStyle  	= string.Empty;
+	private string   _dropdownStyle   = string.Empty;
+	private int      _highlightedIdx  = -1;
 	private List<Product> _results = new();
 	private System.Timers.Timer? _debounce;
 	private ElementReference _searchWrapRef;
@@ -180,10 +189,12 @@
 			await InvokeAsync(() =>	{
 				_results = Products
 					.Where(p => p.Name.Contains(_query, StringComparison.OrdinalIgnoreCase)
-						|| p.Category.Contains(_query, StringComparison.OrdinalIgnoreCase))
+						|| p.Category.Contains(_query, StringComparison.OrdinalIgnoreCase)
+						|| p.Tags.Any(t => t.Contains(_query, StringComparison.OrdinalIgnoreCase)))
 					.Take(8)
 					.ToList();
-				_searching = false;
+				_searching       = false;
+				_highlightedIdx  = -1;
 				StateHasChanged();
 			});
 		};
@@ -207,9 +218,41 @@
 
 	private void ClearSearch()	{
 		_results.Clear();
-		_query = string.Empty;
+		_query           = string.Empty;
 		_dropdownVisible = false;
-		_searching = false;
+		_searching       = false;
+		_highlightedIdx  = -1;
+	}
+
+	private async Task OnSearchKeyDown(KeyboardEventArgs e)
+	{
+		switch (e.Key)
+		{
+			case "Escape":
+				ClearSearch();
+				break;
+			case "ArrowDown" when _dropdownVisible && _results.Count > 0:
+				_highlightedIdx = Math.Min(_highlightedIdx + 1, _results.Count - 1);
+				break;
+			case "ArrowUp" when _dropdownVisible && _results.Count > 0:
+				_highlightedIdx = Math.Max(_highlightedIdx - 1, 0);
+				break;
+			case "Enter" when _dropdownVisible && _results.Count > 0:
+				var idx = _highlightedIdx >= 0 ? _highlightedIdx : (_results.Count == 1 ? 0 : -1);
+				if (idx >= 0) await SelectProduct(_results[idx]);
+				break;
+		}
+	}
+
+	private static string HighlightText(string text, string query)
+	{
+		if (string.IsNullOrEmpty(query)) return System.Net.WebUtility.HtmlEncode(text);
+		var pos = text.IndexOf(query, StringComparison.OrdinalIgnoreCase);
+		if (pos < 0) return System.Net.WebUtility.HtmlEncode(text);
+		var before = System.Net.WebUtility.HtmlEncode(text[..pos]);
+		var match  = System.Net.WebUtility.HtmlEncode(text.Substring(pos, query.Length));
+		var after  = System.Net.WebUtility.HtmlEncode(text[(pos + query.Length)..]);
+		return $"{before}<mark class=\"pos-nav__drop-highlight\">{match}</mark>{after}";
 	}
 
 	private async Task SelectProduct(Product p) {

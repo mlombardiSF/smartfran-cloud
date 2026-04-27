@@ -1,0 +1,442 @@
+@namespace SmartFranCloudApp.Shared.POS.Venta
+@using SmartFranCloudApp.Models
+
+<div class="kb-overlay @(IsOpen ? "kb-overlay--open" : "")" @onclick="OnClose">
+<div class="kb-modal" @onclick:stopPropagation>
+
+	@* ── Header glass ──────────────────────────────────────────────────────── *@
+	<header class="kb-header">
+		<div class="kb-header__left">
+
+			<div class="kb-header__brand">
+				<div class="kb-header__icon-wrap">
+					<span class="material-symbols-outlined kb-header__kanban-icon">view_kanban</span>
+				</div>
+				<div>
+					<img src="assets/svgs/Smartfran-Cloud-logo-light.svg" alt="SmartFran Cloud" class="kb-header__logo"
+						onerror="this.style.display='none';" />
+					<p class="kb-header__subtitle">Gestión en tiempo real</p>
+				</div>
+			</div>
+
+			<div class="kb-header__divider"></div>
+
+			<div class="kb-header__stats">
+				<div class="kb-stat">
+					<span class="kb-stat__dot kb-stat__dot--nuevo"></span>
+					<span class="kb-stat__label">@_orders.Count(o => o.Status == KanbanOrderStatus.Nuevo) nuevos</span>
+				</div>
+				<div class="kb-stat">
+					<span class="kb-stat__dot kb-stat__dot--prep"></span>
+					<span class="kb-stat__label">@_orders.Count(o => o.Status == KanbanOrderStatus.Preparacion) en prep.</span>
+				</div>
+				<div class="kb-stat">
+					<span class="kb-stat__dot kb-stat__dot--listo"></span>
+					<span class="kb-stat__label">@_orders.Count(o => o.Status == KanbanOrderStatus.Listo) listos</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="kb-header__right">
+			<span class="kb-header__datetime">@_datetime</span>
+			<button class="kb-header__close" @onclick="OnClose">
+				<span class="material-symbols-outlined">close</span>
+			</button>
+		</div>
+	</header>
+
+	@* ── Body: board + panel detalle ────────────────────────────────────────── *@
+	<div class="kb-body">
+
+		@* ── Board ─────────────────────────────────────────────────────────── *@
+		<div class="kb-board">
+
+			@foreach (var status in _statusOrder) {
+				var cfg       = GetColConfig(status);
+				var colOrders = _orders.Where(o => o.Status == status).ToList();
+
+				<div class="kb-col">
+					<div class="kb-col-wrap @cfg.BgClass">
+
+						@* Columna header *@
+						<div class="kb-col-head">
+							<span class="material-symbols-outlined kb-col-icon" style="color:@cfg.IconColor;">@cfg.Icon</span>
+							<h2 class="kb-col-title @(status == KanbanOrderStatus.Finalizado ? "kb-col-title--muted" : "")">@cfg.Label</h2>
+							<span class="kb-badge @cfg.BadgeClass">@colOrders.Count</span>
+						</div>
+
+						@* Drop zone *@
+						<div class="kb-col-body @(_dragOverCol == status && _draggingKey != null ? "kb-col-body--over" : "")"
+							@ondragover:preventDefault
+							@ondragenter="() => _dragOverCol = status"
+							@ondragleave="() => { if (_dragOverCol == status) _dragOverCol = null; }"
+							@ondrop="() => HandleDrop(status)">
+
+							@foreach (var order in colOrders) {
+								<div class="kb-card @(order.Key == _draggingKey ? "kb-card--drag" : "") @(order.Key == _detailKey ? "kb-card--active" : "") @(status == KanbanOrderStatus.Finalizado ? "kb-card--done" : "")"
+									draggable="true"
+									@ondragstart="() => _draggingKey = order.Key"
+									@ondragend="() => { _draggingKey = null; _dragOverCol = null; }"
+									@onclick="() => ShowDetail(order.Key)"
+									@onclick:stopPropagation>
+
+									@* Platform *@
+									<div class="kb-card__platform">
+										<img src="@GetPlatformLogo(order.Platform)"
+											alt="@order.Platform"
+											class="kb-card__plat-logo"
+											onerror="this.style.display='none';" />
+										<span class="kb-tag @GetPlatformClass(order.Platform)">@order.Platform</span>
+									</div>
+
+									@* ID + Timer *@
+									<div class="kb-card__row">
+										<h3 class="kb-card__id">@order.Id</h3>
+										@if (status == KanbanOrderStatus.Listo) {
+											<span class="kb-badge-ready">Ready</span>
+										} else if (order.TimerLabel != null) {
+											<div class="kb-timer @(order.TimerPulse ? "kb-timer--pulse" : "")">
+												<span class="material-symbols-outlined kb-timer__icon">@(order.TimerPulse ? "timer" : "schedule")</span>
+												@order.TimerLabel
+											</div>
+										}
+									</div>
+
+									@* Items *@
+									<p class="kb-card__items">
+										@((MarkupString)string.Join("<br>", order.Items.Select(i => $"{i.Qty}× {i.Name}")))
+									</p>
+
+									@* Acción *@
+									@if (status != KanbanOrderStatus.Finalizado) {
+										var btn = GetCardBtn(status);
+										<button class="kb-card__btn @btn.Css"
+											@onclick:stopPropagation
+											@onclick="() => AdvanceStatus(order.Key)">
+											@btn.Label
+										</button>
+									}
+
+								</div>
+							}
+
+						</div>@* /drop zone *@
+					</div>
+				</div>
+			}
+
+		</div>@* /kb-board *@
+
+		@* ── Panel detalle ─────────────────────────────────────────────────── *@
+		<div class="kb-detail @(_detailKey != null ? "kb-detail--open" : "")">
+		@{
+			var det = _detailKey != null ? _orders.FirstOrDefault(x => x.Key == _detailKey) : null;
+		}
+		@if (det != null) {
+			<div class="kb-det-inner">
+
+				@* Header del detalle *@
+				<div class="kb-det-head">
+					<div class="kb-det-head__meta">
+						<div class="kb-det-head__tags">
+							<span class="kb-tag @GetPlatformClass(det.Platform)">@det.Platform</span>
+							<span class="kb-det-head__label">Detalle de Pedido</span>
+							@if (det.TimerLabel != null) {
+								<div class="kb-timer @(det.TimerPulse ? "kb-timer--pulse" : "")">
+									<span class="material-symbols-outlined kb-timer__icon">@(det.TimerPulse ? "timer" : "schedule")</span>
+									@det.TimerLabel
+								</div>
+							}
+						</div>
+						<h1 class="kb-det-head__id">@det.Id</h1>
+					</div>
+					<button class="kb-det-head__close" @onclick="CloseDetail">
+						<span class="material-symbols-outlined">close</span>
+					</button>
+				</div>
+
+				@* Cliente *@
+				<div class="kb-det-client-wrap">
+					<div class="kb-det-client">
+						<div class="kb-det-client__avatar">
+							<span class="material-symbols-outlined">person</span>
+						</div>
+						<div class="kb-det-client__info">
+							<p class="kb-det-client__name">@det.ClientName</p>
+							<p class="kb-det-client__phone">@det.ClientPhone</p>
+						</div>
+						<button class="kb-det-client__call">
+							<span class="material-symbols-outlined">call</span>
+						</button>
+					</div>
+				</div>
+
+				@* Cuerpo scrollable *@
+				<div class="kb-det-body">
+
+					@* Logística *@
+					<section class="kb-det-section">
+						<p class="kb-det-sec-title">Logística de Entrega</p>
+						<div class="kb-det-logistics">
+							<div class="kb-det-logistics__card">
+								<span class="material-symbols-outlined kb-det-logistics__icon" style="color:#8a00cb;">@det.DeliveryIcon</span>
+								<p class="kb-det-logistics__label">Tipo</p>
+								<p class="kb-det-logistics__value">@det.DeliveryType</p>
+							</div>
+							<div class="kb-det-logistics__card">
+								<span class="material-symbols-outlined kb-det-logistics__icon" style="color:#63568c;">location_on</span>
+								<p class="kb-det-logistics__label">Dirección</p>
+								<p class="kb-det-logistics__value">@det.Address</p>
+							</div>
+						</div>
+						@if (det.Note != null) {
+							<div class="kb-det-note">
+								<span class="material-symbols-outlined kb-det-note__icon">info</span>
+								<div>
+									<p class="kb-det-note__title">Nota de entrega</p>
+									<p class="kb-det-note__text">"@det.Note"</p>
+								</div>
+							</div>
+						}
+					</section>
+
+					@* Items del pedido *@
+					<section class="kb-det-section">
+						<div class="kb-det-sec-head">
+							<p class="kb-det-sec-title">Resumen del Pedido</p>
+							<span class="kb-badge kb-badge--neutral">@det.Items.Sum(i => i.Qty) items</span>
+						</div>
+						<div class="kb-det-items">
+							@for (int idx = 0; idx < det.Items.Count; idx++) {
+								var item = det.Items[idx];
+								<div class="kb-det-item @(idx % 2 == 0 ? "kb-det-item--alt" : "")">
+									<span class="kb-det-item__qty">@item.Qty</span>
+									<span class="kb-det-item__name">@item.Name</span>
+									<span class="kb-det-item__total">@Fmt(item.Price * item.Qty)</span>
+								</div>
+							}
+						</div>
+					</section>
+
+					@* Totales *@
+					<section class="kb-det-totals">
+						<div class="kb-det-totals__inner">
+							<div class="kb-det-totals__row">
+								<span>Subtotal</span><span>@Fmt(det.Subtotal)</span>
+							</div>
+							@if (det.Discount > 0) {
+								<div class="kb-det-totals__row kb-det-totals__row--disc">
+									<span>Descuentos</span><span>-@Fmt(det.Discount)</span>
+								</div>
+							}
+							<div class="kb-det-totals__row">
+								<span>Envío</span><span>@(det.Shipping > 0 ? Fmt(det.Shipping) : "$0")</span>
+							</div>
+							<div class="kb-det-totals__total">
+								<span>Total</span>
+								<span class="kb-det-totals__amount">@Fmt(det.Total)</span>
+							</div>
+						</div>
+					</section>
+
+					@* Acciones del detalle *@
+					<div class="kb-det-actions">
+						<button class="kb-det-actions__print">Imprimir</button>
+						@if (det.Status != KanbanOrderStatus.Finalizado) {
+							var dbtn = GetDetailBtn(det.Status);
+							<button class="kb-det-actions__main @dbtn.Css"
+								@onclick="() => AdvanceStatus(det.Key)">
+								<span class="material-symbols-outlined">@dbtn.Icon</span>
+								@dbtn.Label
+							</button>
+						} else {
+							<div class="kb-det-actions__done">
+								<span class="material-symbols-outlined">task_alt</span>
+								Entregado
+							</div>
+						}
+					</div>
+
+				</div>@* /kb-det-body *@
+			</div>@* /kb-det-inner *@
+		}
+		</div>@* /kb-detail *@
+
+	</div>@* /kb-body *@
+</div>@* /kb-modal *@
+</div>@* /kb-overlay *@
+
+@code {
+	[Parameter] public bool         IsOpen  { get; set; }
+	[Parameter] public EventCallback OnClose { get; set; }
+
+	private string?            _detailKey   = "rp4921";
+	private string?            _draggingKey = null;
+	private KanbanOrderStatus? _dragOverCol = null;
+	private string             _datetime    = string.Empty;
+
+	private static readonly System.Globalization.CultureInfo _arCulture = new("es-AR");
+	private static string Fmt(decimal n) => "$" + Math.Round(n).ToString("N0", _arCulture);
+
+	private static readonly KanbanOrderStatus[] _statusOrder = [
+		KanbanOrderStatus.Nuevo,
+		KanbanOrderStatus.Preparacion,
+		KanbanOrderStatus.Listo,
+		KanbanOrderStatus.Finalizado,
+	];
+
+	// ── Datos demo ─────────────────────────────────────────────────────────
+	private readonly List<KanbanOrder> _orders = [
+		new() {
+			Key="rp9420", Id="#RP-9420", Platform="Rappi", Status=KanbanOrderStatus.Nuevo,
+			ClientName="Carlos Tévez", ClientPhone="+54 11 3344-5566",
+			TimerLabel="2 min", TimerPulse=false,
+			DeliveryType="Delivery externo", DeliveryIcon="delivery_dining",
+			Address="Bv. Chacabuco 2150, Córdoba",
+			Note="Sabores: chocolate, frutilla, vainilla.",
+			Items=[
+				new() { Qty=1, Name="1 Kilo",                         Price=8500  },
+				new() { Qty=1, Name="Bombón Escocés en caja x 8 Un.", Price=12500 },
+			],
+			Discount=0, Shipping=850,
+		},
+		new() {
+			Key="py5521", Id="#PY-5521", Platform="PedidosYa", Status=KanbanOrderStatus.Nuevo,
+			ClientName="Diego Milito", ClientPhone="+54 11 7788-1122",
+			TimerLabel="4 min", TimerPulse=false,
+			DeliveryType="Delivery Propio", DeliveryIcon="delivery_dining",
+			Address="Corrientes 580, Córdoba",
+			Items=[
+				new() { Qty=2, Name="Familiar N°1", Price=8900 },
+				new() { Qty=1, Name="1/2 Kilo",     Price=4800 },
+			],
+			Discount=1200, Shipping=0,
+		},
+		new() {
+			Key="rp4921", Id="#RP-4921", Platform="Rappi", Status=KanbanOrderStatus.Preparacion,
+			ClientName="Juan Roman Riquelme", ClientPhone="+54 11 4455-6677",
+			TimerLabel="12 min", TimerPulse=true,
+			DeliveryType="Delivery externo", DeliveryIcon="delivery_dining",
+			Address="Av. del Libertador 1450, Piso 4, Córdoba",
+			Note="No tocar el timbre, llame cuando llegue, hay un bebé durmiendo.",
+			Items=[
+				new() { Qty=2, Name="1 Kilo",                         Price=8500  },
+				new() { Qty=1, Name="Bombón Escocés en caja x 8 Un.", Price=12500 },
+				new() { Qty=1, Name="Grido Batido",                   Price=2200  },
+			],
+			Discount=3170, Shipping=0,
+		},
+		new() {
+			Key="wa2209", Id="#WA-2209", Platform="PediGrido", Status=KanbanOrderStatus.Preparacion,
+			ClientName="Hernán Crespo", ClientPhone="+54 11 9900-2233",
+			TimerLabel="8 min", TimerPulse=false,
+			DeliveryType="Pickup", DeliveryIcon="storefront",
+			Address="—",
+			Note="El cliente avisa que llega en 10 min.",
+			Items=[
+				new() { Qty=3, Name="Bombón Escocés x un.", Price=1600 },
+				new() { Qty=1, Name="1/2 Kilo",             Price=4800 },
+			],
+			Discount=0, Shipping=0,
+		},
+		new() {
+			Key="py8812", Id="#PY-8812", Platform="PedidosYa", Status=KanbanOrderStatus.Listo,
+			ClientName="Javier Zanetti", ClientPhone="+54 11 6655-4433",
+			DeliveryType="Delivery externo", DeliveryIcon="delivery_dining",
+			Address="27 de Abril 1876, Córdoba",
+			Items=[
+				new() { Qty=1, Name="Pizza Frizzio Mozarella", Price=5800 },
+			],
+			Discount=580, Shipping=0,
+		},
+		new() {
+			Key="pk1004", Id="#PK-1004", Platform="I+D", Status=KanbanOrderStatus.Finalizado,
+			ClientName="Ariel Ortega", ClientPhone="+54 11 1122-3344",
+			DeliveryType="Pickup", DeliveryIcon="storefront",
+			Address="—",
+			Items=[
+				new() { Qty=2, Name="Smoothie N°1 Cool Mango", Price=4100 },
+				new() { Qty=1, Name="Smoothie N°4 Vita Light",  Price=4100 },
+			],
+			Discount=0, Shipping=0,
+		},
+	];
+
+	protected override void OnInitialized() =>
+		_datetime = DateTime.Now.ToString("dddd, dd MMM yyyy · HH:mm", _arCulture);
+
+	// ── Acciones ───────────────────────────────────────────────────────────
+	private void ShowDetail(string key) =>
+		_detailKey = _detailKey == key ? null : key;
+
+	private void CloseDetail() => _detailKey = null;
+
+	private void AdvanceStatus(string key) {
+		var order = _orders.FirstOrDefault(o => o.Key == key);
+		if (order is null) return;
+
+		order.Status = order.Status switch {
+			KanbanOrderStatus.Nuevo       => KanbanOrderStatus.Preparacion,
+			KanbanOrderStatus.Preparacion => KanbanOrderStatus.Listo,
+			KanbanOrderStatus.Listo       => KanbanOrderStatus.Finalizado,
+			_                             => order.Status,
+		};
+
+		if (order.Status == KanbanOrderStatus.Preparacion) order.TimerPulse = true;
+		if (order.Status >= KanbanOrderStatus.Listo) { order.TimerLabel = null; order.TimerPulse = false; }
+	}
+
+	private void HandleDrop(KanbanOrderStatus target) {
+		if (_draggingKey is null) return;
+		var order = _orders.FirstOrDefault(o => o.Key == _draggingKey);
+		if (order is null) return;
+
+		order.Status = target;
+		if (target != KanbanOrderStatus.Preparacion) order.TimerPulse = false;
+		if (target >= KanbanOrderStatus.Listo) order.TimerLabel = null;
+
+		_draggingKey = null;
+		_dragOverCol = null;
+	}
+
+	// ── Config columnas ────────────────────────────────────────────────────
+	private record ColConfig(string Label, string Icon, string IconColor, string BgClass, string BadgeClass);
+
+	private static ColConfig GetColConfig(KanbanOrderStatus s) => s switch {
+		KanbanOrderStatus.Nuevo       => new("Nuevos",              "fiber_new",    "#8a00cb", "kb-col-wrap--nuevo", "kb-badge--nuevo"),
+		KanbanOrderStatus.Preparacion => new("Preparación",         "cooking",      "#8a00cb", "kb-col-wrap--prep",  "kb-badge--prep"),
+		KanbanOrderStatus.Listo       => new("Listo para entregar", "hand_package", "#006267", "kb-col-wrap--listo", "kb-badge--listo"),
+		_                             => new("Finalizados",         "task_alt",     "#817287", "kb-col-wrap--done",  "kb-badge--done"),
+	};
+
+	// ── Config botones tarjeta ─────────────────────────────────────────────
+	private record BtnConfig(string Label, string Css);
+	private record DetBtnConfig(string Label, string Css, string Icon);
+
+	private static BtnConfig GetCardBtn(KanbanOrderStatus s) => s switch {
+		KanbanOrderStatus.Nuevo       => new("Iniciar",      "kb-card__btn--nuevo"),
+		KanbanOrderStatus.Preparacion => new("Marcar Listo", "kb-card__btn--prep"),
+		_                             => new("Entregar",     "kb-card__btn--listo"),
+	};
+
+	private static DetBtnConfig GetDetailBtn(KanbanOrderStatus s) => s switch {
+		KanbanOrderStatus.Nuevo       => new("Iniciar Preparación", "kb-det-btn--nuevo", "cooking"),
+		KanbanOrderStatus.Preparacion => new("Marcar como Listo",   "kb-det-btn--prep",  "check_circle"),
+		_                             => new("Confirmar Entrega",   "kb-det-btn--listo", "local_shipping"),
+	};
+
+	// ── Platform helpers ───────────────────────────────────────────────────
+	private static string GetPlatformClass(string p) => p switch {
+		"Rappi"     => "kb-tag--rappi",
+		"PedidosYa" => "kb-tag--peya",
+		"PediGrido" => "kb-tag--grido",
+		_           => "kb-tag--id",
+	};
+
+	private static string GetPlatformLogo(string p) => p switch {
+		"Rappi"     => "assets/svgs/rappi-logo.svg",
+		"PedidosYa" => "assets/images/peya-logo.png",
+		"PediGrido" => "assets/images/grido-logo.png",
+		_           => "assets/images/idiotlab-logo.png",
+	};
+}

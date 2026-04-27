@@ -20,6 +20,11 @@
 		OnPaymentConfirmed="ClosePaymentModal"
 	/>
 
+	<KanbanModal
+		IsOpen="@_kanbanOpen"
+		OnClose="CloseKanban"
+	/>
+
 	@* ── TopNav del POS ──────────────────────────────────────────────────── *@
 	<PosNavBar
 		UserName="@UserSvc.CurrentUser.FullName"
@@ -95,6 +100,11 @@
 
 	</div>
 
+	@* ── Panel derecho: carrito ───────────────────────────────────────── *@
+	<div class="vm-scan">
+		<span class="vm-note">Atención: Demo interactiva</span>
+	</div>
+
 </div>
 
 @code {
@@ -102,7 +112,8 @@
 	private bool   _sidebarOpen      = false;
 	private bool   _socioPanelOpen   = false;
 	private bool   _paymentModalOpen = false;
-	private bool   _soundConfigOpen= false;
+	private bool   _kanbanOpen       = false;
+	private bool   _soundConfigOpen  = false;
 	private string _categoryActive= "Favoritos";
 	private int    _pendingOrders = 5;
 	private OrdersButton? _ordersBtn;
@@ -131,21 +142,21 @@
 	};
 
 	private List<Product> _allProducts = new() {
-		new() { Id="p1", Name="Mini Gigante", Category="Helados", Price=1400, ImageUrl="assets/images/catalog/mini-gigante.png", IsFavorite=true  },
-		new() { Id="p2", Name="Gigante 2 Bochas", Category="Helados", Price=2000, ImageUrl="assets/images/catalog/2-bochas.jpg", IsFavorite=true  },
-		new() { Id="p3", Name="Bombón Escocés x unidad", Category="Bombones", Price=1800, ImageUrl="assets/images/catalog/bombon-escoces.png",        IsFavorite=false },
-		new() { Id="p4", Name="1 Kilo", Category="Helados", Price=8500, ImageUrl="assets/images/catalog/1-kilo.png", IsFavorite=true  },
-		new() { Id="p5", Name="Palito Bombón x unidad", Category="Palitos", Price=900, ImageUrl="assets/images/catalog/palito-bombon.jpg", IsFavorite=true  },
-		new() { Id="p6", Name="Bombón Escocés en caja x8", Category="Bombones", Price=12500, ImageUrl="assets/images/catalog/caja-bombon-escoces.png", IsFavorite=false },
-		new() { Id="p7", Name="Torta Cookie and Cream", Category="Tortas", Price=14000, ImageUrl="assets/images/catalog/torta-cookie-and-cream.png", IsFavorite=false },
-		new() { Id="p8", Name="Palito Frutal x unidad", Category="Palitos", Price=700, ImageUrl="assets/images/catalog/palito-frutal-frutilla.jpg", IsFavorite=false },
-		new() { Id="p9", Name="Palito Cremoso Frutilla x unidad", Category="Palitos", Price=1600, ImageUrl="assets/images/catalog/palito-cremoso-frutilla.jpg", IsFavorite=false },
-		new() { Id="p10", Name="Almendrado en Caja x 8 Un.", Category="Postres", Price=9500, ImageUrl="assets/images/catalog/almendrado-x-caja.png", IsFavorite=true },
-		new() { Id="p11", Name="Almendrado x unidad", Category="Postres", Price=1600, ImageUrl="assets/images/catalog/almendrado-x-unidad.jpg", IsFavorite=false },
-		new() { Id="p12", Name="Crocantino", Category="Postres", Price=9500, ImageUrl="assets/images/catalog/crocantino.png", IsFavorite=false },
-		new() { Id="p13", Name="Casatta en Caja x 8 Un.", Category="Postres", Price=9500, ImageUrl="assets/images/catalog/casatta-x-caja.png", IsFavorite=false },
-		new() { Id="p14", Name="Casatta x unidad", Category="Postres", Price=1600, ImageUrl="assets/images/catalog/casatta-x-caja.png", IsFavorite=false },
-		new() { Id="p15", Name="Barra Delicia Chocolate y Maní", Category="Postres", Price=9500, ImageUrl="assets/images/catalog/barra-delicia.png", IsFavorite=true },
+		new() { Id="p1",  Name="Mini Gigante",                      Category="Helados",  Price=1400,  ImageUrl="assets/images/catalog/mini-gigante.png",               IsFavorite=true,  Tags=["cucurucho","cono","chico","pequeño","grido"] },
+		new() { Id="p2",  Name="Gigante 2 Bochas",                  Category="Helados",  Price=2000,  ImageUrl="assets/images/catalog/2-bochas.jpg",                   IsFavorite=true,  Tags=["cucurucho","cono","bochas","grande","grido"] },
+		new() { Id="p3",  Name="Bombón Escocés x unidad",           Category="Bombones", Price=1800,  ImageUrl="assets/images/catalog/bombon-escoces.png",              IsFavorite=false, Tags=["bombon","escoces","chocolate","unidad","bañado"] },
+		new() { Id="p4",  Name="1 Kilo",                            Category="Helados",  Price=8500,  ImageUrl="assets/images/catalog/1-kilo.png",                     IsFavorite=true,  Tags=["kilo","pote","familiar","peso","litro"] },
+		new() { Id="p5",  Name="Palito Bombón x unidad",            Category="Palitos",  Price=900,   ImageUrl="assets/images/catalog/palito-bombon.jpg",               IsFavorite=true,  Tags=["palito","bombon","chocolate","bañado","unidad"] },
+		new() { Id="p6",  Name="Bombón Escocés en caja x8",         Category="Bombones", Price=12500, ImageUrl="assets/images/catalog/caja-bombon-escoces.png",         IsFavorite=false, Tags=["bombon","escoces","chocolate","caja","ocho","pack"] },
+		new() { Id="p7",  Name="Torta Cookie and Cream",            Category="Tortas",   Price=14000, ImageUrl="assets/images/catalog/torta-cookie-and-cream.png",      IsFavorite=false, Tags=["torta","cookie","cream","crema","cookies","oreo"] },
+		new() { Id="p8",  Name="Palito Frutal x unidad",            Category="Palitos",  Price=700,   ImageUrl="assets/images/catalog/palito-frutal-frutilla.jpg",      IsFavorite=false, Tags=["palito","frutal","fruta","frutilla","unidad"] },
+		new() { Id="p9",  Name="Palito Cremoso Frutilla x unidad",  Category="Palitos",  Price=1600,  ImageUrl="assets/images/catalog/palito-cremoso-frutilla.jpg",     IsFavorite=false, Tags=["palito","cremoso","frutilla","fruta","unidad"] },
+		new() { Id="p10", Name="Almendrado en Caja x 8 Un.",        Category="Postres",  Price=9500,  ImageUrl="assets/images/catalog/almendrado-x-caja.png",           IsFavorite=true,  Tags=["almendrado","almendra","chocolate","caja","ocho","pack"] },
+		new() { Id="p11", Name="Almendrado x unidad",               Category="Postres",  Price=1600,  ImageUrl="assets/images/catalog/almendrado-x-unidad.jpg",         IsFavorite=false, Tags=["almendrado","almendra","chocolate","unidad"] },
+		new() { Id="p12", Name="Crocantino",                        Category="Postres",  Price=9500,  ImageUrl="assets/images/catalog/crocantino.png",                  IsFavorite=false, Tags=["crocantino","croc","chocolate","crocante","nuez"] },
+		new() { Id="p13", Name="Casatta en Caja x 8 Un.",           Category="Postres",  Price=9500,  ImageUrl="assets/images/catalog/casatta-x-caja.png",              IsFavorite=false, Tags=["casatta","caja","ocho","pack","vainilla"] },
+		new() { Id="p14", Name="Casatta x unidad",                  Category="Postres",  Price=1600,  ImageUrl="assets/images/catalog/casatta-x-caja.png",              IsFavorite=false, Tags=["casatta","unidad","vainilla"] },
+		new() { Id="p15", Name="Barra Delicia Chocolate y Maní",    Category="Postres",  Price=9500,  ImageUrl="assets/images/catalog/barra-delicia.png",               IsFavorite=true,  Tags=["barra","delicia","chocolate","mani","maní","cacahuete"] },
 	};
 
 	private List<Product> _filteredProducts => _categoryActive switch
@@ -169,9 +180,8 @@
 		StateHasChanged();
 	}
 
-	private void OpenKanban() {
-		// TODO: abrir panel Kanban (próxima etapa)
-	}
+	private void OpenKanban()  => _kanbanOpen = true;
+	private void CloseKanban() => _kanbanOpen = false;
 
 	private void OpenModalPayment()  => _paymentModalOpen = true;
 	private void ClosePaymentModal() => _paymentModalOpen = false;

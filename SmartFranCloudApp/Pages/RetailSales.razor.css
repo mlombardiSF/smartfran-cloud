@@ -88,3 +88,27 @@
   font-weight: 600;
   margin: 0;
 }
+
+/* Alerta de Demo */
+.vm-scan {
+  position:absolute;
+  bottom:24px;
+  left:24px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:8px;
+  pointer-events:none
+}
+
+.vm-note {
+  font-family:"JetBrains Mono", ui-monospace, monospace;
+  font-size:10px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:#9E8FE8;
+  padding:4px 8px;
+  border-radius:4px;
+  border:1px solid #2E1880;
+  background:color-mix(in oklab, #0F0035 80%, transparent);
+}

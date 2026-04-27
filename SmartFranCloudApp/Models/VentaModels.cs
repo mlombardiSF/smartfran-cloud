@@ -3,12 +3,13 @@ namespace SmartFranCloudApp.Models;
 // ── Producto del catálogo ──────────────────────────────────────────────────
 public class Product
 {
-    public string  Id         { get; set; } = Guid.NewGuid().ToString("N")[..8];
-    public string  Name     { get; set; } = string.Empty;
-    public string  Category  { get; set; } = string.Empty;
-    public decimal Price     { get; set; }
-    public string  ImageUrl  { get; set; } = string.Empty;
-    public bool    IsFavorite { get; set; }
+    public string       Id         { get; set; } = Guid.NewGuid().ToString("N")[..8];
+    public string       Name       { get; set; } = string.Empty;
+    public string       Category   { get; set; } = string.Empty;
+    public decimal      Price      { get; set; }
+    public string       ImageUrl   { get; set; } = string.Empty;
+    public bool         IsFavorite { get; set; }
+    public List<string> Tags       { get; set; } = new();
 }
 
 // ── Item del carrito ───────────────────────────────────────────────────────
@@ -54,6 +55,38 @@ public class CategoryModel
     public string Icon     { get; set; } = string.Empty;
     public bool   IsMore   { get; set; }    // aparece en dropdown "Más"
     public string Group     { get; set; } = string.Empty; // para agrupar en "Más"
+}
+
+// ── Kanban de pedidos ──────────────────────────────────────────────────────
+public enum KanbanOrderStatus { Nuevo, Preparacion, Listo, Finalizado }
+
+public class KanbanOrder
+{
+    public string Key          { get; set; } = Guid.NewGuid().ToString("N")[..6];
+    public string Id           { get; set; } = "";
+    public string Platform     { get; set; } = "";
+    public string ClientName   { get; set; } = "";
+    public string ClientPhone  { get; set; } = "";
+    public KanbanOrderStatus Status { get; set; }
+    public string? TimerLabel  { get; set; }
+    public bool   TimerPulse   { get; set; }
+    public string DeliveryType { get; set; } = "";
+    public string DeliveryIcon { get; set; } = "delivery_dining";
+    public string Address      { get; set; } = "";
+    public string? Note        { get; set; }
+    public List<KanbanOrderItem> Items { get; set; } = new();
+    public decimal Discount    { get; set; }
+    public decimal Shipping    { get; set; }
+
+    public decimal Subtotal => Items.Sum(i => i.Price * i.Qty);
+    public decimal Total    => Subtotal - Discount + Shipping;
+}
+
+public class KanbanOrderItem
+{
+    public int     Qty   { get; set; }
+    public string  Name  { get; set; } = "";
+    public decimal Price { get; set; }
 }
 
 // ── Config de nivel del socio ──────────────────────────────────────────────
