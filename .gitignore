@@ -13,6 +13,9 @@
 *.claude
 *.openai
 *.gemini
+docs/CLAUDE.md
+docs/OPENAI.md
+docs/GEMINI.md
 
 # Archivos de configuración de herramientas
 .libraryindex

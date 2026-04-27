@@ -1,0 +1,37 @@
+@namespace SmartFranCloudApp.Shared.POS
+@implements IDisposable
+
+<div class="toast-stack">
+	@foreach (var item in _snapshot) {
+		var t = item;
+		<ToastNotification
+			Icon="@t.Icon"
+			Title="@t.Title"
+			Subtitle="@t.Subtitle"
+			AccentGradient="@t.AccentGradient"
+			PulseColor="@t.PulseColor"
+			DurationMs="@t.DurationMs"
+			OnClose="() => ToastSvc.Dismiss(t.Id)"
+		/>
+	}
+</div>
+
+@inject ToastService ToastSvc
+
+@code {
+	private List<ToastService.ToastEntry> _snapshot = new();
+
+	protected override void OnInitialized()
+	{
+		_snapshot = ToastSvc.Items.ToList();
+		ToastSvc.OnChanged += HandleChanged;
+	}
+
+	private void HandleChanged()
+	{
+		_snapshot = ToastSvc.Items.ToList();
+		InvokeAsync(StateHasChanged);
+	}
+
+	public void Dispose() => ToastSvc.OnChanged -= HandleChanged;
+}

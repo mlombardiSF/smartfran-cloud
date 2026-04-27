@@ -19,5 +19,6 @@ builder.Services.AddMudServices();
 
 // Singleton para compartir estado entre VentaMinorista y modal de pago
 builder.Services.AddSingleton<CartService>();
+builder.Services.AddSingleton<ToastService>();
 
 await builder.Build().RunAsync();

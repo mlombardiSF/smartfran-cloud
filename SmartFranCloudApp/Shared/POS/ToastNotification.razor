@@ -1,7 +1,7 @@
 @namespace SmartFranCloudApp.Shared.POS
-@inject IJSRuntime JS
 
-<div class="toast @(IsVisible ? "toast--show" : "")">
+<div class="toast @(_animating && IsVisible ? "toast--show" : "")"
+     style="--ta:@AccentGradient;--tc:@PulseColor;--td:@(DurationMs)ms">
 
 	@* Acento izquierdo *@
 	<div class="toast__accent"></div>
@@ -17,7 +17,7 @@
 						class="material-symbols-outlined"
 						style="color:#fff; font-size:1.1em; font-variation-settings:'FILL' 1;"
 					>
-						point_of_sale
+						@Icon
 					</span>
 				</div>
 				<span class="toast__pulse-ring"></span>
@@ -37,15 +37,31 @@
 
 		@* Barra de progreso *@
 		<div class="toast__progress-track">
-			<div class="toast__progress-bar @(IsVisible ? "toast__progress-bar--running" : "")"></div>
+			<div class="toast__progress-bar @(_animating && IsVisible ? "toast__progress-bar--running" : "")"></div>
 		</div>
 	</div>
 
 </div>
 
 @code {
-	[Parameter] public bool          IsVisible { get; set; }
-	[Parameter] public string        Title     { get; set; } = string.Empty;
-	[Parameter] public string        Subtitle  { get; set; } = string.Empty;
-	[Parameter] public EventCallback OnClose   { get; set; }
+	[Parameter] public bool          IsVisible      { get; set; } = true;
+	[Parameter] public string        Icon           { get; set; } = "point_of_sale";
+	[Parameter] public string        Title          { get; set; } = string.Empty;
+	[Parameter] public string        Subtitle       { get; set; } = string.Empty;
+	[Parameter] public string        AccentGradient { get; set; } = "linear-gradient(135deg,#6e59ee,#9080f5)";
+	[Parameter] public string        PulseColor     { get; set; } = "#9080f5";
+	[Parameter] public int           DurationMs     { get; set; } = 4500;
+	[Parameter] public EventCallback OnClose        { get; set; }
+
+	private bool _animating = false;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await Task.Yield();
+			_animating = true;
+			StateHasChanged();
+		}
+	}
 }

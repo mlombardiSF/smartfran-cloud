@@ -1,0 +1,443 @@
+@namespace SmartFranCloudApp.Shared.POS.Venta
+@using SmartFranCloudApp.Models
+@using SmartFranCloudApp.Services
+@inject CartService Cart
+@inject ToastService ToastSvc
+@implements IDisposable
+
+@if (IsOpen) {
+<div class="pm" @onclick="HandleCloseAsync">
+	<div class="pm__inner" @onclick:stopPropagation>
+
+		@* ── Left side ──────────────────────────────────────────────────── *@
+		<div class="pm__left">
+
+			@* Header *@
+			<div class="pm__left-header">
+				<button class="pm__back-btn" @onclick="HandleCloseAsync">
+					<span class="material-symbols-outlined">arrow_back</span>
+				</button>
+				<h1 class="pm__title">Proceso de Pago</h1>
+			</div>
+
+			@* CUIT / Razón Social *@
+			<div class="pm__cuit-section">
+				<label class="pm__section-label">CUIT / Razón Social</label>
+				<div class="pm__cuit-row">
+					<div class="pm__cuit-wrap">
+						@if (_cuitState == "searching") {
+							<svg class="pm__cuit-spinner" viewBox="0 0 24 24" fill="none">
+								<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity=".25"/>
+								<path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+							</svg>
+						} else {
+							<span class="material-symbols-outlined pm__cuit-icon">business</span>
+						}
+						<input
+							class="pm__cuit-input"
+							placeholder="Ingresá el CUIT…"
+							type="text"
+							maxlength="11"
+							inputmode="numeric"
+							autocomplete="off"
+							value="@_cuitValue"
+							@oninput="OnCuitInput"
+						/>
+						@if (_cuitState == "found" || _cuitState == "error") {
+							<button class="pm__cuit-clear" @onclick="ClearCuit">
+								<span class="material-symbols-outlined" style="font-size:0.9em;">cancel</span>
+							</button>
+						}
+					</div>
+					@if (_cuitState == "found" && _cuitRazonSocial is not null) {
+						<div class="pm__razon-reveal">
+							<span class="material-symbols-outlined pm__razon-icon">verified</span>
+							<span class="pm__razon-nombre">@_cuitRazonSocial</span>
+						</div>
+					}
+				</div>
+				@if (_cuitState == "error") {
+					<p class="pm__cuit-error">
+						<span class="material-symbols-outlined" style="font-size:0.85em;">error_outline</span>
+						CUIT no encontrado. Podés continuar sin datos de facturación.
+					</p>
+				}
+			</div>
+
+			@* Items accordion *@
+			<div class="pm__items-section">
+				<button class="pm__items-toggle" @onclick="ToggleItems">
+					<div class="pm__items-toggle-left">
+						<span class="material-symbols-outlined pm__items-icon">receipt_long</span>
+						<span class="pm__items-toggle-text">Ver resumen de items</span>
+						<span class="pm__items-chip">
+							@Cart.TotalItems item@(Cart.TotalItems != 1 ? "s" : "") · @Cart.Subtotal.ToString("C0", _ar)
+						</span>
+					</div>
+					<span class="material-symbols-outlined pm__items-chevron @(_itemsOpen ? "pm__items-chevron--open" : "")">
+						expand_more
+					</span>
+				</button>
+				@if (_itemsOpen) {
+					<div class="pm__items-panel">
+						@foreach (var item in Cart.Items) {
+							var it = item;
+							<div class="pm__item-row">
+								<div class="pm__item-thumb @(it.IsRedemption ? "pm__item-thumb--canje" : "")">
+									@if (it.IsRedemption) {
+										<span class="material-symbols-outlined"
+											style="font-variation-settings:'FILL' 1; color:#6e59ee; font-size:0.85em;">redeem</span>
+									} else {
+										<img src="@it.ImageUrl" alt="@it.Name" onerror="this.style.opacity=0" />
+									}
+								</div>
+								<div class="pm__item-info">
+									<p class="pm__item-name">@it.Name</p>
+									<p class="pm__item-qty">@it.Quantity × @it.Price.ToString("C0", _ar)</p>
+								</div>
+								<span class="pm__item-line-total">@it.Total.ToString("C0", _ar)</span>
+							</div>
+						}
+					</div>
+				}
+			</div>
+
+			<div class="pm__divider"></div>
+
+			@* Medios de pago *@
+			<div class="pm__methods-section">
+				<p class="pm__section-label">Medio de Pago</p>
+				<div class="pm__methods-grid">
+					@foreach (var m in _allMethods) {
+						var mk = m.Key;
+						<button
+							class="pm__method-btn @(mk == "otro" ? "pm__method-btn--dashed" : "") @(_selectedMethod == mk ? "pm__method-btn--active" : "")"
+							@onclick="() => SelectMethod(mk)">
+							@if (m.HasLogo) {
+								<div class="pm__method-logo-wrap">
+									<img src="@m.LogoSrc" alt="@m.Label" class="pm__method-logo" />
+								</div>
+							} else {
+								<span class="material-symbols-outlined pm__method-icon">@m.Icon</span>
+							}
+							<span class="pm__method-label">@m.Label</span>
+						</button>
+					}
+				</div>
+			</div>
+
+			@* Amount row — visible al seleccionar método *@
+			@if (_selectedMethod is not null) {
+				var methodLabel = _allMethods.FirstOrDefault(m => m.Key == _selectedMethod)?.Label ?? _selectedMethod;
+				<div class="pm__amount-row">
+					<div class="pm__amount-field-wrap">
+						<label class="pm__amount-label">Monto — @methodLabel</label>
+						<div class="pm__amount-input-wrap">
+							<span class="pm__amount-prefix">$</span>
+							<input
+								class="pm__amount-input"
+								placeholder="0,00"
+								type="text"
+								inputmode="decimal"
+								@bind="_amountValue"
+								@bind:event="oninput"
+								@onkeydown="OnAmountKeyDown"
+							/>
+						</div>
+					</div>
+					<button class="pm__add-btn" @onclick="AddPayment">
+						<span class="material-symbols-outlined" style="font-size:1em;">add</span>
+						Agregar
+					</button>
+				</div>
+			}
+
+			@* Pagos registrados *@
+			<div class="pm__registered-area">
+				<div class="pm__registered-header">
+					<p class="pm__section-label" style="margin-bottom:0;">Pagos Registrados</p>
+					<span class="pm__registered-badge">
+						@_payments.Count método@(_payments.Count != 1 ? "s" : "")
+					</span>
+				</div>
+				<div class="pm__registered-list">
+					@if (_payments.Count == 0) {
+						<p class="pm__registered-empty">Seleccioná un método para comenzar</p>
+					} else {
+						@for (int i = 0; i < _payments.Count; i++) {
+							var idx = i;
+							var p   = _payments[i];
+							var pIcon = _allMethods.FirstOrDefault(m => m.Key == p.Method)?.Icon ?? "payments";
+							<div class="pm__payment-entry">
+								<div class="pm__payment-icon-wrap">
+									<span class="material-symbols-outlined pm__payment-icon">@pIcon</span>
+								</div>
+								<div class="pm__payment-info">
+									<p class="pm__payment-name">@p.Label</p>
+									<p class="pm__payment-sub">Pago @(_payments.Count == 1 ? "único" : "parcial")</p>
+								</div>
+								<span class="pm__payment-amount">@p.Amount.ToString("C2", _ar)</span>
+								<button class="pm__payment-del" @onclick="() => RemovePayment(idx)">
+									<span class="material-symbols-outlined" style="font-size:1em;">delete</span>
+								</button>
+							</div>
+						}
+					}
+				</div>
+			</div>
+
+		</div>@* /pm__left *@
+
+		@* ── Right side (dark) ──────────────────────────────────────────── *@
+		<div class="pm__right">
+			<p class="pm__right-eyebrow">Detalle de Liquidación</p>
+
+			<div class="pm__right-body">
+
+				<div class="pm__right-rows">
+					<div class="pm__right-row">
+						<span>Subtotal</span>
+						<span>@Cart.Subtotal.ToString("C0", _ar)</span>
+					</div>
+					@if (Cart.SocioActive is not null && !Cart.HasRedemptions && Cart.AmountDiscount > 0) {
+						<div class="pm__right-row pm__right-row--discount">
+							<span>Descuento Socio</span>
+							<span>-@Cart.AmountDiscount.ToString("C0", _ar)</span>
+						</div>
+					}
+				</div>
+
+				<div class="pm__right-total-section">
+					<p class="pm__right-total-label">Total a Confirmar</p>
+					<div class="pm__right-total @(_confirmed ? "pm__right-total--confirmed" : "")">
+						@Cart.Total.ToString("C0", _ar)
+					</div>
+				</div>
+
+				<div class="pm__right-balance">
+					<div class="pm__right-balance-row">
+						<span>Pagado</span>
+						<span class="pm__right-paid">@_paid.ToString("C0", _ar)</span>
+					</div>
+					<div class="pm__right-remaining @(_remaining > 0.5m ? "pm__right-remaining--on" : "")">
+						<span class="pm__right-flag-label">Saldo Faltante</span>
+						<span class="pm__right-flag-val">@(Math.Max(0m, _remaining).ToString("C0", _ar))</span>
+					</div>
+					<div class="pm__right-change @(_change > 0.5m ? "pm__right-change--on" : "")">
+						<span class="pm__right-flag-label">Vuelto / Cambio</span>
+						<span class="pm__right-flag-val">@(Math.Max(0m, _change).ToString("C0", _ar))</span>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="pm__right-actions">
+				<button
+					class="pm__confirm-btn @(!_canConfirm || _confirming ? "pm__confirm-btn--disabled" : "") @(_confirmed ? "pm__confirm-btn--confirmed" : "")"
+					disabled="@(!_canConfirm || _confirming)"
+					@onclick="ConfirmPaymentAsync">
+					@if (_confirmed) {
+						<span class="material-symbols-outlined" style="font-size:1em; font-variation-settings:'FILL' 1;">task_alt</span>
+						<span>¡Pago Confirmado!</span>
+					} else {
+						<span class="material-symbols-outlined" style="font-size:1em; font-variation-settings:'FILL' 1;">check_circle</span>
+						<span>Confirmar Pago</span>
+					}
+				</button>
+				<div class="pm__right-secondary">
+					<button class="pm__secondary-btn">Imprimir</button>
+					<button class="pm__secondary-btn" @onclick="HandleCloseAsync">Cerrar (Esc)</button>
+				</div>
+			</div>
+
+		</div>@* /pm__right *@
+
+	</div>@* /pm__inner *@
+</div>@* /pm *@
+}
+
+@code {
+	[Parameter] public bool IsOpen { get; set; }
+	[Parameter] public EventCallback OnClose { get; set; }
+	[Parameter] public EventCallback OnPaymentConfirmed { get; set; }
+
+	private static readonly System.Globalization.CultureInfo _ar =
+		new System.Globalization.CultureInfo("es-AR");
+
+	// CUIT
+	private string  _cuitValue       = string.Empty;
+	private string  _cuitState       = "idle"; // idle | searching | found | error
+	private string? _cuitRazonSocial;
+	private System.Timers.Timer? _cuitTimer;
+
+	// Items
+	private bool _itemsOpen = false;
+
+	// Payments
+	private string? _selectedMethod;
+	private string  _amountValue  = string.Empty;
+	private List<PaymentEntry> _payments = new();
+
+	// Confirm
+	private bool    _confirming  = false;
+	private bool    _confirmed   = false;
+	private bool    _prevIsOpen  = false;
+
+	// Computed
+	private decimal _paid      => _payments.Sum(p => p.Amount);
+	private decimal _remaining => Cart.Total - _paid;
+	private decimal _change    => _paid - Cart.Total;
+	private bool _canConfirm   =>
+		_payments.Any() && _paid >= Cart.Total && !_confirming && Cart.TotalItems > 0;
+
+	private record MethodMeta(string Key, string Label, string Icon,
+		bool HasLogo = false, string LogoSrc = "");
+
+	private static readonly List<MethodMeta> _allMethods = new() {
+		new("efectivo",      "Efectivo",      "payments"),
+		new("debito",        "Débito",        "credit_card"),
+		new("credito",       "Crédito",       "credit_card_heart"),
+		new("mercadopago",   "Mercado Pago",  "qr_code_scanner",
+			HasLogo: true, LogoSrc: "assets/svgs/MP_RGB_HANDSHAKE_color_vertical.svg"),
+		new("modo",          "Modo",          "phone_iphone",
+			HasLogo: true, LogoSrc: "assets/images/modo-logo.webp"),
+		new("personalpay",   "Personal Pay",  "wallet"),
+		new("transferencia", "Transferencia", "swap_horiz"),
+		new("otro",          "Otro",          "add_circle"),
+	};
+
+	// Reutiliza la misma DB de socios como proxy de CUIT para el demo
+	private static readonly Dictionary<string, string> _cuitDb = new() {
+		["30456789"] = "Marina Rossi",
+		["11222333"] = "Marina Rossi",
+		["42424242"] = "Juan Pérez",
+		["25123456"] = "Carlos Fernández",
+		["33987654"] = "Lucía Gómez",
+		["28765432"] = "Roberto Sánchez",
+		["41234567"] = "Valentina Torres",
+	};
+
+	protected override void OnInitialized() =>
+		Cart.OnCartChanged += HandleCartChanged;
+
+	protected override void OnParametersSet() {
+		if (IsOpen && !_prevIsOpen) ResetState();
+		_prevIsOpen = IsOpen;
+	}
+
+	private void ResetState() {
+		_cuitValue       = string.Empty;
+		_cuitState       = "idle";
+		_cuitRazonSocial = null;
+		_itemsOpen       = false;
+		_selectedMethod  = null;
+		_amountValue     = string.Empty;
+		_payments        = new();
+		_confirming  = false;
+		_confirmed   = false;
+		_cuitTimer?.Dispose();
+		_cuitTimer = null;
+	}
+
+	private void HandleCartChanged() => InvokeAsync(StateHasChanged);
+
+	private async Task HandleCloseAsync() {
+		if (!_confirming) await OnClose.InvokeAsync();
+	}
+
+	// ── CUIT search ───────────────────────────────────────────────────────────
+	private void OnCuitInput(ChangeEventArgs e) {
+		_cuitValue = new string(
+			(e.Value?.ToString() ?? "").Where(char.IsDigit).ToArray());
+		_cuitTimer?.Dispose();
+		_cuitState       = "idle";
+		_cuitRazonSocial = null;
+
+		if (_cuitValue.Length < 7) return;
+
+		_cuitState = "searching";
+		_cuitTimer = new System.Timers.Timer(450);
+		_cuitTimer.Elapsed += async (_, _) => await InvokeAsync(SearchCuit);
+		_cuitTimer.AutoReset = false;
+		_cuitTimer.Start();
+	}
+
+	private void SearchCuit() {
+		if (_cuitDb.TryGetValue(_cuitValue, out var nombre)) {
+			_cuitState       = "found";
+			_cuitRazonSocial = nombre;
+		} else {
+			_cuitState = "error";
+		}
+		StateHasChanged();
+	}
+
+	private void ClearCuit() {
+		_cuitValue       = string.Empty;
+		_cuitState       = "idle";
+		_cuitRazonSocial = null;
+	}
+
+	// ── Items ─────────────────────────────────────────────────────────────────
+	private void ToggleItems() => _itemsOpen = !_itemsOpen;
+
+	// ── Payment methods ───────────────────────────────────────────────────────
+	private void SelectMethod(string method) {
+		_selectedMethod = method;
+		var remaining = Math.Max(0m, Cart.Total - _paid);
+		_amountValue = remaining > 0
+			? remaining.ToString("N2", _ar)
+			: string.Empty;
+	}
+
+	private void AddPayment() {
+		if (_selectedMethod is null) return;
+		var raw = (_amountValue ?? string.Empty)
+			.Replace(".", string.Empty).Replace(",", ".").Trim();
+		if (!decimal.TryParse(raw,
+			System.Globalization.NumberStyles.Any,
+			System.Globalization.CultureInfo.InvariantCulture,
+			out var amount) || amount <= 0) return;
+
+		var meta = _allMethods.FirstOrDefault(m => m.Key == _selectedMethod);
+		_payments.Add(new PaymentEntry(_selectedMethod, meta?.Label ?? _selectedMethod, amount));
+		_selectedMethod = null;
+		_amountValue    = string.Empty;
+	}
+
+	private void OnAmountKeyDown(KeyboardEventArgs e) {
+		if (e.Key == "Enter") AddPayment();
+	}
+
+	private void RemovePayment(int idx) {
+		if (idx >= 0 && idx < _payments.Count) _payments.RemoveAt(idx);
+	}
+
+	// ── Confirm ───────────────────────────────────────────────────────────────
+	private async Task ConfirmPaymentAsync() {
+		if (!_canConfirm) return;
+		_confirming = true;
+		_confirmed  = true;
+		bool hasCuit = _cuitState == "found";
+		StateHasChanged();
+		await Task.Delay(1400);
+		Cart.EmptyCart();
+		_confirming = false;
+		await OnPaymentConfirmed.InvokeAsync();
+		await OnClose.InvokeAsync();
+		ToastSvc.Show("venta");
+		await Task.Delay(600);
+		ToastSvc.Show("ticket");
+		if (hasCuit) {
+			await Task.Delay(700);
+			ToastSvc.Show("comprobante");
+		}
+	}
+
+	public void Dispose() {
+		Cart.OnCartChanged -= HandleCartChanged;
+		_cuitTimer?.Dispose();
+	}
+
+	private record PaymentEntry(string Method, string Label, decimal Amount);
+}

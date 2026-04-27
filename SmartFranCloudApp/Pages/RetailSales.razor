@@ -13,6 +13,12 @@
 
 <div class="vm-root">
 
+	<PaymentModal
+		IsOpen="@_paymentModalOpen"
+		OnClose="ClosePaymentModal"
+		OnPaymentConfirmed="ClosePaymentModal"
+	/>
+
 	@* ── TopNav del POS ──────────────────────────────────────────────────── *@
 	<PosNavBar 
 		UserName="Matias Lombardi"
@@ -91,8 +97,9 @@
 
 @code {
 	// ── Estado UI ──────────────────────────────────────────────────────────
-	private bool   _sidebarOpen    = false;
-	private bool   _socioPanelOpen  = false;
+	private bool   _sidebarOpen      = false;
+	private bool   _socioPanelOpen   = false;
+	private bool   _paymentModalOpen = false;
 	private bool   _soundConfigOpen= false;
 	private string _categoryActive= "Favoritos";
 	private int    _pendingOrders = 5;
@@ -164,7 +171,6 @@
 		// TODO: abrir panel Kanban (próxima etapa)
 	}
 
-	private void OpenModalPayment() {
-		// TODO: abrir modal de pago (próxima etapa)
-	}
+	private void OpenModalPayment()  => _paymentModalOpen = true;
+	private void ClosePaymentModal() => _paymentModalOpen = false;
 }
