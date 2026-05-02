@@ -73,7 +73,7 @@
 							@ondrop="() => HandleDrop(status)">
 
 							@foreach (var order in colOrders) {
-								<div class="kb-card @(order.Key == _draggingKey ? "kb-card--drag" : "") @(order.Key == _detailKey ? "kb-card--active" : "") @(status == KanbanOrderStatus.Finalizado ? "kb-card--done" : "")"
+								<div class="kb-card @(_newOrderKeys.Contains(order.Key) ? "kb-card--new" : "") @(order.Key == _draggingKey ? "kb-card--drag" : "") @(order.Key == _detailKey ? "kb-card--active" : "") @(status == KanbanOrderStatus.Finalizado ? "kb-card--done" : "")"
 									draggable="true"
 									@ondragstart="() => _draggingKey = order.Key"
 									@ondragend="() => { _draggingKey = null; _dragOverCol = null; }"
@@ -179,12 +179,12 @@
 						<p class="kb-det-sec-title">Logística de Entrega</p>
 						<div class="kb-det-logistics">
 							<div class="kb-det-logistics__card">
-								<span class="material-symbols-outlined kb-det-logistics__icon" style="color:#8a00cb;">@det.DeliveryIcon</span>
+								<span class="material-symbols-outlined kb-det-logistics__icon" style="color:var(--sf-primary);">@det.DeliveryIcon</span>
 								<p class="kb-det-logistics__label">Tipo</p>
 								<p class="kb-det-logistics__value">@det.DeliveryType</p>
 							</div>
 							<div class="kb-det-logistics__card">
-								<span class="material-symbols-outlined kb-det-logistics__icon" style="color:#63568c;">location_on</span>
+								<span class="material-symbols-outlined kb-det-logistics__icon" style="color:var(--sf-on-surface-variant);">location_on</span>
 								<p class="kb-det-logistics__label">Dirección</p>
 								<p class="kb-det-logistics__value">@det.Address</p>
 							</div>
@@ -270,10 +270,11 @@
 	[Parameter] public bool         IsOpen  { get; set; }
 	[Parameter] public EventCallback OnClose { get; set; }
 
-	private string?            _detailKey   = "rp4921";
-	private string?            _draggingKey = null;
-	private KanbanOrderStatus? _dragOverCol = null;
-	private string             _datetime    = string.Empty;
+	private string?            _detailKey    = "rp4921";
+	private string?            _draggingKey  = null;
+	private KanbanOrderStatus? _dragOverCol  = null;
+	private string             _datetime     = string.Empty;
+	private HashSet<string>    _newOrderKeys = new();
 
 	private static readonly System.Globalization.CultureInfo _arCulture = new("es-AR");
 	private static string Fmt(decimal n) => "$" + Math.Round(n).ToString("N0", _arCulture);
@@ -371,6 +372,16 @@
 
 	private void CloseDetail() => _detailKey = null;
 
+	public void AddNewOrder(KanbanOrder order) {
+		_orders.Insert(0, order);
+		_newOrderKeys.Add(order.Key);
+		StateHasChanged();
+		Task.Delay(3000).ContinueWith(_ => InvokeAsync(() => {
+			_newOrderKeys.Remove(order.Key);
+			StateHasChanged();
+		}));
+	}
+
 	private void AdvanceStatus(string key) {
 		var order = _orders.FirstOrDefault(o => o.Key == key);
 		if (order is null) return;
@@ -403,10 +414,10 @@
 	private record ColConfig(string Label, string Icon, string IconColor, string BgClass, string BadgeClass);
 
 	private static ColConfig GetColConfig(KanbanOrderStatus s) => s switch {
-		KanbanOrderStatus.Nuevo       => new("Nuevos",              "fiber_new",    "#8a00cb", "kb-col-wrap--nuevo", "kb-badge--nuevo"),
-		KanbanOrderStatus.Preparacion => new("Preparación",         "cooking",      "#8a00cb", "kb-col-wrap--prep",  "kb-badge--prep"),
-		KanbanOrderStatus.Listo       => new("Listo para entregar", "hand_package", "#006267", "kb-col-wrap--listo", "kb-badge--listo"),
-		_                             => new("Finalizados",         "task_alt",     "#817287", "kb-col-wrap--done",  "kb-badge--done"),
+		KanbanOrderStatus.Nuevo       => new("Nuevos",              "fiber_new",    "var(--sf-primary)",  "kb-col-wrap--nuevo", "kb-badge--nuevo"),
+		KanbanOrderStatus.Preparacion => new("Preparación",         "cooking",      "var(--sf-primary)",  "kb-col-wrap--prep",  "kb-badge--prep"),
+		KanbanOrderStatus.Listo       => new("Listo para entregar", "hand_package", "var(--sf-tertiary)", "kb-col-wrap--listo", "kb-badge--listo"),
+		_                             => new("Finalizados",         "task_alt",     "var(--sf-outline)",  "kb-col-wrap--done",  "kb-badge--done"),
 	};
 
 	// ── Config botones tarjeta ─────────────────────────────────────────────

@@ -6,6 +6,7 @@
 @using SmartFranCloudApp.Services
 @using SmartFranCloudApp.Shared.Nav
 @using SmartFranCloudApp.Shared.POS.Venta
+@implements IDisposable
 
 @inject CartService Cart
 @inject UserService UserSvc
@@ -21,6 +22,7 @@
 	/>
 
 	<KanbanModal
+		@ref="_kanbanModal"
 		IsOpen="@_kanbanOpen"
 		OnClose="CloseKanban"
 	/>
@@ -105,6 +107,18 @@
 		<span class="vm-note">Atención: Demo interactiva</span>
 	</div>
 
+	@* ── Notificaciones de nuevos pedidos ────────────────────────────────── *@
+	<div class="vm-toast-container">
+		@foreach (var order in _pendingToasts.ToList()) {
+			var captured = order;
+			<KanbanOrderToast
+				Order="@captured"
+				OnAccept="openKanban => HandleToastAccept(captured, openKanban)"
+				OnDismiss="() => HandleToastDismiss(captured)"
+			/>
+		}
+	</div>
+
 </div>
 
 @code {
@@ -115,8 +129,11 @@
 	private bool   _kanbanOpen       = false;
 	private bool   _soundConfigOpen  = false;
 	private string _categoryActive= "Favoritos";
-	private int    _pendingOrders = 5;
-	private OrdersButton? _ordersBtn;
+	private int    _pendingOrders  = 5;
+	private OrdersButton?        _ordersBtn;
+	private KanbanModal?         _kanbanModal;
+	private List<KanbanOrder>    _pendingToasts = new();
+	private CancellationTokenSource _timerCts  = new();
 
 	// ── Datos catálogo ─────────────────────────────────────────────────────
 	private List<CategoryModel> _categoriesMain = new() {
@@ -185,4 +202,63 @@
 
 	private void OpenModalPayment()  => _paymentModalOpen = true;
 	private void ClosePaymentModal() => _paymentModalOpen = false;
+
+	// ── Notificaciones de nuevos pedidos ───────────────────────────────────
+	protected override async Task OnAfterRenderAsync(bool firstRender) {
+		if (!firstRender) return;
+		try {
+			await Task.Delay(10_000, _timerCts.Token);
+			AddToast(_demoNewOrder1);
+			await Task.Delay(2_200, _timerCts.Token);
+			AddToast(_demoNewOrder2);
+		} catch (OperationCanceledException) { }
+	}
+
+	private void AddToast(KanbanOrder order) {
+		_pendingToasts.Add(order);
+		_pendingOrders++;
+		_ordersBtn?.NotifyNewOrders();
+		StateHasChanged();
+	}
+
+	private void HandleToastAccept(KanbanOrder order, bool openKanban) {
+		_pendingToasts.Remove(order);
+		_kanbanModal?.AddNewOrder(order);
+		if (openKanban) _kanbanOpen = true;
+		StateHasChanged();
+	}
+
+	private void HandleToastDismiss(KanbanOrder order) {
+		_pendingToasts.Remove(order);
+		_kanbanModal?.AddNewOrder(order);
+		StateHasChanged();
+	}
+
+	public void Dispose() => _timerCts.Cancel();
+
+	private readonly KanbanOrder _demoNewOrder1 = new() {
+		Key="rp7731", Id="#RP-7731", Platform="Rappi", Status=KanbanOrderStatus.Nuevo,
+		ClientName="Laura Méndez", ClientPhone="+54 11 5544-7788",
+		TimerLabel="nuevo", TimerPulse=false,
+		DeliveryType="Delivery externo", DeliveryIcon="delivery_dining",
+		Address="San Martín 1240, Córdoba",
+		Items=[
+			new() { Qty=1, Name="1 Kilo",                 Price=8500 },
+			new() { Qty=2, Name="Palito Bombón x unidad",  Price=900  },
+		],
+		Discount=0, Shipping=850,
+	};
+
+	private readonly KanbanOrder _demoNewOrder2 = new() {
+		Key="py3302", Id="#PY-3302", Platform="PedidosYa", Status=KanbanOrderStatus.Nuevo,
+		ClientName="Marcelo García", ClientPhone="+54 11 3300-1122",
+		TimerLabel="nuevo", TimerPulse=false,
+		DeliveryType="Delivery externo", DeliveryIcon="delivery_dining",
+		Address="Colón 890, Córdoba",
+		Items=[
+			new() { Qty=2, Name="Bombón Escocés x unidad", Price=1800 },
+			new() { Qty=1, Name="Crocantino",               Price=9500 },
+		],
+		Discount=500, Shipping=0,
+	};
 }

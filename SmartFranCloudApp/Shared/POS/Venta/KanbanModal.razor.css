@@ -889,3 +889,15 @@
     color: rgba(var(--sf-tertiary-rgb), 0.4);
     font-variation-settings: 'FILL' 1;
 }
+
+/* ── New card entrance + highlight ring ──────────────────────────────────── */
+@keyframes kb-card-new-in {
+    0%   { opacity: 0; transform: translateY(-0.75em) scale(0.96); box-shadow: 0 0 0 0 rgba(var(--sf-primary-rgb), 0); }
+    20%  { opacity: 1; transform: none;                            box-shadow: 0 0 0 3px rgba(var(--sf-primary-rgb), 0.55); }
+    80%  {                                                          box-shadow: 0 0 0 2px rgba(var(--sf-primary-rgb), 0.25); }
+    100% {                                                          box-shadow: 0 4px 20px -4px rgba(var(--sf-on-surface-rgb), 0.07); }
+}
+
+.kb-card--new {
+    animation: kb-card-new-in 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}

@@ -1,0 +1,85 @@
+@namespace SmartFranCloudApp.Shared.POS.Venta
+@using SmartFranCloudApp.Models
+@implements IDisposable
+
+<div class="kbt-toast @(_visible ? "kbt-toast--in" : "")">
+
+	<div class="kbt-left">
+		<img src="@GetPlatformLogo(Order.Platform)"
+			 alt="@Order.Platform"
+			 class="kbt-logo"
+			 onerror="this.style.display='none';" />
+	</div>
+
+	<div class="kbt-body">
+		<div class="kbt-header-row">
+			<span class="kbt-tag @GetPlatformClass(Order.Platform)">@Order.Platform</span>
+			<span class="kbt-id">@Order.Id</span>
+		</div>
+		<p class="kbt-items">@GetItemSummary()</p>
+	</div>
+
+	<div class="kbt-actions">
+		<button class="kbt-btn-ver" @onclick="HandleVer">Ver</button>
+		<button class="kbt-btn-close" @onclick="HandleClose">
+			<span class="material-symbols-outlined">close</span>
+		</button>
+	</div>
+
+	<div class="kbt-progress">
+		<div class="kbt-progress__bar @(_visible ? "kbt-progress__bar--run" : "")"></div>
+	</div>
+
+</div>
+
+@code {
+	[Parameter] public KanbanOrder       Order     { get; set; } = new();
+	[Parameter] public EventCallback<bool> OnAccept { get; set; }
+	[Parameter] public EventCallback     OnDismiss  { get; set; }
+
+	private bool _visible = false;
+	private CancellationTokenSource _cts = new();
+
+	protected override async Task OnAfterRenderAsync(bool firstRender) {
+		if (!firstRender) return;
+		_visible = true;
+		StateHasChanged();
+		try {
+			await Task.Delay(6000, _cts.Token);
+			await OnDismiss.InvokeAsync();
+		} catch (OperationCanceledException) { }
+	}
+
+	private async Task HandleVer() {
+		_cts.Cancel();
+		await OnAccept.InvokeAsync(true);
+	}
+
+	private async Task HandleClose() {
+		_cts.Cancel();
+		await OnAccept.InvokeAsync(false);
+	}
+
+	private string GetItemSummary() {
+		if (!Order.Items.Any()) return "";
+		var first = Order.Items[0];
+		var more  = Order.Items.Count > 1 ? $" +{Order.Items.Count - 1}" : "";
+		return $"{first.Qty}× {first.Name}{more}";
+	}
+
+	private static string GetPlatformClass(string p) => p switch {
+		"Rappi"     => "kbt-tag--rappi",
+		"PedidosYa" => "kbt-tag--peya",
+		"PediGrido" => "kbt-tag--grido",
+		_           => "kbt-tag--id",
+	};
+
+	private static string GetPlatformLogo(string p) => p switch {
+		"Rappi"     => "assets/svgs/rappi-logo.svg",
+		"PedidosYa" => "assets/images/peya-logo.png",
+		"PediGrido" => "assets/images/grido-logo.png",
+		_           => "assets/images/idiotlab-logo.png",
+	};
+
+	public void Dispose() => _cts.Cancel();
+}

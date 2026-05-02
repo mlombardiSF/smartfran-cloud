@@ -1,0 +1,161 @@
+/* ═══════════════════════════════════════════════════════════════
+   KanbanOrderToast — pill notification for new orders
+   Design: The Luminous Ledger · em units · var(--sf-*) tokens
+═══════════════════════════════════════════════════════════════ */
+
+.kbt-toast {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
+	width: 21em;
+	background: var(--sf-surface-container-lowest);
+	border-radius: 1.375em;
+	padding: 0.875em 0.875em 1.5em;
+	box-shadow:
+		0 8px 32px -4px rgba(var(--sf-on-surface-rgb), 0.14),
+		0 0 0 1.5px var(--sf-outline-container);
+	overflow: hidden;
+	opacity: 0;
+	transform: translateX(2em);
+	transition:
+		opacity 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+		transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+	pointer-events: none;
+}
+
+.kbt-toast--in {
+	opacity: 1;
+	transform: translateX(0);
+	pointer-events: auto;
+}
+
+/* ── Platform logo ───────────────────────────────────────────────────────── */
+.kbt-left { flex-shrink: 0; }
+
+.kbt-logo {
+	width: 2.25em;
+	height: 2.25em;
+	border-radius: 0.625em;
+	object-fit: cover;
+	display: block;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.kbt-body {
+	flex: 1;
+	min-width: 0;
+}
+
+.kbt-header-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	margin-bottom: 0.25em;
+	flex-wrap: wrap;
+}
+
+.kbt-tag {
+	display: inline-flex;
+	align-items: center;
+	font-size: 0.54em;
+	font-weight: 900;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	padding: 0.15em 0.6em;
+	border-radius: 9999px;
+}
+
+/* Brand colors — identidad de plataformas externas, no modificar */
+.kbt-tag--rappi { background: #ff6900; color: #fff; }
+.kbt-tag--peya  { background: #fa0050; color: #fff; }
+.kbt-tag--grido { background: #1447e6; color: #fff; }
+.kbt-tag--id    { background: var(--sf-on-surface); color: var(--sf-inverse-on-surface); }
+
+.kbt-id {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-weight: 900;
+	font-size: 0.88em;
+	color: var(--sf-on-surface);
+}
+
+.kbt-items {
+	font-size: 0.72em;
+	color: var(--sf-on-surface-variant);
+	margin: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────────── */
+.kbt-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	flex-shrink: 0;
+}
+
+.kbt-btn-ver {
+	padding: 0.45em 1em;
+	background: linear-gradient(135deg, var(--sf-primary) 0%, var(--sf-primary-container) 100%);
+	color: var(--sf-on-primary);
+	border: none;
+	border-radius: 9999px;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-weight: 900;
+	font-size: 0.72em;
+	cursor: pointer;
+	transition: filter 0.15s;
+	white-space: nowrap;
+	box-shadow: 0 4px 12px -2px rgba(var(--sf-primary-rgb), 0.32);
+}
+
+.kbt-btn-ver:hover { filter: brightness(1.1); }
+
+.kbt-btn-close {
+	width: 1.875em;
+	height: 1.875em;
+	border-radius: 50%;
+	border: none;
+	background: var(--sf-surface-container);
+	color: var(--sf-on-surface-variant);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.15s;
+	flex-shrink: 0;
+}
+
+.kbt-btn-close:hover { background: var(--sf-outline-container); }
+.kbt-btn-close .material-symbols-outlined { font-size: 1em; }
+
+/* ── Progress bar (countdown) ────────────────────────────────────────────── */
+.kbt-progress {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 0.25em;
+	background: var(--sf-outline-container);
+	border-radius: 0 0 1.375em 1.375em;
+	overflow: hidden;
+}
+
+.kbt-progress__bar {
+	height: 100%;
+	width: 100%;
+	background: linear-gradient(90deg, var(--sf-primary) 0%, var(--sf-primary-container) 100%);
+	transform-origin: left;
+	transform: scaleX(1);
+}
+
+.kbt-progress__bar--run {
+	animation: kbt-progress 6s linear forwards;
+}
+
+@keyframes kbt-progress {
+	from { transform: scaleX(1); }
+	to   { transform: scaleX(0); }
+}
